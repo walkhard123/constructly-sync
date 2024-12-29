@@ -82,27 +82,29 @@ const Index = () => {
           Construction Project Management
         </h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {menuItems.map((item) => (
-            <Card key={item.title} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <span className="text-2xl">{item.icon}</span>
-                  {item.title}
-                </CardTitle>
-                <CardDescription>{item.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button 
-                  className="w-full"
-                  onClick={() => setSelectedSection(item.title)}
-                >
-                  Access {item.title}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {!selectedSection && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {menuItems.map((item) => (
+              <Card key={item.title} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <span className="text-2xl">{item.icon}</span>
+                    {item.title}
+                  </CardTitle>
+                  <CardDescription>{item.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Button 
+                    className="w-full"
+                    onClick={() => setSelectedSection(item.title)}
+                  >
+                    Access {item.title}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {selectedSection && (
           <div className="mt-8">
