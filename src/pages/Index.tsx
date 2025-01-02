@@ -1,12 +1,13 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
-import { ArrowLeft, Plus, Search, Calendar, Clock, Upload, Users, ClipboardList } from "lucide-react";
+import { ArrowLeft, Plus, Search, Calendar, Clock, Upload, Users, ClipboardList, ListTodo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectManagement } from "@/components/ProjectManagement";
 import { TeamMembers } from "@/components/TeamMembers";
 import { DailyLogs } from "@/components/DailyLogs";
 import { TimeClock } from "@/components/TimeClock";
 import { FileUpload } from "@/components/FileUpload";
+import { TaskManagement } from "@/components/TaskManagement";
 
 const Index = () => {
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
@@ -17,6 +18,12 @@ const Index = () => {
       description: "Manage construction projects and tasks",
       icon: <ClipboardList className="w-6 h-6" />,
       component: <ProjectManagement />
+    },
+    {
+      title: "Tasks",
+      description: "View and manage all tasks across projects",
+      icon: <ListTodo className="w-6 h-6" />,
+      component: <TaskManagement />
     },
     {
       title: "Team Members",
