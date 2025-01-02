@@ -80,7 +80,7 @@ const Index = () => {
         )}
         
         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-          Construction Project Management
+          ProBuilder 1.0
         </h1>
         
         {!selectedSection ? (
