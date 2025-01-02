@@ -42,12 +42,14 @@ export const FileUpload = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center gap-4 flex-wrap">
         <div className="flex gap-2 flex-1">
-          <Input 
-            placeholder="Search files..." 
-            className="max-w-sm"
-            type="search"
-            startIcon={<Search className="w-4 h-4" />}
-          />
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input 
+              placeholder="Search files..." 
+              className="pl-8"
+              type="search"
+            />
+          </div>
           <Button variant="outline">Category</Button>
           <Button variant="outline">Date</Button>
         </div>

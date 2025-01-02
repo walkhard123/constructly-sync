@@ -1,129 +1,197 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Cloud, Thermometer, Users, FileEdit, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar, FileText, Image, Plus, Tag, Clock } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export const DailyLogs = () => {
-  const [logs] = useState([
-    { 
+  const [logs, setLogs] = useState([
+    {
       id: 1,
-      date: "2024-03-20", 
-      weather: "Sunny", 
-      temp: "72°F", 
-      crew: 15,
-      activities: [
-        "Foundation work completed on Block A",
-        "Electrical wiring inspection passed",
-        "Safety meeting conducted"
-      ],
-      materials: [
-        "Concrete: 50 cubic yards",
-        "Steel reinforcement: 2 tons",
-        "Electrical conduit: 500 ft"
-      ],
-      incidents: 0,
-      delays: "None reported"
-    },
-    { 
-      id: 2,
-      date: "2024-03-19", 
-      weather: "Cloudy", 
-      temp: "65°F", 
-      crew: 12,
-      activities: [
-        "Wall framing in progress",
-        "HVAC installation started",
-        "Site cleanup completed"
-      ],
-      materials: [
-        "Lumber: 1000 board feet",
-        "HVAC units: 2",
-        "Insulation: 500 sq ft"
-      ],
-      incidents: 1,
-      delays: "2 hour rain delay"
+      project: "Downtown Office Building",
+      date: "2024-03-20",
+      startTime: "08:00",
+      endTime: "17:00",
+      activities: "Completed foundation inspection, started electrical work",
+      deliveries: "Received steel beams, ordered concrete",
+      attachments: 2,
+      tags: ["@JohnDoe", "@SarahSmith"]
     }
   ]);
+
+  const [newLog, setNewLog] = useState({
+    project: "",
+    activities: "",
+    deliveries: "",
+    startTime: "",
+    endTime: "",
+    tags: ""
+  });
+
+  const handleAddLog = () => {
+    if (newLog.project && newLog.activities) {
+      setLogs([...logs, {
+        id: logs.length + 1,
+        ...newLog,
+        date: new Date().toISOString().split('T')[0],
+        attachments: 0,
+        tags: newLog.tags.split(',').map(tag => tag.trim())
+      }]);
+      setNewLog({
+        project: "",
+        activities: "",
+        deliveries: "",
+        startTime: "",
+        endTime: "",
+        tags: ""
+      });
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center gap-4 flex-wrap">
         <div className="flex gap-2 flex-1">
           <Input 
-            type="date" 
+            placeholder="Search logs..." 
             className="max-w-sm"
+            type="search"
           />
-          <Button variant="outline">Filter</Button>
+          <Button variant="outline">
+            <Calendar className="w-4 h-4 mr-2" />
+            Date Range
+          </Button>
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700">
-          <Plus className="mr-2 h-4 w-4" /> New Log Entry
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              <Plus className="mr-2 h-4 w-4" /> Add Log Entry
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Daily Log Entry</DialogTitle>
+              <DialogDescription>
+                Record your daily activities and project updates
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label>Project</Label>
+                <Select onValueChange={(value) => setNewLog({...newLog, project: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select project" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Downtown Office Building">Downtown Office Building</SelectItem>
+                    <SelectItem value="Residential Complex">Residential Complex</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Start Time</Label>
+                  <Input
+                    type="time"
+                    value={newLog.startTime}
+                    onChange={(e) => setNewLog({...newLog, startTime: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>End Time</Label>
+                  <Input
+                    type="time"
+                    value={newLog.endTime}
+                    onChange={(e) => setNewLog({...newLog, endTime: e.target.value})}
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Activities</Label>
+                <Textarea
+                  value={newLog.activities}
+                  onChange={(e) => setNewLog({...newLog, activities: e.target.value})}
+                  placeholder="Describe today's activities..."
+                />
+              </div>
+              <div>
+                <Label>Deliveries</Label>
+                <Textarea
+                  value={newLog.deliveries}
+                  onChange={(e) => setNewLog({...newLog, deliveries: e.target.value})}
+                  placeholder="List any deliveries received or ordered..."
+                />
+              </div>
+              <div>
+                <Label>Tag Team Members</Label>
+                <Input
+                  value={newLog.tags}
+                  onChange={(e) => setNewLog({...newLog, tags: e.target.value})}
+                  placeholder="@JohnDoe, @SarahSmith"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setNewLog({
+                project: "",
+                activities: "",
+                deliveries: "",
+                startTime: "",
+                endTime: "",
+                tags: ""
+              })}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddLog}>Add Log</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
-      
+
       <div className="space-y-4">
         {logs.map((log) => (
-          <Card key={log.id} className="hover:shadow-lg transition-shadow">
+          <Card key={log.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle>{new Date(log.date).toLocaleDateString('en-US', { 
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}</CardTitle>
-                  <CardDescription className="flex gap-4 mt-2">
-                    <span className="flex items-center gap-1">
-                      <Cloud className="w-4 h-4" /> {log.weather}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Thermometer className="w-4 h-4" /> {log.temp}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" /> {log.crew} workers
-                    </span>
-                  </CardDescription>
+                  <CardTitle>{log.project}</CardTitle>
+                  <CardDescription>{log.date}</CardDescription>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <FileEdit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="w-4 h-4" />
+                  <span>{log.startTime} - {log.endTime}</span>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <div>
-                  <h4 className="font-semibold mb-2">Activities</h4>
-                  <ul className="list-disc list-inside space-y-1 text-gray-600">
-                    {log.activities.map((activity, index) => (
-                      <li key={index}>{activity}</li>
+                  <h4 className="font-medium mb-2">Activities</h4>
+                  <p className="text-sm text-gray-600">{log.activities}</p>
+                </div>
+                {log.deliveries && (
+                  <div>
+                    <h4 className="font-medium mb-2">Deliveries</h4>
+                    <p className="text-sm text-gray-600">{log.deliveries}</p>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="flex gap-2">
+                    {log.tags.map((tag, index) => (
+                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm">
+                        <Tag className="w-3 h-3 mr-1" />
+                        {tag}
+                      </span>
                     ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Materials Used</h4>
-                  <ul className="list-disc list-inside space-y-1 text-gray-600">
-                    {log.materials.map((material, index) => (
-                      <li key={index}>{material}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-sm text-gray-500">Safety Incidents</span>
-                  <p className={`font-medium ${log.incidents > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                    {log.incidents} reported
-                  </p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Delays</span>
-                  <p className="font-medium">{log.delays}</p>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="w-4 h-4" />
+                    <span>{log.attachments} files</span>
+                  </div>
                 </div>
               </div>
             </CardContent>

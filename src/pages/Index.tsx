@@ -9,6 +9,7 @@ import { TimeClock } from "@/components/TimeClock";
 import { FileUpload } from "@/components/FileUpload";
 import { TaskManagement } from "@/components/TaskManagement";
 import { Dashboard } from "@/components/Dashboard";
+import { LeaveRequests } from "@/components/LeaveRequests";
 
 const Index = () => {
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
@@ -55,6 +56,12 @@ const Index = () => {
       description: "Manage project documents",
       icon: <Upload className="w-6 h-6" />,
       component: <FileUpload />
+    },
+    {
+      title: "Leave Requests",
+      description: "Manage time off and leave requests",
+      icon: <Calendar className="w-6 h-6" />,
+      component: <LeaveRequests />
     }
   ];
 
