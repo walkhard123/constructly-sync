@@ -2,15 +2,89 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, FileEdit, Trash2, CheckCircle, AlertCircle } from "lucide-react";
+import { Plus, FileEdit, Trash2, CheckCircle, AlertCircle, ListTodo } from "lucide-react";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export const ProjectManagement = () => {
   const [projects, setProjects] = useState([
-    { id: 1, name: "Downtown Office Building", phase: "Phase 1", progress: 65, due: "Dec 2024", status: "active", budget: "$2.5M", risk: "medium" },
-    { id: 2, name: "Residential Complex", phase: "Phase 2", progress: 30, due: "Mar 2025", status: "active", budget: "$4.1M", risk: "low" },
-    { id: 3, name: "Shopping Mall Renovation", phase: "Phase 1", progress: 85, due: "Nov 2024", status: "active", budget: "$1.8M", risk: "high" },
+    { 
+      id: 1, 
+      name: "Downtown Office Building", 
+      phase: "Phase 1", 
+      progress: 65, 
+      due: "Dec 2024", 
+      status: "active", 
+      budget: "$2.5M", 
+      risk: "medium",
+      tasks: [
+        { id: 1, title: "Foundation inspection", status: "completed", priority: "high", assignee: "John Doe", dueDate: "2024-03-20" },
+        { id: 2, title: "Electrical wiring", status: "in-progress", priority: "medium", assignee: "Jane Smith", dueDate: "2024-04-15" }
+      ]
+    },
+    { 
+      id: 2, 
+      name: "Residential Complex", 
+      phase: "Phase 2", 
+      progress: 30, 
+      due: "Mar 2025", 
+      status: "active", 
+      budget: "$4.1M", 
+      risk: "low",
+      tasks: [
+        { id: 1, title: "Site preparation", status: "in-progress", priority: "high", assignee: "Mike Johnson", dueDate: "2024-03-25" }
+      ]
+    },
+    { 
+      id: 3, 
+      name: "Shopping Mall Renovation", 
+      phase: "Phase 1", 
+      progress: 85, 
+      due: "Nov 2024", 
+      status: "active", 
+      budget: "$1.8M", 
+      risk: "high",
+      tasks: []
+    },
   ]);
+
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [newTask, setNewTask] = useState({
+    title: "",
+    priority: "medium",
+    assignee: "",
+    dueDate: "",
+    status: "pending"
+  });
+
+  const handleAddTask = () => {
+    if (selectedProject && newTask.title && newTask.assignee && newTask.dueDate) {
+      const updatedProjects = projects.map(project => {
+        if (project.id === selectedProject) {
+          return {
+            ...project,
+            tasks: [...project.tasks, {
+              id: project.tasks.length + 1,
+              ...newTask
+            }]
+          };
+        }
+        return project;
+      });
+      setProjects(updatedProjects);
+      setIsTaskDialogOpen(false);
+      setNewTask({
+        title: "",
+        priority: "medium",
+        assignee: "",
+        dueDate: "",
+        status: "pending"
+      });
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -26,9 +100,87 @@ export const ProjectManagement = () => {
             Filter
           </Button>
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700">
-          <Plus className="mr-2 h-4 w-4" /> New Project
-        </Button>
+        <div className="flex gap-2">
+          <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="bg-purple-100 hover:bg-purple-200">
+                <ListTodo className="mr-2 h-4 w-4" /> Add Task
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Task</DialogTitle>
+                <DialogDescription>
+                  Create a new task for a specific project
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="project">Project</Label>
+                  <Select onValueChange={(value) => setSelectedProject(Number(value))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {projects.map((project) => (
+                        <SelectItem key={project.id} value={project.id.toString()}>
+                          {project.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="title">Task Title</Label>
+                  <Input
+                    id="title"
+                    value={newTask.title}
+                    onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select onValueChange={(value) => setNewTask({...newTask, priority: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="assignee">Assignee</Label>
+                  <Input
+                    id="assignee"
+                    value={newTask.assignee}
+                    onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="dueDate">Due Date</Label>
+                  <Input
+                    id="dueDate"
+                    type="date"
+                    value={newTask.dueDate}
+                    onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleAddTask}>Add Task</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="mr-2 h-4 w-4" /> New Project
+          </Button>
+        </div>
       </div>
       
       <Tabs defaultValue="active" className="w-full">
@@ -83,6 +235,35 @@ export const ProjectManagement = () => {
                       }`}>
                         {project.risk.charAt(0).toUpperCase() + project.risk.slice(1)}
                       </p>
+                    </div>
+                  </div>
+                  {/* Tasks Section */}
+                  <div className="mt-4">
+                    <h4 className="font-medium mb-2">Tasks ({project.tasks.length})</h4>
+                    <div className="space-y-2">
+                      {project.tasks.map((task) => (
+                        <div key={task.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
+                          <div className="flex items-center gap-2">
+                            {task.status === 'completed' ? (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <AlertCircle className="w-4 h-4 text-yellow-500" />
+                            )}
+                            <span className="text-sm">{task.title}</span>
+                          </div>
+                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                            <span>{task.assignee}</span>
+                            <span>Due: {task.dueDate}</span>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              task.priority === 'high' ? 'bg-red-100 text-red-700' :
+                              task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-green-100 text-green-700'
+                            }`}>
+                              {task.priority}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
