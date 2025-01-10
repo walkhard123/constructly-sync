@@ -11,8 +11,10 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export const LeaveRequests = () => {
+  const { toast } = useToast();
   const [requests, setRequests] = useState([
     {
       id: 1,
@@ -49,6 +51,31 @@ export const LeaveRequests = () => {
         reason: ""
       });
     }
+  };
+
+  const handleApprove = (requestId: number) => {
+    setRequests(requests.map(request => 
+      request.id === requestId 
+        ? { ...request, status: "approved" }
+        : request
+    ));
+    toast({
+      title: "Leave Request Approved",
+      description: "The leave request has been approved successfully.",
+    });
+  };
+
+  const handleReject = (requestId: number) => {
+    setRequests(requests.map(request => 
+      request.id === requestId 
+        ? { ...request, status: "rejected" }
+        : request
+    ));
+    toast({
+      title: "Leave Request Rejected",
+      description: "The leave request has been rejected.",
+      variant: "destructive",
+    });
   };
 
   return (
@@ -199,8 +226,20 @@ export const LeaveRequests = () => {
                 </div>
                 {request.status === "pending" && (
                   <div className="flex gap-2 pt-4">
-                    <Button variant="outline" className="w-full">Approve</Button>
-                    <Button variant="outline" className="w-full text-red-500 hover:text-red-600">Reject</Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full hover:bg-green-50 hover:text-green-600"
+                      onClick={() => handleApprove(request.id)}
+                    >
+                      Approve
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full hover:bg-red-50 hover:text-red-600"
+                      onClick={() => handleReject(request.id)}
+                    >
+                      Reject
+                    </Button>
                   </div>
                 )}
               </div>
