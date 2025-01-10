@@ -108,6 +108,7 @@ export const ProjectManagement = () => {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [newTask, setNewTask] = useState<Partial<Task>>({
     title: "",
     priority: "medium",
@@ -137,19 +138,48 @@ export const ProjectManagement = () => {
       return;
     }
 
-    const newProjectData: Project = {
-      id: projects.length + 1,
-      name: newProject.name,
-      phase: newProject.phase || "Phase 1",
-      progress: newProject.progress || 0,
-      due: newProject.due,
-      status: newProject.status || "active",
-      budget: newProject.budget,
-      risk: newProject.risk || "low",
-      tasks: []
-    };
+    if (editingProject) {
+      // Update existing project
+      setProjects(prevProjects => prevProjects.map(project => 
+        project.id === editingProject.id 
+          ? {
+              ...project,
+              name: newProject.name,
+              phase: newProject.phase || "Phase 1",
+              progress: newProject.progress || 0,
+              due: newProject.due,
+              status: newProject.status || "active",
+              budget: newProject.budget,
+              risk: newProject.risk || "low"
+            }
+          : project
+      ));
+      setEditingProject(null);
+      toast({
+        title: "Success",
+        description: "Project updated successfully",
+      });
+    } else {
+      // Add new project
+      const newProjectData: Project = {
+        id: projects.length + 1,
+        name: newProject.name,
+        phase: newProject.phase || "Phase 1",
+        progress: newProject.progress || 0,
+        due: newProject.due,
+        status: newProject.status || "active",
+        budget: newProject.budget,
+        risk: newProject.risk || "low",
+        tasks: []
+      };
 
-    setProjects(prevProjects => [...prevProjects, newProjectData]);
+      setProjects(prevProjects => [...prevProjects, newProjectData]);
+      toast({
+        title: "Success",
+        description: "Project added successfully",
+      });
+    }
+
     setIsProjectDialogOpen(false);
     setNewProject({
       name: "",
@@ -161,9 +191,28 @@ export const ProjectManagement = () => {
       risk: "low",
       tasks: []
     });
+  };
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+    setNewProject({
+      name: project.name,
+      phase: project.phase,
+      progress: project.progress,
+      due: project.due,
+      status: project.status,
+      budget: project.budget,
+      risk: project.risk,
+      tasks: project.tasks
+    });
+    setIsProjectDialogOpen(true);
+  };
+
+  const handleDeleteProject = (projectId: number) => {
+    setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
     toast({
       title: "Success",
-      description: "Project added successfully",
+      description: "Project deleted successfully",
     });
   };
 
@@ -336,7 +385,20 @@ export const ProjectManagement = () => {
           }
           setIsTaskDialogOpen(true);
         }} 
-        onOpenProjectDialog={() => setIsProjectDialogOpen(true)}
+        onOpenProjectDialog={() => {
+          setEditingProject(null);
+          setNewProject({
+            name: "",
+            phase: "Phase 1",
+            progress: 0,
+            due: "",
+            status: "active",
+            budget: "",
+            risk: "low",
+            tasks: []
+          });
+          setIsProjectDialogOpen(true);
+        }}
       />
       
       <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
@@ -422,9 +484,9 @@ export const ProjectManagement = () => {
       <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add New Project</DialogTitle>
+            <DialogTitle>{editingProject ? 'Edit Project' : 'Add New Project'}</DialogTitle>
             <DialogDescription>
-              Fill in the project details below
+              {editingProject ? 'Edit the project details below' : 'Fill in the project details below'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -488,11 +550,14 @@ export const ProjectManagement = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsProjectDialogOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setIsProjectDialogOpen(false);
+              setEditingProject(null);
+            }}>
               Cancel
             </Button>
             <Button onClick={handleAddProject}>
-              Add Project
+              {editingProject ? 'Update Project' : 'Add Project'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -515,6 +580,8 @@ export const ProjectManagement = () => {
               onDeleteTask={handleDeleteTask}
               onAddSubTask={handleAddSubTask}
               onToggleSubTask={handleToggleSubTask}
+              onEditProject={() => handleEditProject(project)}
+              onDeleteProject={() => handleDeleteProject(project.id)}
             />
           ))}
         </TabsContent>

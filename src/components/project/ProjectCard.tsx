@@ -37,6 +37,8 @@ interface ProjectCardProps {
   onDeleteTask: (projectId: number, taskId: number) => void;
   onAddSubTask: (projectId: number, taskId: number, title: string) => void;
   onToggleSubTask: (projectId: number, taskId: number, subTaskId: number) => void;
+  onEditProject: () => void;
+  onDeleteProject: () => void;
 }
 
 export const ProjectCard = ({ 
@@ -45,7 +47,9 @@ export const ProjectCard = ({
   onEditTask,
   onDeleteTask,
   onAddSubTask,
-  onToggleSubTask
+  onToggleSubTask,
+  onEditProject,
+  onDeleteProject
 }: ProjectCardProps) => {
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -56,10 +60,15 @@ export const ProjectCard = ({
             <CardDescription>{project.phase} • Due: {project.due}</CardDescription>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={onEditProject}>
               <FileEdit className="w-4 h-4" />
             </Button>
-            <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-red-500 hover:text-red-600"
+              onClick={onDeleteProject}
+            >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
