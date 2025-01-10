@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { FileEdit, ListTodo, Plus } from "lucide-react";
+import { ListTodo, Plus } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 interface ProjectHeaderProps {
@@ -17,10 +17,6 @@ export const ProjectHeader = ({ onOpenTaskDialog, onOpenProjectDialog }: Project
           className="max-w-sm"
           type="search"
         />
-        <Button variant="outline">
-          <FileEdit className="w-4 h-4 mr-2" />
-          Filter
-        </Button>
       </div>
       <div className="flex gap-2">
         <Dialog>
