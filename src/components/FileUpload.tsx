@@ -2,10 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload, Search, FileText, Download, Trash2, Eye } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export const FileUpload = () => {
-  const [files] = useState([
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [files, setFiles] = useState([
     { 
       id: 1,
       name: "Site Plans.pdf", 
@@ -38,6 +41,32 @@ export const FileUpload = () => {
     }
   ]);
 
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = event.target.files;
+    if (selectedFiles) {
+      const newFiles = Array.from(selectedFiles).map((file, index) => ({
+        id: files.length + index + 1,
+        name: file.name,
+        size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+        date: new Date().toISOString().split('T')[0],
+        type: file.name.split('.').pop()?.toUpperCase() || 'Unknown',
+        uploadedBy: "Current User",
+        category: "New Upload",
+        downloads: 0
+      }));
+
+      setFiles([...newFiles, ...files]);
+      toast({
+        title: "Files uploaded successfully",
+        description: `${selectedFiles.length} file(s) have been uploaded.`,
+      });
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center gap-4 flex-wrap">
@@ -53,7 +82,17 @@ export const FileUpload = () => {
           <Button variant="outline">Category</Button>
           <Button variant="outline">Date</Button>
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          multiple
+        />
+        <Button 
+          className="bg-purple-600 hover:bg-purple-700"
+          onClick={handleUploadClick}
+        >
           <Upload className="mr-2 h-4 w-4" /> Upload Files
         </Button>
       </div>
