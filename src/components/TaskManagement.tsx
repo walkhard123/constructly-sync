@@ -66,7 +66,12 @@ export const TaskManagement = () => {
       if (editingTask) {
         setTasks(tasks.map(task => 
           task.id === editingTask.id 
-            ? { ...task, ...newTask, id: task.id, subTasks: task.subTasks } 
+            ? { 
+                ...task, 
+                ...newTask, 
+                id: task.id, 
+                subTasks: newTask.subTasks || task.subTasks // Preserve existing subtasks if none provided
+              } 
             : task
         ));
         toast({
@@ -77,7 +82,7 @@ export const TaskManagement = () => {
         setTasks([...tasks, { 
           ...newTask as Task, 
           id: tasks.length + 1,
-          subTasks: []
+          subTasks: newTask.subTasks || [] // Initialize empty subtasks array for new tasks
         }]);
         toast({
           title: "Success",
