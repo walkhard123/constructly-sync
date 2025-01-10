@@ -7,6 +7,7 @@ import { TeamMemberSelect } from "./form/TeamMemberSelect";
 import { ProjectDates } from "./form/ProjectDates";
 import { ProjectDescription } from "./form/ProjectDescription";
 import { useToast } from "@/hooks/use-toast";
+import { Card } from "@/components/ui/card";
 
 interface ProjectDialogFormProps {
   isOpen: boolean;
@@ -41,47 +42,64 @@ export const ProjectDialogForm = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{editingProject ? 'Edit Project' : 'Add New Project'}</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="space-y-4 pb-4 border-b">
+          <DialogTitle className="text-2xl font-bold">
+            {editingProject ? 'Edit Project' : 'Add New Project'}
+          </DialogTitle>
+          <DialogDescription className="text-base">
             {editingProject ? 'Edit the project details below' : 'Fill in the project details below'}
             <span className="text-sm text-muted-foreground block mt-1">
               Fields marked with <span className="text-red-500">*</span> are required
             </span>
           </DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-2 gap-4">
-          <ProjectBasicInfo
-            name={newProject.name || ''}
-            address={newProject.address || ''}
-            onNameChange={(value) => setNewProject({ ...newProject, name: value })}
-            onAddressChange={(value) => setNewProject({ ...newProject, address: value })}
-          />
-          
-          <ProjectTypeSelect
-            type={newProject.type || 'house'}
-            onTypeChange={(value) => setNewProject({ ...newProject, type: value })}
-          />
 
-          <TeamMemberSelect
-            teamMember={newProject.teamMember || ''}
-            onTeamMemberChange={(value) => setNewProject({ ...newProject, teamMember: value })}
-          />
+        <div className="py-4 space-y-8">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+            <div className="space-y-6">
+              <ProjectBasicInfo
+                name={newProject.name || ''}
+                address={newProject.address || ''}
+                onNameChange={(value) => setNewProject({ ...newProject, name: value })}
+                onAddressChange={(value) => setNewProject({ ...newProject, address: value })}
+              />
+            </div>
+          </Card>
 
-          <ProjectDates
-            startDate={newProject.startDate || ''}
-            endDate={newProject.endDate || ''}
-            onStartDateChange={(value) => setNewProject({ ...newProject, startDate: value })}
-            onEndDateChange={(value) => setNewProject({ ...newProject, endDate: value })}
-          />
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Project Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ProjectTypeSelect
+                type={newProject.type || 'house'}
+                onTypeChange={(value) => setNewProject({ ...newProject, type: value })}
+              />
 
-          <ProjectDescription
-            description={newProject.description || ''}
-            onDescriptionChange={(value) => setNewProject({ ...newProject, description: value })}
-          />
+              <TeamMemberSelect
+                teamMember={newProject.teamMember || ''}
+                onTeamMemberChange={(value) => setNewProject({ ...newProject, teamMember: value })}
+              />
+
+              <ProjectDates
+                startDate={newProject.startDate || ''}
+                endDate={newProject.endDate || ''}
+                onStartDateChange={(value) => setNewProject({ ...newProject, startDate: value })}
+                onEndDateChange={(value) => setNewProject({ ...newProject, endDate: value })}
+              />
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
+            <ProjectDescription
+              description={newProject.description || ''}
+              onDescriptionChange={(value) => setNewProject({ ...newProject, description: value })}
+            />
+          </Card>
         </div>
-        <DialogFooter>
+
+        <DialogFooter className="pt-4 border-t">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
