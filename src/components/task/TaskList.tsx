@@ -9,7 +9,7 @@ interface TaskListProps {
   onAddSubTask: (taskId: number) => void;
   onToggleSubTask: (taskId: number, subTaskId: number) => void;
   newSubTasks: { [key: number]: string };
-  setNewSubTasks: (value: { [key: number]: string }) => void;
+  setNewSubTasks: React.Dispatch<React.SetStateAction<{ [key: number]: string }>>;
 }
 
 export const TaskList = ({
