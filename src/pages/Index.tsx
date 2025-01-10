@@ -72,10 +72,6 @@ const Index = () => {
     }
   ];
 
-  const handleSectionChange = (title: string) => {
-    setSelectedSection(title);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -100,7 +96,7 @@ const Index = () => {
               <Card 
                 key={item.title} 
                 className="hover:shadow-lg transition-shadow cursor-pointer hover:border-purple-200"
-                onClick={() => handleSectionChange(item.title)}
+                onClick={() => setSelectedSection(item.title)}
               >
                 <CardHeader>
                   <div className="flex items-center gap-3">

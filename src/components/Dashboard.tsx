@@ -34,24 +34,13 @@ export const Dashboard = () => {
     })
   });
 
-  // Function to dispatch a custom event that will be caught by the parent
-  const handleCardClick = (section: string) => {
-    const event = new CustomEvent('changeSection', { 
-      detail: { section }
-    });
-    window.dispatchEvent(event);
-  };
-
   return (
     <div className="space-y-6 animate-fade-in">
       <h1 className="text-3xl font-bold">Dashboard Overview</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Projects Summary */}
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick('Projects Management')}
-        >
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Projects</CardTitle>
             <ClipboardList className="h-4 w-4 text-purple-600" />
@@ -68,10 +57,7 @@ export const Dashboard = () => {
         </Card>
 
         {/* Tasks Summary */}
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick('Tasks')}
-        >
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tasks</CardTitle>
             <ListTodo className="h-4 w-4 text-purple-600" />
@@ -88,10 +74,7 @@ export const Dashboard = () => {
         </Card>
 
         {/* Team Summary */}
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick('Team Members')}
-        >
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Team</CardTitle>
             <Users className="h-4 w-4 text-purple-600" />
@@ -108,10 +91,7 @@ export const Dashboard = () => {
         </Card>
 
         {/* Time Tracking */}
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick('Time Clock')}
-        >
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Time Tracking</CardTitle>
             <Clock className="h-4 w-4 text-purple-600" />
@@ -128,10 +108,7 @@ export const Dashboard = () => {
         </Card>
 
         {/* Daily Logs */}
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick('Daily Logs')}
-        >
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Daily Logs</CardTitle>
             <Calendar className="h-4 w-4 text-purple-600" />
@@ -148,10 +125,7 @@ export const Dashboard = () => {
         </Card>
 
         {/* Documents */}
-        <Card 
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-          onClick={() => handleCardClick('File Upload')}
-        >
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Documents</CardTitle>
             <FileText className="h-4 w-4 text-purple-600" />
