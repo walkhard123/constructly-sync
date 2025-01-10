@@ -3,33 +3,7 @@ import { Button } from "@/components/ui/button";
 import { FileEdit, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import { ProjectTaskList } from "./ProjectTaskList";
 import { useState } from "react";
-
-interface SubTask {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-
-interface Task {
-  id: number;
-  title: string;
-  status: string;
-  priority: string;
-  assignee: string;
-  dueDate: string;
-  subTasks: SubTask[];
-}
-
-interface Project {
-  id: number;
-  name: string;
-  phase: string;
-  progress: number;
-  due: string;
-  budget: string;
-  risk: string;
-  tasks: Task[];
-}
+import { Project, Task, SubTask } from "../types/project";
 
 interface ProjectCardProps {
   project: Project;
@@ -67,7 +41,7 @@ export const ProjectCard = ({
             <div>
               <CardTitle className="text-lg">{project.name}</CardTitle>
               <CardDescription className="text-sm">
-                {project.phase} • Due: {project.due}
+                {project.phase} • Due: {project.endDate}
               </CardDescription>
             </div>
           </div>
