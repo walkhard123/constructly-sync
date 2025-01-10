@@ -8,9 +8,14 @@ export const useProjectManagement = () => {
     { 
       id: 1, 
       name: "Downtown Office Building", 
+      address: "123 Main St",
+      type: "apartment",
+      teamMember: "John Smith",
+      startDate: "2024-01-01",
+      endDate: "2024-12-31",
+      description: "Modern office building in downtown area",
       phase: "Phase 1", 
-      progress: 65, 
-      due: "Dec 2024", 
+      progress: 65,
       status: "active", 
       budget: "$2.5M", 
       risk: "medium",
@@ -39,10 +44,15 @@ export const useProjectManagement = () => {
     },
     { 
       id: 2, 
-      name: "Residential Complex", 
+      name: "Residential Complex",
+      address: "456 Oak Ave",
+      type: "townhouse",
+      teamMember: "Jane Smith",
+      startDate: "2024-02-01",
+      endDate: "2025-03-31",
+      description: "Modern residential complex with amenities",
       phase: "Phase 2", 
-      progress: 30, 
-      due: "Mar 2025", 
+      progress: 30,
       status: "active", 
       budget: "$4.1M", 
       risk: "low",
@@ -61,10 +71,15 @@ export const useProjectManagement = () => {
     },
     { 
       id: 3, 
-      name: "Shopping Mall Renovation", 
+      name: "Shopping Mall Renovation",
+      address: "789 Market St",
+      type: "others",
+      teamMember: "Mike Johnson",
+      startDate: "2024-03-01",
+      endDate: "2024-11-30",
+      description: "Complete renovation of existing shopping mall",
       phase: "Phase 1", 
-      progress: 85, 
-      due: "Nov 2024", 
+      progress: 85,
       status: "active", 
       budget: "$1.8M", 
       risk: "high",
@@ -73,7 +88,7 @@ export const useProjectManagement = () => {
   ]);
 
   const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
-    if (!newProject.name || !newProject.due || !newProject.budget) {
+    if (!newProject.name || !newProject.endDate || !newProject.budget) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -90,7 +105,7 @@ export const useProjectManagement = () => {
               name: newProject.name!,
               phase: newProject.phase || "Phase 1",
               progress: newProject.progress || 0,
-              due: newProject.due!,
+              endDate: newProject.endDate!,
               status: newProject.status || "active",
               budget: newProject.budget!,
               risk: newProject.risk || "low"
@@ -105,11 +120,16 @@ export const useProjectManagement = () => {
       const newProjectData: Project = {
         id: projects.length + 1,
         name: newProject.name,
+        address: newProject.address || "",
+        type: newProject.type || "house",
+        teamMember: newProject.teamMember || "",
+        startDate: newProject.startDate || "",
+        endDate: newProject.endDate!,
+        description: newProject.description || "",
         phase: newProject.phase || "Phase 1",
         progress: newProject.progress || 0,
-        due: newProject.due,
         status: newProject.status || "active",
-        budget: newProject.budget,
+        budget: newProject.budget!,
         risk: newProject.risk || "low",
         tasks: []
       };
