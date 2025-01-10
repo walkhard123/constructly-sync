@@ -3,6 +3,22 @@ import { Button } from "@/components/ui/button";
 import { FileEdit, Trash2 } from "lucide-react";
 import { ProjectTaskList } from "./ProjectTaskList";
 
+interface SubTask {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
+interface Task {
+  id: number;
+  title: string;
+  status: string;
+  priority: string;
+  assignee: string;
+  dueDate: string;
+  subTasks: SubTask[];
+}
+
 interface Project {
   id: number;
   name: string;
@@ -11,14 +27,7 @@ interface Project {
   due: string;
   budget: string;
   risk: string;
-  tasks: Array<{
-    id: number;
-    title: string;
-    status: string;
-    priority: string;
-    assignee: string;
-    dueDate: string;
-  }>;
+  tasks: Task[];
 }
 
 interface ProjectCardProps {
@@ -26,13 +35,17 @@ interface ProjectCardProps {
   onToggleTaskStatus: (projectId: number, taskId: number) => void;
   onEditTask: (projectId: number, taskId: number) => void;
   onDeleteTask: (projectId: number, taskId: number) => void;
+  onAddSubTask: (projectId: number, taskId: number, title: string) => void;
+  onToggleSubTask: (projectId: number, taskId: number, subTaskId: number) => void;
 }
 
 export const ProjectCard = ({ 
   project,
   onToggleTaskStatus,
   onEditTask,
-  onDeleteTask
+  onDeleteTask,
+  onAddSubTask,
+  onToggleSubTask
 }: ProjectCardProps) => {
   return (
     <Card className="hover:shadow-lg transition-shadow">
@@ -87,6 +100,8 @@ export const ProjectCard = ({
               onToggleStatus={(taskId) => onToggleTaskStatus(project.id, taskId)}
               onEditTask={(taskId) => onEditTask(project.id, taskId)}
               onDeleteTask={(taskId) => onDeleteTask(project.id, taskId)}
+              onAddSubTask={(taskId, title) => onAddSubTask(project.id, taskId, title)}
+              onToggleSubTask={(taskId, subTaskId) => onToggleSubTask(project.id, taskId, subTaskId)}
             />
           </div>
         </div>
