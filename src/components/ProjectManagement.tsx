@@ -18,7 +18,7 @@ export const ProjectManagement = () => {
     handleToggleTaskStatus,
     handleDeleteTask,
     handleAddSubTask,
-    handleToggleSubTask
+    toggleSubTask
   } = useProjects();
 
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
@@ -144,7 +144,7 @@ export const ProjectManagement = () => {
         editingTask={editingTask}
         newTask={newTask}
         setNewTask={setNewTask}
-        onSave={() => handleAddTask(selectedProject, newTask)}
+        onSave={() => handleAddTask(newTask)}
       />
 
       <ProjectTabs
@@ -153,7 +153,7 @@ export const ProjectManagement = () => {
         onEditTask={handleEditTask}
         onDeleteTask={handleDeleteTask}
         onAddSubTask={handleAddSubTask}
-        onToggleSubTask={handleToggleSubTask}
+        onToggleSubTask={toggleSubTask}
         onEditProject={handleEditProject}
         onDeleteProject={handleDeleteProject}
       />
