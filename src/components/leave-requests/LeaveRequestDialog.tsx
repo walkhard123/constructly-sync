@@ -40,6 +40,23 @@ export const LeaveRequestDialog = ({
   handleCancel,
   teamMembers,
 }: LeaveRequestDialogProps) => {
+  const handleStartDateSelect = (date: Date | undefined) => {
+    setStartDate(date);
+    // If end date is before start date, reset end date
+    if (date && endDate && date > endDate) {
+      setEndDate(undefined);
+    }
+  };
+
+  const handleEndDateSelect = (date: Date | undefined) => {
+    // Only allow end date to be set if it's after or equal to start date
+    if (date && startDate && date >= startDate) {
+      setEndDate(date);
+    } else if (!startDate) {
+      setEndDate(date);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -98,7 +115,8 @@ export const LeaveRequestDialog = ({
                   <Calendar
                     mode="single"
                     selected={startDate}
-                    onSelect={setStartDate}
+                    onSelect={handleStartDateSelect}
+                    disabled={(date) => date < new Date()}
                     initialFocus
                   />
                 </PopoverContent>
@@ -123,7 +141,10 @@ export const LeaveRequestDialog = ({
                   <Calendar
                     mode="single"
                     selected={endDate}
-                    onSelect={setEndDate}
+                    onSelect={handleEndDateSelect}
+                    disabled={(date) => 
+                      date < new Date() || (startDate ? date < startDate : false)
+                    }
                     initialFocus
                   />
                 </PopoverContent>
