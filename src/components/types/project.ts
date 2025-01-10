@@ -26,7 +26,7 @@ export interface Project {
   description: string;
   phase: string;
   progress: number;
-  status: string;
+  status: "upcoming" | "active" | "completed";
   budget: string;
   risk: string;
   tasks: Task[];

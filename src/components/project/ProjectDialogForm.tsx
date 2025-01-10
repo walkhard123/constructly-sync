@@ -6,6 +6,7 @@ import { ProjectTypeSelect } from "./form/ProjectTypeSelect";
 import { TeamMemberSelect } from "./form/TeamMemberSelect";
 import { ProjectDates } from "./form/ProjectDates";
 import { ProjectDescription } from "./form/ProjectDescription";
+import { ProjectStatusSelect } from "./form/ProjectStatusSelect";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 
@@ -86,6 +87,11 @@ export const ProjectDialogForm = ({
                 endDate={newProject.endDate || ''}
                 onStartDateChange={(value) => setNewProject({ ...newProject, startDate: value })}
                 onEndDateChange={(value) => setNewProject({ ...newProject, endDate: value })}
+              />
+
+              <ProjectStatusSelect
+                status={newProject.status || 'upcoming'}
+                onStatusChange={(value) => setNewProject({ ...newProject, status: value })}
               />
             </div>
           </Card>
