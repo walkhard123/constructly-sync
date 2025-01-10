@@ -2,7 +2,6 @@ import { Project, Task } from "@/components/types/project";
 import { useProjectState } from "./useProjectState";
 import { useProjectActions } from "./useProjectActions";
 import { useTaskActions } from "./useTaskActions";
-import { useSubTaskActions } from "./useSubTaskActions";
 
 export const useProjects = () => {
   const { projects, setProjects, searchQuery, setSearchQuery } = useProjectState();
@@ -12,7 +11,9 @@ export const useProjects = () => {
     setTasks: (updatedTasks) => {
       setProjects(projects.map(p => ({
         ...p,
-        tasks: updatedTasks.filter(t => t.project === p.name)
+        tasks: Array.isArray(updatedTasks) 
+          ? updatedTasks.filter(t => t.project === p.name)
+          : []
       })));
     },
     setIsDialogOpen: () => {},
@@ -60,6 +61,31 @@ export const useProjects = () => {
     }));
   };
 
+  const projectAddSubTask = (projectId: number, taskId: number, title: string) => {
+    setProjects(projects.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          tasks: project.tasks.map(task => {
+            if (task.id === taskId) {
+              const newSubTask = {
+                id: (task.subTasks?.length || 0) + 1,
+                title,
+                completed: false
+              };
+              return {
+                ...task,
+                subTasks: [...(task.subTasks || []), newSubTask]
+              };
+            }
+            return task;
+          })
+        };
+      }
+      return project;
+    }));
+  };
+
   return {
     projects: filteredProjects,
     handleSearch,
@@ -68,7 +94,7 @@ export const useProjects = () => {
     handleAddTask,
     handleToggleTaskStatus,
     handleDeleteTask,
-    handleAddSubTask,
+    handleAddSubTask: projectAddSubTask,
     toggleSubTask
   };
 };
