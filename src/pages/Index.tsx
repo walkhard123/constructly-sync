@@ -10,6 +10,7 @@ import { FileUpload } from "@/components/FileUpload";
 import { TaskManagement } from "@/components/TaskManagement";
 import { Dashboard } from "@/components/Dashboard";
 import { LeaveRequests } from "@/components/LeaveRequests";
+import { Settings } from "@/components/Settings";
 
 const Index = () => {
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
@@ -67,7 +68,7 @@ const Index = () => {
       title: "Settings",
       description: "Configure system preferences",
       icon: <Settings2 className="w-6 h-6" />,
-      component: <div>Settings Page</div>
+      component: <Settings />
     }
   ];
 
