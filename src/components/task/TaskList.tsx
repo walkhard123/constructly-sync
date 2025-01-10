@@ -8,8 +8,8 @@ interface TaskListProps {
   onToggleStatus: (taskId: number) => void;
   onAddSubTask: (taskId: number) => void;
   onToggleSubTask: (taskId: number, subTaskId: number) => void;
-  newSubTask: string;
-  setNewSubTask: (value: string) => void;
+  newSubTasks: { [key: number]: string };
+  setNewSubTasks: (value: { [key: number]: string }) => void;
 }
 
 export const TaskList = ({
@@ -19,8 +19,8 @@ export const TaskList = ({
   onToggleStatus,
   onAddSubTask,
   onToggleSubTask,
-  newSubTask,
-  setNewSubTask
+  newSubTasks,
+  setNewSubTasks
 }: TaskListProps) => {
   return (
     <div className="grid gap-4">
@@ -33,8 +33,10 @@ export const TaskList = ({
           onToggleStatus={onToggleStatus}
           onAddSubTask={onAddSubTask}
           onToggleSubTask={onToggleSubTask}
-          newSubTask={newSubTask}
-          setNewSubTask={setNewSubTask}
+          newSubTask={newSubTasks[task.id] || ''}
+          setNewSubTask={(value: string) => 
+            setNewSubTasks(prev => ({ ...prev, [task.id]: value }))
+          }
         />
       ))}
     </div>

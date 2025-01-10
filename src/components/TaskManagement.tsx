@@ -50,6 +50,7 @@ export const TaskManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [newSubTasks, setNewSubTasks] = useState<{ [key: number]: string }>({});
   const [newTask, setNewTask] = useState<Partial<Task>>({
     title: "",
     priority: "medium",
@@ -59,7 +60,6 @@ export const TaskManagement = () => {
     status: "in-progress",
     subTasks: []
   });
-  const [newSubTask, setNewSubTask] = useState("");
 
   const handleAddTask = () => {
     if (newTask.title && newTask.assignee && newTask.dueDate && newTask.project) {
@@ -119,7 +119,7 @@ export const TaskManagement = () => {
   };
 
   const handleAddSubTask = (taskId: number) => {
-    if (!newSubTask.trim()) {
+    if (!newSubTasks[taskId]?.trim()) {
       toast({
         title: "Error",
         description: "Subtask title cannot be empty",
@@ -132,7 +132,7 @@ export const TaskManagement = () => {
       if (task.id === taskId) {
         const newSubTaskItem = {
           id: (task.subTasks?.length || 0) + 1,
-          title: newSubTask.trim(),
+          title: newSubTasks[taskId].trim(),
           completed: false
         };
         return {
@@ -143,7 +143,7 @@ export const TaskManagement = () => {
       return task;
     }));
     
-    setNewSubTask("");
+    setNewSubTasks(prev => ({ ...prev, [taskId]: '' }));
     toast({
       title: "Success",
       description: "Subtask added successfully",
@@ -230,8 +230,8 @@ export const TaskManagement = () => {
         }}
         onAddSubTask={handleAddSubTask}
         onToggleSubTask={toggleSubTask}
-        newSubTask={newSubTask}
-        setNewSubTask={setNewSubTask}
+        newSubTasks={newSubTasks}
+        setNewSubTasks={setNewSubTasks}
       />
     </div>
   );
