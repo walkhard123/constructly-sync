@@ -77,13 +77,17 @@ export const ProjectTaskList = ({
                 onChange={(value) => setNewSubTasks(prev => ({ ...prev, [task.id]: value }))}
                 onAdd={() => handleAddSubTask(task.id)}
               />
-              {task.subTasks?.map((subTask) => (
-                <SubTaskItem
-                  key={subTask.id}
-                  subTask={subTask}
-                  onToggle={() => onToggleSubTask(task.id, subTask.id)}
-                />
-              ))}
+              {task.subTasks && task.subTasks.length > 0 && (
+                <div className="space-y-2">
+                  {task.subTasks.map((subTask) => (
+                    <SubTaskItem
+                      key={subTask.id}
+                      subTask={subTask}
+                      onToggle={() => onToggleSubTask(task.id, subTask.id)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

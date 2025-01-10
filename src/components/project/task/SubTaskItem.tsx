@@ -8,7 +8,7 @@ interface SubTaskItemProps {
 
 export const SubTaskItem = ({ subTask, onToggle }: SubTaskItemProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 bg-white p-2 rounded-md shadow-sm">
       <button
         onClick={onToggle}
         className="hover:scale-110 transition-transform"
