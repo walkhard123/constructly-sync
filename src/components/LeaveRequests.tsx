@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export const LeaveRequests = () => {
   const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [requests, setRequests] = useState([
     {
       id: 1,
@@ -27,30 +28,71 @@ export const LeaveRequests = () => {
     }
   ]);
 
-  const [date, setDate] = useState<Date>();
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
 
   const [newRequest, setNewRequest] = useState({
     type: "",
     startDate: "",
     endDate: "",
-    reason: ""
+    reason: "",
+    employee: ""
   });
 
+  // Sample team members data (in a real app, this would come from an API)
+  const teamMembers = [
+    { id: 1, name: "John Smith" },
+    { id: 2, name: "Sarah Johnson" },
+    { id: 3, name: "Mike Williams" }
+  ];
+
   const handleAddRequest = () => {
-    if (newRequest.type && newRequest.startDate && newRequest.endDate) {
-      setRequests([...requests, {
-        id: requests.length + 1,
-        ...newRequest,
-        status: "pending",
-        employee: "Current User"
-      }]);
-      setNewRequest({
-        type: "",
-        startDate: "",
-        endDate: "",
-        reason: ""
+    if (!newRequest.type || !startDate || !endDate || !newRequest.employee) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
       });
+      return;
     }
+
+    setRequests([...requests, {
+      id: requests.length + 1,
+      ...newRequest,
+      startDate: format(startDate, "yyyy-MM-dd"),
+      endDate: format(endDate, "yyyy-MM-dd"),
+      status: "pending"
+    }]);
+
+    // Reset form
+    setNewRequest({
+      type: "",
+      startDate: "",
+      endDate: "",
+      reason: "",
+      employee: ""
+    });
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setIsDialogOpen(false);
+
+    toast({
+      title: "Success",
+      description: "Leave request submitted successfully.",
+    });
+  };
+
+  const handleCancel = () => {
+    setNewRequest({
+      type: "",
+      startDate: "",
+      endDate: "",
+      reason: "",
+      employee: ""
+    });
+    setStartDate(undefined);
+    setEndDate(undefined);
+    setIsDialogOpen(false);
   };
 
   const handleApprove = (requestId: number) => {
@@ -92,7 +134,7 @@ export const LeaveRequests = () => {
             Filter by Date
           </Button>
         </div>
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-purple-600 hover:bg-purple-700">
               <Plus className="mr-2 h-4 w-4" /> New Leave Request
@@ -106,6 +148,21 @@ export const LeaveRequests = () => {
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
+              <div>
+                <Label>Team Member</Label>
+                <Select onValueChange={(value) => setNewRequest({...newRequest, employee: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select team member" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teamMembers.map((member) => (
+                      <SelectItem key={member.id} value={member.name}>
+                        {member.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div>
                 <Label>Leave Type</Label>
                 <Select onValueChange={(value) => setNewRequest({...newRequest, type: value})}>
@@ -128,18 +185,18 @@ export const LeaveRequests = () => {
                         variant={"outline"}
                         className={cn(
                           "w-full justify-start text-left font-normal",
-                          !date && "text-muted-foreground"
+                          !startDate && "text-muted-foreground"
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={date}
-                        onSelect={setDate}
+                        selected={startDate}
+                        onSelect={setStartDate}
                         initialFocus
                       />
                     </PopoverContent>
@@ -153,18 +210,18 @@ export const LeaveRequests = () => {
                         variant={"outline"}
                         className={cn(
                           "w-full justify-start text-left font-normal",
-                          !date && "text-muted-foreground"
+                          !endDate && "text-muted-foreground"
                         )}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                       <Calendar
                         mode="single"
-                        selected={date}
-                        onSelect={setDate}
+                        selected={endDate}
+                        onSelect={setEndDate}
                         initialFocus
                       />
                     </PopoverContent>
@@ -181,12 +238,7 @@ export const LeaveRequests = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setNewRequest({
-                type: "",
-                startDate: "",
-                endDate: "",
-                reason: ""
-              })}>
+              <Button variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
               <Button onClick={handleAddRequest}>Submit Request</Button>
