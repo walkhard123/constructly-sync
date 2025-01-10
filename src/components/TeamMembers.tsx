@@ -1,11 +1,24 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, Mail, Phone, FileEdit, Trash2 } from "lucide-react";
+import { Mail, Phone, FileEdit, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 export const TeamMembers = () => {
-  const [members] = useState([
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newMember, setNewMember] = useState({
+    name: "",
+    role: "",
+    email: "",
+    phone: "",
+  });
+
+  const [members, setMembers] = useState([
     { 
       id: 1, 
       name: "John Smith", 
@@ -44,25 +57,132 @@ export const TeamMembers = () => {
     }
   ]);
 
+  const handleAddMember = () => {
+    if (!newMember.name || !newMember.role || !newMember.email || !newMember.phone) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const avatar = newMember.name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase();
+
+    setMembers([
+      ...members,
+      {
+        id: members.length + 1,
+        name: newMember.name,
+        role: newMember.role,
+        email: newMember.email,
+        phone: newMember.phone,
+        avatar,
+        projects: 0,
+        activeHours: 0,
+        completedTasks: 0,
+        status: "active"
+      }
+    ]);
+
+    setNewMember({
+      name: "",
+      role: "",
+      email: "",
+      phone: "",
+    });
+    setIsDialogOpen(false);
+    
+    toast({
+      title: "Success",
+      description: "Team member added successfully",
+    });
+  };
+
+  const filteredMembers = members.filter(member =>
+    member.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center gap-4 flex-wrap">
-        <div className="flex gap-2 flex-1">
+        <div className="flex-1">
           <Input 
-            placeholder="Search team members..." 
+            placeholder="Search by name..." 
             className="max-w-sm"
             type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Button variant="outline">Department</Button>
-          <Button variant="outline">Role</Button>
         </div>
-        <Button className="bg-purple-600 hover:bg-purple-700">
+        <Button 
+          className="bg-purple-600 hover:bg-purple-700"
+          onClick={() => setIsDialogOpen(true)}
+        >
           <Plus className="mr-2 h-4 w-4" /> Add Member
         </Button>
       </div>
       
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Team Member</DialogTitle>
+            <DialogDescription>
+              Fill in the details to add a new team member.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={newMember.name}
+                onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="role">Role</Label>
+              <Input
+                id="role"
+                value={newMember.role}
+                onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={newMember.email}
+                onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                value={newMember.phone}
+                onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddMember}>
+              Add Member
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid gap-4">
-        {members.map((member) => (
+        {filteredMembers.map((member) => (
           <Card key={member.id} className="hover:shadow-lg transition-shadow">
             <CardHeader>
               <div className="flex justify-between items-start">
