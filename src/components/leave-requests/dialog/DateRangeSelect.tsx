@@ -36,13 +36,11 @@ export const DateRangeSelect = ({
               {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="start" side="top" sideOffset={8}>
             <Calendar
               mode="single"
               selected={startDate}
-              onSelect={(date) => {
-                onStartDateSelect(date || undefined);
-              }}
+              onSelect={(date) => onStartDateSelect(date ?? undefined)}
               disabled={(date) => date < new Date()}
               initialFocus
             />
@@ -64,13 +62,11 @@ export const DateRangeSelect = ({
               {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent className="w-auto p-0" align="start" side="top" sideOffset={8}>
             <Calendar
               mode="single"
               selected={endDate}
-              onSelect={(date) => {
-                onEndDateSelect(date || undefined);
-              }}
+              onSelect={(date) => onEndDateSelect(date ?? undefined)}
               disabled={(date) => 
                 date < new Date() || (startDate ? date < startDate : false)
               }
