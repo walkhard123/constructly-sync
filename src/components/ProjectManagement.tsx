@@ -1,41 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectHeader } from "./project/ProjectHeader";
 import { ProjectCard } from "./project/ProjectCard";
-
-interface SubTask {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-
-interface Task {
-  id: number;
-  title: string;
-  status: string;
-  priority: string;
-  assignee: string;
-  dueDate: string;
-  subTasks: SubTask[];
-}
-
-interface Project {
-  id: number;
-  name: string;
-  phase: string;
-  progress: number;
-  due: string;
-  status: string;
-  budget: string;
-  risk: string;
-  tasks: Task[];
-}
+import { ProjectDialogForm } from "./project/ProjectDialogForm";
+import { TaskDialogForm } from "./project/TaskDialogForm";
+import { Project, Task } from "./types/project";
 
 export const ProjectManagement = () => {
   const { toast } = useToast();
@@ -139,7 +109,6 @@ export const ProjectManagement = () => {
     }
 
     if (editingProject) {
-      // Update existing project
       setProjects(prevProjects => prevProjects.map(project => 
         project.id === editingProject.id 
           ? {
@@ -160,7 +129,6 @@ export const ProjectManagement = () => {
         description: "Project updated successfully",
       });
     } else {
-      // Add new project
       const newProjectData: Project = {
         id: projects.length + 1,
         name: newProject.name,
@@ -190,29 +158,6 @@ export const ProjectManagement = () => {
       budget: "",
       risk: "low",
       tasks: []
-    });
-  };
-
-  const handleEditProject = (project: Project) => {
-    setEditingProject(project);
-    setNewProject({
-      name: project.name,
-      phase: project.phase,
-      progress: project.progress,
-      due: project.due,
-      status: project.status,
-      budget: project.budget,
-      risk: project.risk,
-      tasks: project.tasks
-    });
-    setIsProjectDialogOpen(true);
-  };
-
-  const handleDeleteProject = (projectId: number) => {
-    setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
-    toast({
-      title: "Success",
-      description: "Project deleted successfully",
     });
   };
 
@@ -258,6 +203,29 @@ export const ProjectManagement = () => {
     toast({
       title: "Success",
       description: "Task added successfully",
+    });
+  };
+
+  const handleEditProject = (project: Project) => {
+    setEditingProject(project);
+    setNewProject({
+      name: project.name,
+      phase: project.phase,
+      progress: project.progress,
+      due: project.due,
+      status: project.status,
+      budget: project.budget,
+      risk: project.risk,
+      tasks: project.tasks
+    });
+    setIsProjectDialogOpen(true);
+  };
+
+  const handleDeleteProject = (projectId: number) => {
+    setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
+    toast({
+      title: "Success",
+      description: "Project deleted successfully",
     });
   };
 
@@ -401,167 +369,26 @@ export const ProjectManagement = () => {
         }}
       />
       
-      <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{editingTask ? 'Edit Task' : 'Add New Task'}</DialogTitle>
-            <DialogDescription>
-              {editingTask ? 'Edit the task details below' : 'Fill in the task details below'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="project">Project</Label>
-              <Select
-                value={selectedProject?.toString()}
-                onValueChange={(value) => setSelectedProject(parseInt(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select project" />
-                </SelectTrigger>
-                <SelectContent>
-                  {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id.toString()}>
-                      {project.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="title">Task Title</Label>
-              <Input
-                id="title"
-                value={newTask.title}
-                onChange={(e) => setNewTask({...newTask, title: e.target.value})}
-              />
-            </div>
-            <div>
-              <Label htmlFor="priority">Priority</Label>
-              <Select
-                value={newTask.priority}
-                onValueChange={(value) => setNewTask({...newTask, priority: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="assignee">Assignee</Label>
-              <Input
-                id="assignee"
-                value={newTask.assignee}
-                onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
-              />
-            </div>
-            <div>
-              <Label htmlFor="dueDate">Due Date</Label>
-              <Input
-                id="dueDate"
-                type="date"
-                value={newTask.dueDate}
-                onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsTaskDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddTask}>
-              {editingTask ? 'Update Task' : 'Add Task'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ProjectDialogForm
+        isOpen={isProjectDialogOpen}
+        onOpenChange={setIsProjectDialogOpen}
+        editingProject={editingProject}
+        newProject={newProject}
+        setNewProject={setNewProject}
+        onSave={handleAddProject}
+      />
 
-      <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{editingProject ? 'Edit Project' : 'Add New Project'}</DialogTitle>
-            <DialogDescription>
-              {editingProject ? 'Edit the project details below' : 'Fill in the project details below'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Project Name</Label>
-              <Input
-                id="name"
-                value={newProject.name}
-                onChange={(e) => setNewProject({...newProject, name: e.target.value})}
-              />
-            </div>
-            <div>
-              <Label htmlFor="phase">Phase</Label>
-              <Select
-                value={newProject.phase}
-                onValueChange={(value) => setNewProject({...newProject, phase: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select phase" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Phase 1">Phase 1</SelectItem>
-                  <SelectItem value="Phase 2">Phase 2</SelectItem>
-                  <SelectItem value="Phase 3">Phase 3</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="due">Due Date</Label>
-              <Input
-                id="due"
-                type="date"
-                value={newProject.due}
-                onChange={(e) => setNewProject({...newProject, due: e.target.value})}
-              />
-            </div>
-            <div>
-              <Label htmlFor="budget">Budget</Label>
-              <Input
-                id="budget"
-                value={newProject.budget}
-                onChange={(e) => setNewProject({...newProject, budget: e.target.value})}
-                placeholder="e.g. $1.5M"
-              />
-            </div>
-            <div>
-              <Label htmlFor="risk">Risk Level</Label>
-              <Select
-                value={newProject.risk}
-                onValueChange={(value) => setNewProject({...newProject, risk: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select risk level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setIsProjectDialogOpen(false);
-              setEditingProject(null);
-            }}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddProject}>
-              {editingProject ? 'Update Project' : 'Add Project'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TaskDialogForm
+        isOpen={isTaskDialogOpen}
+        onOpenChange={setIsTaskDialogOpen}
+        selectedProject={selectedProject}
+        projects={projects}
+        setSelectedProject={setSelectedProject}
+        editingTask={editingTask}
+        newTask={newTask}
+        setNewTask={setNewTask}
+        onSave={handleAddTask}
+      />
 
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="w-full justify-start">

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { TaskHeader } from "./task/TaskHeader";
 import { TaskDialog } from "./task/TaskDialog";
-import { TaskCard } from "./task/TaskCard";
+import { TaskList } from "./task/TaskList";
 import { Task } from "./types/task";
 
 export const TaskManagement = () => {
@@ -40,8 +40,7 @@ export const TaskManagement = () => {
     }
   ]);
 
-  // Add projects state
-  const [projects, setProjects] = useState([
+  const [projects] = useState([
     { id: 1, name: "Downtown Office Building" },
     { id: 2, name: "Residential Complex" },
     { id: 3, name: "Shopping Mall Renovation" },
@@ -192,38 +191,33 @@ export const TaskManagement = () => {
         projects={projects}
       />
 
-      <div className="grid gap-4">
-        {filteredTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            task={task}
-            onEditTask={handleEditTask}
-            onDeleteTask={(taskId) => {
-              setTasks(tasks.filter(t => t.id !== taskId));
-              toast({
-                title: "Success",
-                description: "Task deleted successfully",
-              });
-            }}
-            onToggleStatus={(taskId) => {
-              setTasks(tasks.map(t => {
-                if (t.id === taskId) {
-                  return { ...t, status: t.status === 'completed' ? 'in-progress' : 'completed' };
-                }
-                return t;
-              }));
-              toast({
-                title: "Success",
-                description: "Task status updated",
-              });
-            }}
-            onAddSubTask={handleAddSubTask}
-            onToggleSubTask={toggleSubTask}
-            newSubTask={newSubTask}
-            setNewSubTask={setNewSubTask}
-          />
-        ))}
-      </div>
+      <TaskList
+        tasks={filteredTasks}
+        onEditTask={handleEditTask}
+        onDeleteTask={(taskId) => {
+          setTasks(tasks.filter(t => t.id !== taskId));
+          toast({
+            title: "Success",
+            description: "Task deleted successfully",
+          });
+        }}
+        onToggleStatus={(taskId) => {
+          setTasks(tasks.map(t => {
+            if (t.id === taskId) {
+              return { ...t, status: t.status === 'completed' ? 'in-progress' : 'completed' };
+            }
+            return t;
+          }));
+          toast({
+            title: "Success",
+            description: "Task status updated",
+          });
+        }}
+        onAddSubTask={handleAddSubTask}
+        onToggleSubTask={toggleSubTask}
+        newSubTask={newSubTask}
+        setNewSubTask={setNewSubTask}
+      />
     </div>
   );
 };
