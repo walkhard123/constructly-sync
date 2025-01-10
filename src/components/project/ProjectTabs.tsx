@@ -27,11 +27,56 @@ export const ProjectTabs = ({
     <Tabs defaultValue="active" className="w-full">
       <TabsList className="w-full justify-start">
         <TabsTrigger value="active">Active Projects</TabsTrigger>
-        <TabsTrigger value="completed">Completed</TabsTrigger>
         <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-        <TabsTrigger value="archived">Archived</TabsTrigger>
+        <TabsTrigger value="completed">Completed</TabsTrigger>
+        <TabsTrigger value="all">All Projects</TabsTrigger>
       </TabsList>
       <TabsContent value="active" className="space-y-4">
+        {projects.filter(p => p.status === 'active').map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onToggleTaskStatus={onToggleTaskStatus}
+            onEditTask={onEditTask}
+            onDeleteTask={onDeleteTask}
+            onAddSubTask={onAddSubTask}
+            onToggleSubTask={onToggleSubTask}
+            onEditProject={() => onEditProject(project)}
+            onDeleteProject={() => onDeleteProject(project.id)}
+          />
+        ))}
+      </TabsContent>
+      <TabsContent value="upcoming" className="space-y-4">
+        {projects.filter(p => p.status === 'upcoming').map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onToggleTaskStatus={onToggleTaskStatus}
+            onEditTask={onEditTask}
+            onDeleteTask={onDeleteTask}
+            onAddSubTask={onAddSubTask}
+            onToggleSubTask={onToggleSubTask}
+            onEditProject={() => onEditProject(project)}
+            onDeleteProject={() => onDeleteProject(project.id)}
+          />
+        ))}
+      </TabsContent>
+      <TabsContent value="completed" className="space-y-4">
+        {projects.filter(p => p.status === 'completed').map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onToggleTaskStatus={onToggleTaskStatus}
+            onEditTask={onEditTask}
+            onDeleteTask={onDeleteTask}
+            onAddSubTask={onAddSubTask}
+            onToggleSubTask={onToggleSubTask}
+            onEditProject={() => onEditProject(project)}
+            onDeleteProject={() => onDeleteProject(project.id)}
+          />
+        ))}
+      </TabsContent>
+      <TabsContent value="all" className="space-y-4">
         {projects.map((project) => (
           <ProjectCard
             key={project.id}
