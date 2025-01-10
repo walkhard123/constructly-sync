@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CheckCircle, AlertCircle, Search, Filter, FileEdit, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -38,8 +38,26 @@ export const TaskManagement = () => {
       project: "Downtown Office Building",
       subTasks: []
     },
-    { id: 2, title: "Electrical wiring", status: "in-progress", priority: "medium", assignee: "Jane Smith", dueDate: "2024-04-15", project: "Downtown Office Building" },
-    { id: 3, title: "Site preparation", status: "in-progress", priority: "high", assignee: "Mike Johnson", dueDate: "2024-03-25", project: "Residential Complex" }
+    { 
+      id: 2, 
+      title: "Electrical wiring", 
+      status: "in-progress", 
+      priority: "medium", 
+      assignee: "Jane Smith", 
+      dueDate: "2024-04-15", 
+      project: "Downtown Office Building",
+      subTasks: []
+    },
+    { 
+      id: 3, 
+      title: "Site preparation", 
+      status: "in-progress", 
+      priority: "high", 
+      assignee: "Mike Johnson", 
+      dueDate: "2024-03-25", 
+      project: "Residential Complex",
+      subTasks: []
+    }
   ]);
 
   const [filterStatus, setFilterStatus] = useState("all");

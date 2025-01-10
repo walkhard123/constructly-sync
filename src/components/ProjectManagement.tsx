@@ -50,8 +50,24 @@ export const ProjectManagement = () => {
       budget: "$2.5M", 
       risk: "medium",
       tasks: [
-        { id: 1, title: "Foundation inspection", status: "completed", priority: "high", assignee: "John Doe", dueDate: "2024-03-20", subTasks: [] },
-        { id: 2, title: "Electrical wiring", status: "in-progress", priority: "medium", assignee: "Jane Smith", dueDate: "2024-04-15", subTasks: [] }
+        { 
+          id: 1, 
+          title: "Foundation inspection", 
+          status: "completed", 
+          priority: "high", 
+          assignee: "John Doe", 
+          dueDate: "2024-03-20", 
+          subTasks: [] 
+        },
+        { 
+          id: 2, 
+          title: "Electrical wiring", 
+          status: "in-progress", 
+          priority: "medium", 
+          assignee: "Jane Smith", 
+          dueDate: "2024-04-15", 
+          subTasks: [] 
+        }
       ]
     },
     { 
@@ -64,7 +80,15 @@ export const ProjectManagement = () => {
       budget: "$4.1M", 
       risk: "low",
       tasks: [
-        { id: 1, title: "Site preparation", status: "in-progress", priority: "high", assignee: "Mike Johnson", dueDate: "2024-03-25", subTasks: [] }
+        { 
+          id: 1, 
+          title: "Site preparation", 
+          status: "in-progress", 
+          priority: "high", 
+          assignee: "Mike Johnson", 
+          dueDate: "2024-03-25", 
+          subTasks: [] 
+        }
       ]
     },
     { 
@@ -100,7 +124,12 @@ export const ProjectManagement = () => {
             ...project,
             tasks: [...project.tasks, {
               id: project.tasks.length + 1,
-              ...newTask
+              title: newTask.title || "",
+              status: newTask.status || "pending",
+              priority: newTask.priority || "medium",
+              assignee: newTask.assignee || "",
+              dueDate: newTask.dueDate || "",
+              subTasks: []
             }]
           };
         }
