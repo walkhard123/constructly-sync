@@ -7,8 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, FileText, Image, Plus, Tag, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 export const DailyLogs = () => {
+  const { toast } = useToast();
   const [logs, setLogs] = useState([
     {
       id: 1,
@@ -19,7 +21,8 @@ export const DailyLogs = () => {
       activities: "Completed foundation inspection, started electrical work",
       deliveries: "Received steel beams, ordered concrete",
       attachments: 2,
-      tags: ["@JohnDoe", "@SarahSmith"]
+      tags: ["@JohnDoe", "@SarahSmith"],
+      photos: []
     }
   ]);
 
@@ -29,27 +32,67 @@ export const DailyLogs = () => {
     deliveries: "",
     startTime: "",
     endTime: "",
-    tags: ""
+    tags: [],
+    photos: []
   });
 
-  const handleAddLog = () => {
-    if (newLog.project && newLog.activities) {
-      setLogs([...logs, {
-        id: logs.length + 1,
-        ...newLog,
-        date: new Date().toISOString().split('T')[0],
-        attachments: 0,
-        tags: newLog.tags.split(',').map(tag => tag.trim())
-      }]);
-      setNewLog({
-        project: "",
-        activities: "",
-        deliveries: "",
-        startTime: "",
-        endTime: "",
-        tags: ""
-      });
+  const [projects] = useState([
+    "Downtown Office Building",
+    "Residential Complex",
+    "Commercial Plaza",
+    "Industrial Park"
+  ]);
+
+  const [teamMembers] = useState([
+    "@JohnDoe",
+    "@SarahSmith",
+    "@MikeWilson",
+    "@EmilyBrown"
+  ]);
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newPhotos = Array.from(files).map(file => URL.createObjectURL(file));
+      setNewLog(prev => ({
+        ...prev,
+        photos: [...prev.photos, ...newPhotos]
+      }));
     }
+  };
+
+  const handleAddLog = () => {
+    if (!newLog.project || !newLog.activities) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLogs([...logs, {
+      id: logs.length + 1,
+      ...newLog,
+      date: new Date().toISOString().split('T')[0],
+      attachments: newLog.photos.length,
+      tags: Array.isArray(newLog.tags) ? newLog.tags : [newLog.tags]
+    }]);
+
+    setNewLog({
+      project: "",
+      activities: "",
+      deliveries: "",
+      startTime: "",
+      endTime: "",
+      tags: [],
+      photos: []
+    });
+
+    toast({
+      title: "Success",
+      description: "Log entry added successfully"
+    });
   };
 
   return (
@@ -72,7 +115,7 @@ export const DailyLogs = () => {
               <Plus className="mr-2 h-4 w-4" /> Add Log Entry
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Add Daily Log Entry</DialogTitle>
               <DialogDescription>
@@ -87,8 +130,9 @@ export const DailyLogs = () => {
                     <SelectValue placeholder="Select project" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Downtown Office Building">Downtown Office Building</SelectItem>
-                    <SelectItem value="Residential Complex">Residential Complex</SelectItem>
+                    {projects.map((project) => (
+                      <SelectItem key={project} value={project}>{project}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -128,11 +172,48 @@ export const DailyLogs = () => {
               </div>
               <div>
                 <Label>Tag Team Members</Label>
+                <Select onValueChange={(value) => setNewLog({...newLog, tags: [...(Array.isArray(newLog.tags) ? newLog.tags : []), value]})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select team members" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teamMembers.map((member) => (
+                      <SelectItem key={member} value={member}>{member}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {Array.isArray(newLog.tags) && newLog.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {newLog.tags.map((tag, index) => (
+                      <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm">
+                        <Tag className="w-3 h-3 mr-1" />
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label>Upload Photos</Label>
                 <Input
-                  value={newLog.tags}
-                  onChange={(e) => setNewLog({...newLog, tags: e.target.value})}
-                  placeholder="@JohnDoe, @SarahSmith"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="mt-1"
                 />
+                {newLog.photos.length > 0 && (
+                  <div className="mt-2 grid grid-cols-3 gap-2">
+                    {newLog.photos.map((photo, index) => (
+                      <img
+                        key={index}
+                        src={photo}
+                        alt={`Upload preview ${index + 1}`}
+                        className="w-full h-24 object-cover rounded"
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
@@ -142,7 +223,8 @@ export const DailyLogs = () => {
                 deliveries: "",
                 startTime: "",
                 endTime: "",
-                tags: ""
+                tags: [],
+                photos: []
               })}>
                 Cancel
               </Button>
