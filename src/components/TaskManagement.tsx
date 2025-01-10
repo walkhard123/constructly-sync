@@ -7,16 +7,44 @@ import { Task } from "./types/task";
 
 export const TaskManagement = () => {
   const { toast } = useToast();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [projects] = useState([
+  const [tasks, setTasks] = useState<Task[]>([
+    { 
+      id: 1, 
+      title: "Foundation inspection", 
+      status: "completed", 
+      priority: "high", 
+      assignee: "John Doe", 
+      dueDate: "2024-03-20", 
+      project: "Downtown Office Building",
+      subTasks: []
+    },
+    { 
+      id: 2, 
+      title: "Electrical wiring", 
+      status: "in-progress", 
+      priority: "medium", 
+      assignee: "Jane Smith", 
+      dueDate: "2024-04-15", 
+      project: "Downtown Office Building",
+      subTasks: []
+    },
+    { 
+      id: 3, 
+      title: "Site preparation", 
+      status: "in-progress", 
+      priority: "high", 
+      assignee: "Mike Johnson", 
+      dueDate: "2024-03-25", 
+      project: "Residential Complex",
+      subTasks: []
+    }
+  ]);
+
+  // Add projects state
+  const [projects, setProjects] = useState([
     { id: 1, name: "Downtown Office Building" },
     { id: 2, name: "Residential Complex" },
     { id: 3, name: "Shopping Mall Renovation" },
-  ]);
-  const [teamMembers] = useState([
-    { id: 1, name: "John Smith" },
-    { id: 2, name: "Sarah Johnson" },
-    { id: 3, name: "Mike Williams" },
   ]);
 
   const [filterStatus, setFilterStatus] = useState("all");
@@ -68,12 +96,6 @@ export const TaskManagement = () => {
         subTasks: []
       });
       setEditingTask(null);
-    } else {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
     }
   };
 
@@ -168,7 +190,6 @@ export const TaskManagement = () => {
         handleAddTask={handleAddTask}
         editingTask={editingTask}
         projects={projects}
-        teamMembers={teamMembers}
       />
 
       <div className="grid gap-4">
@@ -200,7 +221,6 @@ export const TaskManagement = () => {
             onToggleSubTask={toggleSubTask}
             newSubTask={newSubTask}
             setNewSubTask={setNewSubTask}
-            teamMembers={teamMembers}
           />
         ))}
       </div>
