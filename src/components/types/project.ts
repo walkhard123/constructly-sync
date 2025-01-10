@@ -11,6 +11,7 @@ export interface Task {
   priority: string;
   assignee: string;
   dueDate: string;
+  project: string;
   subTasks: SubTask[];
 }
 

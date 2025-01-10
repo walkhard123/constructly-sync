@@ -171,6 +171,9 @@ export const ProjectManagement = () => {
       return;
     }
 
+    const project = projects.find(p => p.id === selectedProject);
+    if (!project) return;
+
     const newTaskData: Task = {
       id: Math.max(0, ...projects.find(p => p.id === selectedProject)?.tasks.map(t => t.id) || [0]) + 1,
       title: newTask.title,
@@ -178,6 +181,7 @@ export const ProjectManagement = () => {
       priority: newTask.priority || "medium",
       assignee: newTask.assignee,
       dueDate: newTask.dueDate,
+      project: project.name,
       subTasks: []
     };
 
@@ -198,6 +202,7 @@ export const ProjectManagement = () => {
       assignee: "",
       dueDate: "",
       status: "pending",
+      project: "",
       subTasks: []
     });
     toast({
