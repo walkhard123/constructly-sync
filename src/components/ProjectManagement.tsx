@@ -128,70 +128,88 @@ export const ProjectManagement = () => {
   });
 
   const handleAddProject = () => {
-    if (newProject.name && newProject.due && newProject.budget) {
-      setProjects([...projects, {
-        id: projects.length + 1,
-        name: newProject.name,
-        phase: newProject.phase || "Phase 1",
-        progress: newProject.progress || 0,
-        due: newProject.due,
-        status: "active",
-        budget: newProject.budget,
-        risk: newProject.risk || "low",
-        tasks: []
-      }]);
-      setIsProjectDialogOpen(false);
-      setNewProject({
-        name: "",
-        phase: "Phase 1",
-        progress: 0,
-        due: "",
-        status: "active",
-        budget: "",
-        risk: "low",
-        tasks: []
-      });
+    if (!newProject.name || !newProject.due || !newProject.budget) {
       toast({
-        title: "Success",
-        description: "Project added successfully",
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
       });
+      return;
     }
+
+    const newProjectData: Project = {
+      id: projects.length + 1,
+      name: newProject.name,
+      phase: newProject.phase || "Phase 1",
+      progress: newProject.progress || 0,
+      due: newProject.due,
+      status: newProject.status || "active",
+      budget: newProject.budget,
+      risk: newProject.risk || "low",
+      tasks: []
+    };
+
+    setProjects(prevProjects => [...prevProjects, newProjectData]);
+    setIsProjectDialogOpen(false);
+    setNewProject({
+      name: "",
+      phase: "Phase 1",
+      progress: 0,
+      due: "",
+      status: "active",
+      budget: "",
+      risk: "low",
+      tasks: []
+    });
+    toast({
+      title: "Success",
+      description: "Project added successfully",
+    });
   };
 
   const handleAddTask = () => {
-    if (selectedProject && newTask.title && newTask.assignee && newTask.dueDate) {
-      const updatedProjects = projects.map(project => {
-        if (project.id === selectedProject) {
-          return {
-            ...project,
-            tasks: [...project.tasks, {
-              id: project.tasks.length + 1,
-              title: newTask.title || "",
-              status: newTask.status || "pending",
-              priority: newTask.priority || "medium",
-              assignee: newTask.assignee || "",
-              dueDate: newTask.dueDate || "",
-              subTasks: []
-            }]
-          };
-        }
-        return project;
-      });
-      setProjects(updatedProjects);
-      setIsTaskDialogOpen(false);
-      setNewTask({
-        title: "",
-        priority: "medium",
-        assignee: "",
-        dueDate: "",
-        status: "pending",
-        subTasks: []
-      });
+    if (!selectedProject || !newTask.title || !newTask.assignee || !newTask.dueDate) {
       toast({
-        title: "Success",
-        description: "Task added successfully",
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
       });
+      return;
     }
+
+    const newTaskData: Task = {
+      id: Math.max(0, ...projects.find(p => p.id === selectedProject)?.tasks.map(t => t.id) || [0]) + 1,
+      title: newTask.title,
+      status: newTask.status || "pending",
+      priority: newTask.priority || "medium",
+      assignee: newTask.assignee,
+      dueDate: newTask.dueDate,
+      subTasks: []
+    };
+
+    setProjects(prevProjects => prevProjects.map(project => {
+      if (project.id === selectedProject) {
+        return {
+          ...project,
+          tasks: [...project.tasks, newTaskData]
+        };
+      }
+      return project;
+    }));
+
+    setIsTaskDialogOpen(false);
+    setNewTask({
+      title: "",
+      priority: "medium",
+      assignee: "",
+      dueDate: "",
+      status: "pending",
+      subTasks: []
+    });
+    toast({
+      title: "Success",
+      description: "Task added successfully",
+    });
   };
 
   const handleToggleTaskStatus = (projectId: number, taskId: number) => {
