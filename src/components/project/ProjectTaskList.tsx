@@ -1,8 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CheckCircle, AlertCircle, FileEdit, Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-import { SubTask, Task } from "../types/project";
+import { Task } from "../types/project";
+import { SubTaskInput } from "./task/SubTaskInput";
+import { SubTaskItem } from "./task/SubTaskItem";
+import { TaskActions } from "./task/TaskActions";
+import { TaskHeader } from "./task/TaskHeader";
 
 interface ProjectTaskListProps {
   tasks: Task[];
@@ -48,36 +49,11 @@ export const ProjectTaskList = ({
             }`}
             onClick={() => toggleTaskExpansion(task.id)}
           >
-            <div className="flex items-center gap-2 flex-1">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleStatus(task.id);
-                }}
-                className="hover:scale-110 transition-transform"
-              >
-                {task.status === 'completed' ? (
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-yellow-500" />
-                )}
-              </button>
-              <span className={`text-sm ${task.status === 'completed' ? 'line-through text-gray-500' : ''} ${
-                task.subTasks?.length > 0 ? 'font-medium text-purple-700' : ''
-              }`}>
-                {task.title}
-              </span>
-              {task.subTasks?.length > 0 && (
-                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                  {task.subTasks.length} subtasks
-                </span>
-              )}
-              {expandedTasks[task.id] ? (
-                <ChevronUp className="w-4 h-4 text-gray-500" />
-              ) : (
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              )}
-            </div>
+            <TaskHeader
+              task={task}
+              isExpanded={expandedTasks[task.id]}
+              onToggleStatus={() => onToggleStatus(task.id)}
+            />
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-500">{task.assignee}</span>
               <span className="text-sm text-gray-500">Due: {task.dueDate}</span>
@@ -88,59 +64,25 @@ export const ProjectTaskList = ({
               }`}>
                 {task.priority}
               </span>
-              <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEditTask(task.id)}
-                >
-                  <FileEdit className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onDeleteTask(task.id)}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
+              <TaskActions
+                onEdit={() => onEditTask(task.id)}
+                onDelete={() => onDeleteTask(task.id)}
+              />
             </div>
           </div>
           {expandedTasks[task.id] && (
             <div className="pl-8 space-y-2" onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center gap-2">
-                <Input
-                  placeholder="Add subtask..."
-                  value={newSubTasks[task.id] || ''}
-                  onChange={(e) => setNewSubTasks(prev => ({ ...prev, [task.id]: e.target.value }))}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleAddSubTask(task.id);
-                    }
-                  }}
-                  className="max-w-md"
+              <SubTaskInput
+                value={newSubTasks[task.id] || ''}
+                onChange={(value) => setNewSubTasks(prev => ({ ...prev, [task.id]: value }))}
+                onAdd={() => handleAddSubTask(task.id)}
+              />
+              {task.subTasks?.map((subTask) => (
+                <SubTaskItem
+                  key={subTask.id}
+                  subTask={subTask}
+                  onToggle={() => onToggleSubTask(task.id, subTask.id)}
                 />
-                <Button size="sm" onClick={() => handleAddSubTask(task.id)}>
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-              {task.subTasks?.map((subTask: SubTask) => (
-                <div key={subTask.id} className="flex items-center gap-2">
-                  <button
-                    onClick={() => onToggleSubTask(task.id, subTask.id)}
-                    className="hover:scale-110 transition-transform"
-                  >
-                    {subTask.completed ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <AlertCircle className="w-4 h-4 text-yellow-500" />
-                    )}
-                  </button>
-                  <span className={`text-sm ${subTask.completed ? 'line-through text-gray-500' : ''}`}>
-                    {subTask.title}
-                  </span>
-                </div>
               ))}
             </div>
           )}
