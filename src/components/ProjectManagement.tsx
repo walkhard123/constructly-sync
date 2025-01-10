@@ -7,8 +7,10 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 export const ProjectManagement = () => {
+  const { toast } = useToast();
   const [projects, setProjects] = useState([
     { 
       id: 1, 
@@ -52,6 +54,7 @@ export const ProjectManagement = () => {
 
   const [selectedProject, setSelectedProject] = useState(null);
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
   const [newTask, setNewTask] = useState({
     title: "",
     priority: "medium",
@@ -83,6 +86,67 @@ export const ProjectManagement = () => {
         dueDate: "",
         status: "pending"
       });
+      toast({
+        title: "Success",
+        description: "Task added successfully",
+      });
+    }
+  };
+
+  const handleToggleTaskStatus = (projectId: number, taskId: number) => {
+    const updatedProjects = projects.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          tasks: project.tasks.map(task => {
+            if (task.id === taskId) {
+              const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+              return { ...task, status: newStatus };
+            }
+            return task;
+          })
+        };
+      }
+      return project;
+    });
+    setProjects(updatedProjects);
+    toast({
+      title: "Success",
+      description: "Task status updated",
+    });
+  };
+
+  const handleDeleteTask = (projectId: number, taskId: number) => {
+    const updatedProjects = projects.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          tasks: project.tasks.filter(task => task.id !== taskId)
+        };
+      }
+      return project;
+    });
+    setProjects(updatedProjects);
+    toast({
+      title: "Success",
+      description: "Task deleted successfully",
+    });
+  };
+
+  const handleEditTask = (projectId: number, taskId: number) => {
+    const project = projects.find(p => p.id === projectId);
+    const task = project?.tasks.find(t => t.id === taskId);
+    if (task) {
+      setSelectedProject(projectId);
+      setEditingTask(task);
+      setNewTask({
+        title: task.title,
+        priority: task.priority,
+        assignee: task.assignee,
+        dueDate: task.dueDate,
+        status: task.status
+      });
+      setIsTaskDialogOpen(true);
     }
   };
 
@@ -244,16 +308,23 @@ export const ProjectManagement = () => {
                       {project.tasks.map((task) => (
                         <div key={task.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
                           <div className="flex items-center gap-2">
-                            {task.status === 'completed' ? (
-                              <CheckCircle className="w-4 h-4 text-green-500" />
-                            ) : (
-                              <AlertCircle className="w-4 h-4 text-yellow-500" />
-                            )}
-                            <span className="text-sm">{task.title}</span>
+                            <button
+                              onClick={() => handleToggleTaskStatus(project.id, task.id)}
+                              className="hover:scale-110 transition-transform"
+                            >
+                              {task.status === 'completed' ? (
+                                <CheckCircle className="w-4 h-4 text-green-500" />
+                              ) : (
+                                <AlertCircle className="w-4 h-4 text-yellow-500" />
+                              )}
+                            </button>
+                            <span className={`text-sm ${task.status === 'completed' ? 'line-through text-gray-500' : ''}`}>
+                              {task.title}
+                            </span>
                           </div>
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
-                            <span>{task.assignee}</span>
-                            <span>Due: {task.dueDate}</span>
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm text-gray-500">{task.assignee}</span>
+                            <span className="text-sm text-gray-500">Due: {task.dueDate}</span>
                             <span className={`px-2 py-1 rounded-full text-xs ${
                               task.priority === 'high' ? 'bg-red-100 text-red-700' :
                               task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
@@ -261,6 +332,23 @@ export const ProjectManagement = () => {
                             }`}>
                               {task.priority}
                             </span>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleEditTask(project.id, task.id)}
+                              >
+                                <FileEdit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteTask(project.id, task.id)}
+                                className="text-red-500 hover:text-red-600"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       ))}

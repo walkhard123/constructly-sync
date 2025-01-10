@@ -3,10 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { CheckCircle, AlertCircle, Search, Filter } from "lucide-react";
+import { CheckCircle, AlertCircle, Search, Filter, FileEdit, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export const TaskManagement = () => {
+  const { toast } = useToast();
   const [tasks, setTasks] = useState([
     { id: 1, title: "Foundation inspection", status: "completed", priority: "high", assignee: "John Doe", dueDate: "2024-03-20", project: "Downtown Office Building" },
     { id: 2, title: "Electrical wiring", status: "in-progress", priority: "medium", assignee: "Jane Smith", dueDate: "2024-04-15", project: "Downtown Office Building" },
@@ -23,6 +25,28 @@ export const TaskManagement = () => {
     const matchesStatus = filterStatus === "all" || task.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
+
+  const handleToggleStatus = (taskId: number) => {
+    setTasks(tasks.map(task => {
+      if (task.id === taskId) {
+        const newStatus = task.status === 'completed' ? 'in-progress' : 'completed';
+        return { ...task, status: newStatus };
+      }
+      return task;
+    }));
+    toast({
+      title: "Success",
+      description: "Task status updated",
+    });
+  };
+
+  const handleDeleteTask = (taskId: number) => {
+    setTasks(tasks.filter(task => task.id !== taskId));
+    toast({
+      title: "Success",
+      description: "Task deleted successfully",
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -61,24 +85,41 @@ export const TaskManagement = () => {
                   <CardTitle className="text-lg">{task.title}</CardTitle>
                   <CardDescription>{task.project}</CardDescription>
                 </div>
-                <div className={`px-2 py-1 rounded-full text-xs ${
-                  task.priority === 'high' ? 'bg-red-100 text-red-700' :
-                  task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-green-100 text-green-700'
-                }`}>
-                  {task.priority}
+                <div className="flex items-center gap-2">
+                  <div className={`px-2 py-1 rounded-full text-xs ${
+                    task.priority === 'high' ? 'bg-red-100 text-red-700' :
+                    task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-green-100 text-green-700'
+                  }`}>
+                    {task.priority}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteTask(task.id)}
+                    className="text-red-500 hover:text-red-600"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="flex justify-between items-center text-sm">
                 <div className="flex items-center gap-2">
-                  {task.status === 'completed' ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 text-yellow-500" />
-                  )}
-                  <span className="text-gray-600">{task.status}</span>
+                  <button
+                    onClick={() => handleToggleStatus(task.id)}
+                    className="hover:scale-110 transition-transform"
+                  >
+                    {task.status === 'completed' ? (
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-yellow-500" />
+                    )}
+                  </button>
+                  <span className={`text-gray-600 ${task.status === 'completed' ? 'line-through' : ''}`}>
+                    {task.status}
+                  </span>
                 </div>
                 <div className="flex gap-4 text-gray-500">
                   <span>{task.assignee}</span>
