@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export const useProjects = () => {
   const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState<Project[]>([
     { 
       id: 1, 
@@ -71,6 +72,14 @@ export const useProjects = () => {
       tasks: []
     },
   ]);
+
+  const filteredProjects = projects.filter(project => 
+    project.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
 
   const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
     if (!newProject.name || !newProject.due || !newProject.budget) {
@@ -261,7 +270,8 @@ export const useProjects = () => {
   };
 
   return {
-    projects,
+    projects: filteredProjects,
+    handleSearch,
     handleAddProject,
     handleDeleteProject,
     handleAddTask,
