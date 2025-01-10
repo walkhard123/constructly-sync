@@ -11,7 +11,7 @@ export const useProjects = () => {
       name: "Downtown Office Building",
       address: "123 Main St",
       type: "apartment",
-      teamMember: "John Doe",
+      teamMember: "John Smith",
       startDate: "2024-01-01",
       endDate: "2024-12-31",
       description: "Modern office building in downtown area",
@@ -111,14 +111,12 @@ export const useProjects = () => {
         project.id === editingProject.id 
           ? {
               ...project,
-              name: newProject.name!,
+              ...newProject,
               phase: newProject.phase || "Phase 1",
               progress: newProject.progress || 0,
-              endDate: newProject.endDate!,
               status: newProject.status || "active",
-              budget: newProject.budget!,
               risk: newProject.risk || "low"
-            }
+            } as Project
           : project
       ));
       toast({
@@ -129,11 +127,16 @@ export const useProjects = () => {
       const newProjectData: Project = {
         id: projects.length + 1,
         name: newProject.name,
+        address: newProject.address || "",
+        type: newProject.type || "house",
+        teamMember: newProject.teamMember || "",
+        startDate: newProject.startDate || "",
+        endDate: newProject.endDate,
+        description: newProject.description || "",
         phase: newProject.phase || "Phase 1",
         progress: newProject.progress || 0,
-        endDate: newProject.endDate,
         status: newProject.status || "active",
-        budget: newProject.budget,
+        budget: newProject.budget || "",
         risk: newProject.risk || "low",
         tasks: []
       };

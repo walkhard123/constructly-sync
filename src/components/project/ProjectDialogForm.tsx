@@ -1,10 +1,11 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Project } from "../types/project";
+import { ProjectBasicInfo } from "./form/ProjectBasicInfo";
+import { ProjectTypeSelect } from "./form/ProjectTypeSelect";
+import { TeamMemberSelect } from "./form/TeamMemberSelect";
+import { ProjectDates } from "./form/ProjectDates";
+import { ProjectDescription } from "./form/ProjectDescription";
 
 interface ProjectDialogFormProps {
   isOpen: boolean;
@@ -33,81 +34,34 @@ export const ProjectDialogForm = ({
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-4">
-          <div className="col-span-2">
-            <Label htmlFor="name">Project Name</Label>
-            <Input
-              id="name"
-              value={newProject.name}
-              onChange={(e) => setNewProject({...newProject, name: e.target.value})}
-            />
-          </div>
+          <ProjectBasicInfo
+            name={newProject.name || ''}
+            address={newProject.address || ''}
+            onNameChange={(value) => setNewProject({ ...newProject, name: value })}
+            onAddressChange={(value) => setNewProject({ ...newProject, address: value })}
+          />
           
-          <div className="col-span-2">
-            <Label htmlFor="address">Project Address</Label>
-            <Input
-              id="address"
-              value={newProject.address}
-              onChange={(e) => setNewProject({...newProject, address: e.target.value})}
-            />
-          </div>
+          <ProjectTypeSelect
+            type={newProject.type || 'house'}
+            onTypeChange={(value) => setNewProject({ ...newProject, type: value })}
+          />
 
-          <div>
-            <Label htmlFor="type">Project Type</Label>
-            <Select
-              value={newProject.type}
-              onValueChange={(value) => setNewProject({...newProject, type: value as Project['type']})}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select project type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="house">House</SelectItem>
-                <SelectItem value="duplex">Duplex</SelectItem>
-                <SelectItem value="townhouse">Townhouse</SelectItem>
-                <SelectItem value="apartment">Apartment</SelectItem>
-                <SelectItem value="others">Others</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <TeamMemberSelect
+            teamMember={newProject.teamMember || ''}
+            onTeamMemberChange={(value) => setNewProject({ ...newProject, teamMember: value })}
+          />
 
-          <div>
-            <Label htmlFor="teamMember">Assigned Team Member</Label>
-            <Input
-              id="teamMember"
-              value={newProject.teamMember}
-              onChange={(e) => setNewProject({...newProject, teamMember: e.target.value})}
-            />
-          </div>
+          <ProjectDates
+            startDate={newProject.startDate || ''}
+            endDate={newProject.endDate || ''}
+            onStartDateChange={(value) => setNewProject({ ...newProject, startDate: value })}
+            onEndDateChange={(value) => setNewProject({ ...newProject, endDate: value })}
+          />
 
-          <div>
-            <Label htmlFor="startDate">Start Date</Label>
-            <Input
-              id="startDate"
-              type="date"
-              value={newProject.startDate}
-              onChange={(e) => setNewProject({...newProject, startDate: e.target.value})}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="endDate">End Date</Label>
-            <Input
-              id="endDate"
-              type="date"
-              value={newProject.endDate}
-              onChange={(e) => setNewProject({...newProject, endDate: e.target.value})}
-            />
-          </div>
-
-          <div className="col-span-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={newProject.description}
-              onChange={(e) => setNewProject({...newProject, description: e.target.value})}
-              className="h-32"
-            />
-          </div>
+          <ProjectDescription
+            description={newProject.description || ''}
+            onDescriptionChange={(value) => setNewProject({ ...newProject, description: value })}
+          />
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
