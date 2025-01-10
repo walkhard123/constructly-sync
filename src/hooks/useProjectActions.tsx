@@ -18,7 +18,7 @@ export const useProjectActions = (
     }
 
     if (editingProject) {
-      setProjects(prevProjects => prevProjects.map(project => 
+      setProjects(projects.map((project: Project) => 
         project.id === editingProject.id 
           ? {
               ...project,
@@ -42,17 +42,17 @@ export const useProjectActions = (
         type: newProject.type || "house",
         teamMember: newProject.teamMember || "",
         startDate: newProject.startDate || "",
-        endDate: newProject.endDate,
+        endDate: newProject.endDate!,
         description: newProject.description || "",
         phase: newProject.phase || "Phase 1",
         progress: newProject.progress || 0,
         status: newProject.status || "active",
-        budget: newProject.budget,
+        budget: newProject.budget!,
         risk: newProject.risk || "low",
         tasks: []
       };
 
-      setProjects(prevProjects => [...prevProjects, newProjectData]);
+      setProjects([...projects, newProjectData]);
       toast({
         title: "Success",
         description: "Project added successfully",
@@ -61,7 +61,7 @@ export const useProjectActions = (
   };
 
   const handleDeleteProject = (projectId: number) => {
-    setProjects(prevProjects => prevProjects.filter(project => project.id !== projectId));
+    setProjects(projects.filter((project: Project) => project.id !== projectId));
     toast({
       title: "Success",
       description: "Project deleted successfully",

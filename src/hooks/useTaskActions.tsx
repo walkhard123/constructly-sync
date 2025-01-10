@@ -31,7 +31,7 @@ export const useTaskActions = (
       subTasks: []
     };
 
-    setProjects(prevProjects => prevProjects.map(project => {
+    setProjects(projects.map((project: Project) => {
       if (project.id === selectedProject) {
         return {
           ...project,
@@ -48,7 +48,7 @@ export const useTaskActions = (
   };
 
   const handleToggleTaskStatus = (projectId: number, taskId: number) => {
-    setProjects(prevProjects => prevProjects.map(project => {
+    setProjects(projects.map((project: Project) => {
       if (project.id === projectId) {
         return {
           ...project,
@@ -70,7 +70,7 @@ export const useTaskActions = (
   };
 
   const handleDeleteTask = (projectId: number, taskId: number) => {
-    setProjects(prevProjects => prevProjects.map(project => {
+    setProjects(projects.map((project: Project) => {
       if (project.id === projectId) {
         return {
           ...project,
