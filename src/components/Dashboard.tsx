@@ -2,8 +2,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { BarChart, Calendar, Clock, ClipboardList, ListTodo, Users, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
+  
   // Mock data fetching - in a real app, these would be API calls
   const { data: projectStats } = useQuery({
     queryKey: ['projectStats'],
@@ -34,13 +37,20 @@ export const Dashboard = () => {
     })
   });
 
+  const handleCardClick = (section: string) => {
+    navigate(`/${section.toLowerCase().replace(/\s+/g, '-')}`);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <h1 className="text-3xl font-bold">Dashboard Overview</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Projects Summary */}
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => handleCardClick('Projects Management')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Projects</CardTitle>
             <ClipboardList className="h-4 w-4 text-purple-600" />
@@ -57,7 +67,10 @@ export const Dashboard = () => {
         </Card>
 
         {/* Tasks Summary */}
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => handleCardClick('Tasks')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tasks</CardTitle>
             <ListTodo className="h-4 w-4 text-purple-600" />
@@ -74,7 +87,10 @@ export const Dashboard = () => {
         </Card>
 
         {/* Team Summary */}
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => handleCardClick('Team Members')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Team</CardTitle>
             <Users className="h-4 w-4 text-purple-600" />
@@ -91,7 +107,10 @@ export const Dashboard = () => {
         </Card>
 
         {/* Time Tracking */}
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => handleCardClick('Time Clock')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Time Tracking</CardTitle>
             <Clock className="h-4 w-4 text-purple-600" />
@@ -108,7 +127,10 @@ export const Dashboard = () => {
         </Card>
 
         {/* Daily Logs */}
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => handleCardClick('Daily Logs')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Daily Logs</CardTitle>
             <Calendar className="h-4 w-4 text-purple-600" />
@@ -125,7 +147,10 @@ export const Dashboard = () => {
         </Card>
 
         {/* Documents */}
-        <Card>
+        <Card 
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => handleCardClick('File Upload')}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Documents</CardTitle>
             <FileText className="h-4 w-4 text-purple-600" />
