@@ -5,9 +5,10 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 interface ProjectHeaderProps {
   onOpenTaskDialog: () => void;
+  onOpenProjectDialog: () => void;
 }
 
-export const ProjectHeader = ({ onOpenTaskDialog }: ProjectHeaderProps) => {
+export const ProjectHeader = ({ onOpenTaskDialog, onOpenProjectDialog }: ProjectHeaderProps) => {
   return (
     <div className="flex justify-between items-center gap-4 flex-wrap">
       <div className="flex gap-2 flex-1">
@@ -33,7 +34,10 @@ export const ProjectHeader = ({ onOpenTaskDialog }: ProjectHeaderProps) => {
             </Button>
           </DialogTrigger>
         </Dialog>
-        <Button className="bg-purple-600 hover:bg-purple-700">
+        <Button 
+          className="bg-purple-600 hover:bg-purple-700"
+          onClick={onOpenProjectDialog}
+        >
           <Plus className="mr-2 h-4 w-4" /> New Project
         </Button>
       </div>

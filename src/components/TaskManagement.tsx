@@ -40,6 +40,13 @@ export const TaskManagement = () => {
     }
   ]);
 
+  // Add projects state
+  const [projects, setProjects] = useState([
+    { id: 1, name: "Downtown Office Building" },
+    { id: 2, name: "Residential Complex" },
+    { id: 3, name: "Shopping Mall Renovation" },
+  ]);
+
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -182,6 +189,7 @@ export const TaskManagement = () => {
         setNewTask={setNewTask}
         handleAddTask={handleAddTask}
         editingTask={editingTask}
+        projects={projects}
       />
 
       <div className="grid gap-4">

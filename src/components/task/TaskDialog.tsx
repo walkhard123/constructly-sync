@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Task } from "../types/task";
+import { useState } from "react";
 
 interface TaskDialogProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface TaskDialogProps {
   setNewTask: (task: Partial<Task>) => void;
   handleAddTask: () => void;
   editingTask: Task | null;
+  projects: { id: number; name: string; }[];
 }
 
 export const TaskDialog = ({
@@ -20,7 +22,8 @@ export const TaskDialog = ({
   newTask,
   setNewTask,
   handleAddTask,
-  editingTask
+  editingTask,
+  projects
 }: TaskDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -39,6 +42,24 @@ export const TaskDialog = ({
               value={newTask.title}
               onChange={(e) => setNewTask({...newTask, title: e.target.value})}
             />
+          </div>
+          <div>
+            <Label htmlFor="project">Project</Label>
+            <Select
+              value={newTask.project}
+              onValueChange={(value) => setNewTask({...newTask, project: value})}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select project" />
+              </SelectTrigger>
+              <SelectContent>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.name}>
+                    {project.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label htmlFor="priority">Priority</Label>
@@ -62,14 +83,6 @@ export const TaskDialog = ({
               id="assignee"
               value={newTask.assignee}
               onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
-            />
-          </div>
-          <div>
-            <Label htmlFor="project">Project</Label>
-            <Input
-              id="project"
-              value={newTask.project}
-              onChange={(e) => setNewTask({...newTask, project: e.target.value})}
             />
           </div>
           <div>

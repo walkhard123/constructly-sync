@@ -106,6 +106,7 @@ export const ProjectManagement = () => {
 
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [newTask, setNewTask] = useState<Partial<Task>>({
     title: "",
@@ -115,6 +116,47 @@ export const ProjectManagement = () => {
     status: "pending",
     subTasks: []
   });
+  const [newProject, setNewProject] = useState<Partial<Project>>({
+    name: "",
+    phase: "Phase 1",
+    progress: 0,
+    due: "",
+    status: "active",
+    budget: "",
+    risk: "low",
+    tasks: []
+  });
+
+  const handleAddProject = () => {
+    if (newProject.name && newProject.due && newProject.budget) {
+      setProjects([...projects, {
+        id: projects.length + 1,
+        name: newProject.name,
+        phase: newProject.phase || "Phase 1",
+        progress: newProject.progress || 0,
+        due: newProject.due,
+        status: "active",
+        budget: newProject.budget,
+        risk: newProject.risk || "low",
+        tasks: []
+      }]);
+      setIsProjectDialogOpen(false);
+      setNewProject({
+        name: "",
+        phase: "Phase 1",
+        progress: 0,
+        due: "",
+        status: "active",
+        budget: "",
+        risk: "low",
+        tasks: []
+      });
+      toast({
+        title: "Success",
+        description: "Project added successfully",
+      });
+    }
+  };
 
   const handleAddTask = () => {
     if (selectedProject && newTask.title && newTask.assignee && newTask.dueDate) {
@@ -264,7 +306,20 @@ export const ProjectManagement = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <ProjectHeader onOpenTaskDialog={() => setIsTaskDialogOpen(true)} />
+      <ProjectHeader 
+        onOpenTaskDialog={() => {
+          if (projects.length === 0) {
+            toast({
+              title: "Error",
+              description: "Please create a project first",
+              variant: "destructive",
+            });
+            return;
+          }
+          setIsTaskDialogOpen(true);
+        }} 
+        onOpenProjectDialog={() => setIsProjectDialogOpen(true)}
+      />
       
       <Dialog open={isTaskDialogOpen} onOpenChange={setIsTaskDialogOpen}>
         <DialogContent>
@@ -275,6 +330,24 @@ export const ProjectManagement = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div>
+              <Label htmlFor="project">Project</Label>
+              <Select
+                value={selectedProject?.toString()}
+                onValueChange={(value) => setSelectedProject(parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select project" />
+                </SelectTrigger>
+                <SelectContent>
+                  {projects.map((project) => (
+                    <SelectItem key={project.id} value={project.id.toString()}>
+                      {project.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <Label htmlFor="title">Task Title</Label>
               <Input
@@ -327,7 +400,86 @@ export const ProjectManagement = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
+      <Dialog open={isProjectDialogOpen} onOpenChange={setIsProjectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Project</DialogTitle>
+            <DialogDescription>
+              Fill in the project details below
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Project Name</Label>
+              <Input
+                id="name"
+                value={newProject.name}
+                onChange={(e) => setNewProject({...newProject, name: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="phase">Phase</Label>
+              <Select
+                value={newProject.phase}
+                onValueChange={(value) => setNewProject({...newProject, phase: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select phase" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Phase 1">Phase 1</SelectItem>
+                  <SelectItem value="Phase 2">Phase 2</SelectItem>
+                  <SelectItem value="Phase 3">Phase 3</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="due">Due Date</Label>
+              <Input
+                id="due"
+                type="date"
+                value={newProject.due}
+                onChange={(e) => setNewProject({...newProject, due: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="budget">Budget</Label>
+              <Input
+                id="budget"
+                value={newProject.budget}
+                onChange={(e) => setNewProject({...newProject, budget: e.target.value})}
+                placeholder="e.g. $1.5M"
+              />
+            </div>
+            <div>
+              <Label htmlFor="risk">Risk Level</Label>
+              <Select
+                value={newProject.risk}
+                onValueChange={(value) => setNewProject({...newProject, risk: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select risk level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsProjectDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddProject}>
+              Add Project
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <Tabs defaultValue="active" className="w-full">
         <TabsList className="w-full justify-start">
           <TabsTrigger value="active">Active Projects</TabsTrigger>
