@@ -5,25 +5,26 @@ import { ProjectDialogForm } from "./project/ProjectDialogForm";
 import { TaskDialogForm } from "./project/TaskDialogForm";
 import { ProjectTabs } from "./project/ProjectTabs";
 import { Project, Task } from "./types/project";
-import { useProjects } from "@/hooks/useProjects";
+import { useProjectState } from "@/hooks/useProjectState";
+import { useProjectActions } from "@/hooks/useProjectActions";
+import { useTaskActions } from "@/hooks/useTaskActions";
 
 export const ProjectManagement = () => {
   const { toast } = useToast();
   const {
     projects,
-    handleSearch,
-    handleAddProject,
-    handleDeleteProject,
-    handleAddTask,
-    handleToggleTaskStatus,
-    handleDeleteTask,
-    handleAddSubTask,
-    handleToggleSubTask
-  } = useProjects();
+    setProjects,
+    selectedProject,
+    setSelectedProject,
+    isTaskDialogOpen,
+    setIsTaskDialogOpen,
+    isProjectDialogOpen,
+    setIsProjectDialogOpen
+  } = useProjectState();
 
-  const [selectedProject, setSelectedProject] = useState<number | null>(null);
-  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
-  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
+  const { handleSearch, handleAddProject, handleDeleteProject } = useProjectActions(projects, setProjects);
+  const { handleAddTask, handleToggleTaskStatus, handleDeleteTask, handleAddSubTask, handleToggleSubTask } = useTaskActions(projects, setProjects);
+
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [newTask, setNewTask] = useState<Partial<Task>>({
