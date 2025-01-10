@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileEdit, Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { FileEdit, Trash2, ChevronDown, ChevronUp, User, Calendar } from "lucide-react";
 import { ProjectTaskList } from "./ProjectTaskList";
 import { useState } from "react";
 import { Project, Task, SubTask } from "../types/project";
@@ -31,18 +31,30 @@ export const ProjectCard = ({
   return (
     <Card className="hover:shadow-lg transition-shadow">
       <CardHeader className="p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4 flex-1">
+        <div className="flex justify-between items-start">
+          <div className="flex items-start gap-4 flex-1">
             {isExpanded ? (
-              <ChevronUp className="w-4 h-4 text-gray-500" />
+              <ChevronUp className="w-4 h-4 text-gray-500 mt-1" />
             ) : (
-              <ChevronDown className="w-4 h-4 text-gray-500" />
+              <ChevronDown className="w-4 h-4 text-gray-500 mt-1" />
             )}
-            <div>
-              <CardTitle className="text-lg">{project.name}</CardTitle>
-              <CardDescription className="text-sm">
-                {project.phase} • Due: {project.endDate}
-              </CardDescription>
+            <div className="space-y-2">
+              <div>
+                <CardTitle className="text-lg">{project.name}</CardTitle>
+                <CardDescription className="text-sm mt-1">
+                  {project.address}
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-6 text-sm text-gray-600">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  {project.teamMember}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Due: {project.endDate}
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -93,22 +105,6 @@ export const ProjectCard = ({
                 className="bg-purple-600 h-2 rounded-full transition-all" 
                 style={{ width: `${project.progress}%` }}
               />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="text-sm text-gray-500">Budget</span>
-                <p className="font-medium">{project.budget}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Risk Level</span>
-                <p className={`font-medium ${
-                  project.risk === 'high' ? 'text-red-500' : 
-                  project.risk === 'medium' ? 'text-yellow-500' : 
-                  'text-green-500'
-                }`}>
-                  {project.risk.charAt(0).toUpperCase() + project.risk.slice(1)}
-                </p>
-              </div>
             </div>
             <div>
               <h4 className="font-medium mb-2">Tasks ({project.tasks.length})</h4>
