@@ -21,7 +21,7 @@ export const useTaskActions = (
     if (!project) return;
 
     const newTaskData: Task = {
-      id: Math.max(0, ...project.tasks.map(t => t.id), 0) + 1,
+      id: Math.max(0, ...project.tasks.map(t => t.id)) + 1,
       title: newTask.title,
       status: newTask.status || "pending",
       priority: newTask.priority || "medium",
