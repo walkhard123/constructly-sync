@@ -1,6 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Project } from "../types/project";
 import { ProjectCard } from "./ProjectCard";
+import { DndContext, DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useState } from "react";
 
 interface ProjectTabsProps {
   projects: Project[];
@@ -23,6 +26,58 @@ export const ProjectTabs = ({
   onEditProject,
   onDeleteProject
 }: ProjectTabsProps) => {
+  const [localProjects, setLocalProjects] = useState(projects);
+  
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      setLocalProjects((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+
+  const renderProjectList = (filteredProjects: Project[]) => (
+    <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+      <SortableContext items={filteredProjects.map(p => p.id)} strategy={verticalListSortingStrategy}>
+        <div className="space-y-4">
+          {filteredProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onToggleTaskStatus={onToggleTaskStatus}
+              onEditTask={onEditTask}
+              onDeleteTask={onDeleteTask}
+              onAddSubTask={onAddSubTask}
+              onToggleSubTask={onToggleSubTask}
+              onEditProject={() => onEditProject(project)}
+              onDeleteProject={() => onDeleteProject(project.id)}
+            />
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
+  );
+
   return (
     <Tabs defaultValue="active" className="w-full">
       <TabsList className="w-full justify-start">
@@ -32,64 +87,16 @@ export const ProjectTabs = ({
         <TabsTrigger value="all">All Projects</TabsTrigger>
       </TabsList>
       <TabsContent value="active" className="space-y-4">
-        {projects.filter(p => p.status === 'active').map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onToggleTaskStatus={onToggleTaskStatus}
-            onEditTask={onEditTask}
-            onDeleteTask={onDeleteTask}
-            onAddSubTask={onAddSubTask}
-            onToggleSubTask={onToggleSubTask}
-            onEditProject={() => onEditProject(project)}
-            onDeleteProject={() => onDeleteProject(project.id)}
-          />
-        ))}
+        {renderProjectList(localProjects.filter(p => p.status === 'active'))}
       </TabsContent>
       <TabsContent value="upcoming" className="space-y-4">
-        {projects.filter(p => p.status === 'upcoming').map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onToggleTaskStatus={onToggleTaskStatus}
-            onEditTask={onEditTask}
-            onDeleteTask={onDeleteTask}
-            onAddSubTask={onAddSubTask}
-            onToggleSubTask={onToggleSubTask}
-            onEditProject={() => onEditProject(project)}
-            onDeleteProject={() => onDeleteProject(project.id)}
-          />
-        ))}
+        {renderProjectList(localProjects.filter(p => p.status === 'upcoming'))}
       </TabsContent>
       <TabsContent value="completed" className="space-y-4">
-        {projects.filter(p => p.status === 'completed').map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onToggleTaskStatus={onToggleTaskStatus}
-            onEditTask={onEditTask}
-            onDeleteTask={onDeleteTask}
-            onAddSubTask={onAddSubTask}
-            onToggleSubTask={onToggleSubTask}
-            onEditProject={() => onEditProject(project)}
-            onDeleteProject={() => onDeleteProject(project.id)}
-          />
-        ))}
+        {renderProjectList(localProjects.filter(p => p.status === 'completed'))}
       </TabsContent>
       <TabsContent value="all" className="space-y-4">
-        {projects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onToggleTaskStatus={onToggleTaskStatus}
-            onEditTask={onEditTask}
-            onDeleteTask={onDeleteTask}
-            onAddSubTask={onAddSubTask}
-            onToggleSubTask={onToggleSubTask}
-            onEditProject={() => onEditProject(project)}
-            onDeleteProject={() => onDeleteProject(project.id)}
-          />
-        ))}
+        {renderProjectList(localProjects)}
       </TabsContent>
     </Tabs>
   );

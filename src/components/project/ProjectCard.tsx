@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { FileEdit, Trash2, ChevronDown, ChevronUp, User, Calendar } from "lucide-react";
 import { ProjectTaskList } from "./ProjectTaskList";
 import { useState } from "react";
-import { Project, Task, SubTask } from "../types/project";
+import { Project } from "../types/project";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ProjectCardProps {
   project: Project;
@@ -27,6 +29,21 @@ export const ProjectCard = ({
   onDeleteProject
 }: ProjectCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: project.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -42,7 +59,13 @@ export const ProjectCard = ({
   };
 
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card 
+      className="hover:shadow-lg transition-shadow touch-none"
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+    >
       <CardHeader className="p-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-4 flex-1">
