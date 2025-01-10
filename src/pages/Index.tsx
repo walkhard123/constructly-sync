@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
-import { ArrowLeft, Plus, Search, Calendar, Clock, Upload, Users, ClipboardList, ListTodo, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, Plus, Search, Calendar, Clock, Upload, Users, ClipboardList, ListTodo, LayoutDashboard, Settings2, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectManagement } from "@/components/ProjectManagement";
 import { TeamMembers } from "@/components/TeamMembers";
@@ -60,7 +60,7 @@ const Index = () => {
     {
       title: "Leave Requests",
       description: "Manage time off and leave requests",
-      icon: <Calendar className="w-6 h-6" />,
+      icon: <ListChecks className="w-6 h-6" />,
       component: <LeaveRequests />
     }
   ];
@@ -68,20 +68,27 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {selectedSection && (
+        <div className="flex justify-between items-center mb-6">
+          {selectedSection && (
+            <Button
+              variant="ghost"
+              onClick={() => setSelectedSection(null)}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Main Menu
+            </Button>
+          )}
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            ProBuilder 1.0
+          </h1>
           <Button
-            variant="ghost"
-            className="mb-4"
-            onClick={() => setSelectedSection(null)}
+            variant="outline"
+            size="icon"
+            className="rounded-full"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Main Menu
+            <Settings2 className="h-5 w-5" />
           </Button>
-        )}
-        
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-          ProBuilder 1.0
-        </h1>
+        </div>
         
         {!selectedSection ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
