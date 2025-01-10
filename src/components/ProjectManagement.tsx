@@ -11,6 +11,7 @@ export const ProjectManagement = () => {
   const { toast } = useToast();
   const {
     projects,
+    handleSearch,
     handleAddProject,
     handleDeleteProject,
     handleAddTask,
@@ -107,6 +108,7 @@ export const ProjectManagement = () => {
           });
           setIsProjectDialogOpen(true);
         }}
+        onSearch={handleSearch}
       />
       
       <ProjectDialogForm
