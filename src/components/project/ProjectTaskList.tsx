@@ -2,22 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle, AlertCircle, FileEdit, Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
-
-interface SubTask {
-  id: number;
-  title: string;
-  completed: boolean;
-}
-
-interface Task {
-  id: number;
-  title: string;
-  status: string;
-  priority: string;
-  assignee: string;
-  dueDate: string;
-  subTasks: SubTask[];
-}
+import { SubTask, Task } from "../types/project";
 
 interface ProjectTaskListProps {
   tasks: Task[];
@@ -59,7 +44,7 @@ export const ProjectTaskList = ({
         <div key={task.id} className="space-y-2">
           <div 
             className={`flex items-center justify-between p-2 bg-gray-50 rounded-md cursor-pointer hover:bg-gray-100 transition-colors ${
-              task.subTasks.length > 0 ? 'border-l-4 border-purple-500' : ''
+              task.subTasks?.length > 0 ? 'border-l-4 border-purple-500' : ''
             }`}
             onClick={() => toggleTaskExpansion(task.id)}
           >
@@ -78,11 +63,11 @@ export const ProjectTaskList = ({
                 )}
               </button>
               <span className={`text-sm ${task.status === 'completed' ? 'line-through text-gray-500' : ''} ${
-                task.subTasks.length > 0 ? 'font-medium text-purple-700' : ''
+                task.subTasks?.length > 0 ? 'font-medium text-purple-700' : ''
               }`}>
                 {task.title}
               </span>
-              {task.subTasks.length > 0 && (
+              {task.subTasks?.length > 0 && (
                 <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
                   {task.subTasks.length} subtasks
                 </span>
@@ -140,7 +125,7 @@ export const ProjectTaskList = ({
                   <Plus className="w-4 h-4" />
                 </Button>
               </div>
-              {task.subTasks?.map(subTask => (
+              {task.subTasks?.map((subTask: SubTask) => (
                 <div key={subTask.id} className="flex items-center gap-2">
                   <button
                     onClick={() => onToggleSubTask(task.id, subTask.id)}
