@@ -69,8 +69,8 @@ export const TaskManagement = () => {
             ? { 
                 ...task, 
                 ...newTask, 
-                id: task.id, 
-                subTasks: newTask.subTasks || task.subTasks // Preserve existing subtasks if none provided
+                id: task.id,
+                subTasks: task.subTasks || [] // Ensure subTasks array exists
               } 
             : task
         ));
@@ -79,10 +79,11 @@ export const TaskManagement = () => {
           description: "Task updated successfully",
         });
       } else {
+        const maxId = Math.max(0, ...tasks.map(t => t.id));
         setTasks([...tasks, { 
           ...newTask as Task, 
-          id: tasks.length + 1,
-          subTasks: newTask.subTasks || [] // Initialize empty subtasks array for new tasks
+          id: maxId + 1,
+          subTasks: [] // Initialize empty subTasks array
         }]);
         toast({
           title: "Success",
@@ -112,32 +113,41 @@ export const TaskManagement = () => {
       dueDate: task.dueDate,
       project: task.project,
       status: task.status,
-      subTasks: task.subTasks
+      subTasks: task.subTasks || [] // Ensure subTasks array exists
     });
     setIsDialogOpen(true);
   };
 
   const handleAddSubTask = (taskId: number) => {
-    if (newSubTask.trim()) {
-      setTasks(tasks.map(task => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            subTasks: [...task.subTasks, {
-              id: task.subTasks.length + 1,
-              title: newSubTask,
-              completed: false
-            }]
-          };
-        }
-        return task;
-      }));
-      setNewSubTask("");
+    if (!newSubTask.trim()) {
       toast({
-        title: "Success",
-        description: "Subtask added successfully",
+        title: "Error",
+        description: "Subtask title cannot be empty",
+        variant: "destructive",
       });
+      return;
     }
+
+    setTasks(tasks.map(task => {
+      if (task.id === taskId) {
+        const newSubTaskItem = {
+          id: (task.subTasks?.length || 0) + 1,
+          title: newSubTask.trim(),
+          completed: false
+        };
+        return {
+          ...task,
+          subTasks: [...(task.subTasks || []), newSubTaskItem]
+        };
+      }
+      return task;
+    }));
+    
+    setNewSubTask("");
+    toast({
+      title: "Success",
+      description: "Subtask added successfully",
+    });
   };
 
   const toggleSubTask = (taskId: number, subTaskId: number) => {
@@ -145,7 +155,7 @@ export const TaskManagement = () => {
       if (task.id === taskId) {
         return {
           ...task,
-          subTasks: task.subTasks.map(subTask => 
+          subTasks: (task.subTasks || []).map(subTask => 
             subTask.id === subTaskId 
               ? { ...subTask, completed: !subTask.completed }
               : subTask
