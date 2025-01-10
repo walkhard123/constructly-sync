@@ -1,4 +1,4 @@
-import { Project, Task } from "@/components/types/project";
+import { Project } from "@/components/types/project";
 import { useToast } from "@/hooks/use-toast";
 
 export const useProjectActions = (
@@ -6,10 +6,6 @@ export const useProjectActions = (
   setProjects: (projects: Project[]) => void
 ) => {
   const { toast } = useToast();
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
 
   const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
     if (!newProject.name || !newProject.endDate || !newProject.budget) {
@@ -22,9 +18,16 @@ export const useProjectActions = (
     }
 
     if (editingProject) {
-      setProjects(projects.map(project => 
+      setProjects(projects.map((project: Project) => 
         project.id === editingProject.id 
-          ? { ...project, ...newProject } as Project
+          ? {
+              ...project,
+              ...newProject,
+              phase: newProject.phase || "Phase 1",
+              progress: newProject.progress || 0,
+              status: newProject.status || "active",
+              risk: newProject.risk || "low"
+            } as Project
           : project
       ));
       toast({
@@ -58,7 +61,7 @@ export const useProjectActions = (
   };
 
   const handleDeleteProject = (projectId: number) => {
-    setProjects(projects.filter(project => project.id !== projectId));
+    setProjects(projects.filter((project: Project) => project.id !== projectId));
     toast({
       title: "Success",
       description: "Project deleted successfully",
@@ -66,7 +69,6 @@ export const useProjectActions = (
   };
 
   return {
-    handleSearch,
     handleAddProject,
     handleDeleteProject
   };
