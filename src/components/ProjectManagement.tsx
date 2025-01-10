@@ -144,7 +144,7 @@ export const ProjectManagement = () => {
         editingTask={editingTask}
         newTask={newTask}
         setNewTask={setNewTask}
-        onSave={() => handleAddTask(selectedProject, newTask)}
+        onSave={() => handleAddTask(newTask, editingTask)}
       />
 
       <ProjectTabs
