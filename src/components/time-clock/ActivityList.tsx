@@ -10,6 +10,7 @@ interface ActivityListProps {
     department: string;
     duration: string;
     location: string;
+    project: string;  // Added this line to match ActivityEntry interface
   }>;
 }
 
