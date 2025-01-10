@@ -1,11 +1,13 @@
 import { Project, Task } from "@/components/types/project";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export const useProjectActions = (
   projects: Project[],
   setProjects: (projects: Project[]) => void
 ) => {
   const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -66,6 +68,7 @@ export const useProjectActions = (
   };
 
   return {
+    searchQuery,
     handleSearch,
     handleAddProject,
     handleDeleteProject

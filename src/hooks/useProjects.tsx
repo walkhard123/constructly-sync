@@ -6,27 +6,9 @@ import { useTaskActions } from "./useTaskActions";
 export const useProjects = () => {
   const { toast } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const { handleAddTask, handleEditTask } = useTaskActions({
-    tasks: projects.flatMap(p => p.tasks),
-    setTasks: (updatedTasks: Task[]) => {
-      setProjects(projects.map(p => ({
-        ...p,
-        tasks: updatedTasks.filter(t => t.project === p.name)
-      })));
-    },
-    setIsDialogOpen: () => {},
-    setNewTask: () => {},
-    setEditingTask: () => {}
-  });
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-  };
-
-  const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
-    if (!newProject.name || !newProject.endDate || !newProject.budget) {
+  const handleAddTask = (newTask: Partial<Task>, editingTask: Task | null) => {
+    if (!newTask.title || !newTask.assignee || !newTask.dueDate || !newTask.project) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -35,54 +17,56 @@ export const useProjects = () => {
       return;
     }
 
-    if (editingProject) {
-      setProjects(projects.map((project: Project) => 
-        project.id === editingProject.id 
-          ? {
-              ...project,
-              ...newProject,
-              phase: newProject.phase || "Phase 1",
-              progress: newProject.progress || 0,
-              status: newProject.status || "active",
-              risk: newProject.risk || "low"
-            } as Project
-          : project
-      ));
-      toast({
-        title: "Success",
-        description: "Project updated successfully",
-      });
-    } else {
-      const newProjectData: Project = {
-        id: projects.length + 1,
-        name: newProject.name,
-        address: newProject.address || "",
-        type: newProject.type || "house",
-        teamMember: newProject.teamMember || "",
-        startDate: newProject.startDate || "",
-        endDate: newProject.endDate!,
-        description: newProject.description || "",
-        phase: newProject.phase || "Phase 1",
-        progress: newProject.progress || 0,
-        status: newProject.status || "active",
-        budget: newProject.budget!,
-        risk: newProject.risk || "low",
-        tasks: []
-      };
+    setProjects(projects.map(project => {
+      if (project.name === newTask.project) {
+        if (editingTask) {
+          return {
+            ...project,
+            tasks: project.tasks.map(task =>
+              task.id === editingTask.id
+                ? { ...task, ...newTask } as Task
+                : task
+            )
+          };
+        } else {
+          const newTaskData: Task = {
+            id: Math.max(0, ...project.tasks.map(t => t.id)) + 1,
+            title: newTask.title!,
+            status: newTask.status || "pending",
+            priority: newTask.priority || "medium",
+            assignee: newTask.assignee!,
+            dueDate: newTask.dueDate!,
+            project: newTask.project!,
+            subTasks: []
+          };
+          return {
+            ...project,
+            tasks: [...project.tasks, newTaskData]
+          };
+        }
+      }
+      return project;
+    }));
 
-      setProjects([...projects, newProjectData]);
-      toast({
-        title: "Success",
-        description: "Project added successfully",
-      });
-    }
-  };
-
-  const handleDeleteProject = (projectId: number) => {
-    setProjects(projects.filter((project: Project) => project.id !== projectId));
     toast({
       title: "Success",
-      description: "Project deleted successfully",
+      description: editingTask ? "Task updated successfully" : "Task added successfully",
+    });
+  };
+
+  const handleEditTask = (projectId: number, task: Task) => {
+    setProjects(projects.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          tasks: project.tasks.map(t => t.id === task.id ? task : t)
+        };
+      }
+      return project;
+    }));
+    toast({
+      title: "Success",
+      description: "Task updated successfully",
     });
   };
 
@@ -171,10 +155,8 @@ export const useProjects = () => {
 
   return {
     projects,
-    handleSearch,
-    handleAddProject,
-    handleDeleteProject,
     handleAddTask,
+    handleEditTask,
     handleToggleTaskStatus,
     handleDeleteTask,
     handleAddSubTask,
