@@ -4,10 +4,8 @@ import { TaskList } from "./task/TaskList";
 import { useTaskState } from "@/hooks/useTaskState";
 import { useTaskActions } from "@/hooks/useTaskActions";
 import { useTaskFilter } from "./task/TaskFilter";
-import { useToast } from "@/hooks/use-toast";
 
 export const TaskManagement = () => {
-  const { toast } = useToast();
   const {
     tasks,
     setTasks,
