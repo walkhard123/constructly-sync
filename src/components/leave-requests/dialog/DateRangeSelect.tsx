@@ -40,7 +40,9 @@ export const DateRangeSelect = ({
             <Calendar
               mode="single"
               selected={startDate}
-              onSelect={onStartDateSelect}
+              onSelect={(date) => {
+                onStartDateSelect(date || undefined);
+              }}
               disabled={(date) => date < new Date()}
               initialFocus
             />
@@ -66,7 +68,9 @@ export const DateRangeSelect = ({
             <Calendar
               mode="single"
               selected={endDate}
-              onSelect={onEndDateSelect}
+              onSelect={(date) => {
+                onEndDateSelect(date || undefined);
+              }}
               disabled={(date) => 
                 date < new Date() || (startDate ? date < startDate : false)
               }
