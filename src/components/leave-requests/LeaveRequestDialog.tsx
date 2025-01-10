@@ -1,13 +1,10 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { TeamMemberSelect } from "./dialog/TeamMemberSelect";
+import { LeaveTypeSelect } from "./dialog/LeaveTypeSelect";
+import { DateRangeSelect } from "./dialog/DateRangeSelect";
 
 interface LeaveRequestDialogProps {
   isOpen: boolean;
@@ -42,14 +39,12 @@ export const LeaveRequestDialog = ({
 }: LeaveRequestDialogProps) => {
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDate(date);
-    // If end date is before start date, reset end date
     if (date && endDate && date > endDate) {
       setEndDate(undefined);
     }
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
-    // Only allow end date to be set if it's after or equal to start date
     if (date && startDate && date >= startDate) {
       setEndDate(date);
     } else if (!startDate) {
@@ -67,90 +62,21 @@ export const LeaveRequestDialog = ({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div>
-            <Label>Team Member</Label>
-            <Select onValueChange={(value) => setNewRequest({...newRequest, employee: value})}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select team member" />
-              </SelectTrigger>
-              <SelectContent>
-                {teamMembers.map((member) => (
-                  <SelectItem key={member.id} value={member.name}>
-                    {member.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>Leave Type</Label>
-            <Select onValueChange={(value) => setNewRequest({...newRequest, type: value})}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select leave type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Annual Leave">Annual Leave</SelectItem>
-                <SelectItem value="Sick Leave">Sick Leave</SelectItem>
-                <SelectItem value="Personal Leave">Personal Leave</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Start Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={handleStartDateSelect}
-                    disabled={(date) => date < new Date()}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div>
-              <Label>End Date</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={handleEndDateSelect}
-                    disabled={(date) => 
-                      date < new Date() || (startDate ? date < startDate : false)
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+          <TeamMemberSelect
+            value={newRequest.employee}
+            onChange={(value) => setNewRequest({...newRequest, employee: value})}
+            teamMembers={teamMembers}
+          />
+          <LeaveTypeSelect
+            value={newRequest.type}
+            onChange={(value) => setNewRequest({...newRequest, type: value})}
+          />
+          <DateRangeSelect
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateSelect={handleStartDateSelect}
+            onEndDateSelect={handleEndDateSelect}
+          />
           <div>
             <Label>Reason</Label>
             <Textarea
