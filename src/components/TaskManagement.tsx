@@ -1,177 +1,41 @@
-import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { TaskHeader } from "./task/TaskHeader";
 import { TaskDialog } from "./task/TaskDialog";
 import { TaskList } from "./task/TaskList";
-import { Task } from "./types/task";
+import { useTaskState } from "@/hooks/useTaskState";
+import { useTaskActions } from "@/hooks/useTaskActions";
+import { useTaskFilter } from "./task/TaskFilter";
 
 export const TaskManagement = () => {
-  const { toast } = useToast();
-  const [tasks, setTasks] = useState<Task[]>([
-    { 
-      id: 1, 
-      title: "Foundation inspection", 
-      status: "completed", 
-      priority: "high", 
-      assignee: "John Doe", 
-      dueDate: "2024-03-20", 
-      project: "Downtown Office Building",
-      subTasks: []
-    },
-    { 
-      id: 2, 
-      title: "Electrical wiring", 
-      status: "in-progress", 
-      priority: "medium", 
-      assignee: "Jane Smith", 
-      dueDate: "2024-04-15", 
-      project: "Downtown Office Building",
-      subTasks: []
-    },
-    { 
-      id: 3, 
-      title: "Site preparation", 
-      status: "in-progress", 
-      priority: "high", 
-      assignee: "Mike Johnson", 
-      dueDate: "2024-03-25", 
-      project: "Residential Complex",
-      subTasks: []
-    }
-  ]);
+  const {
+    tasks,
+    setTasks,
+    projects,
+    filterStatus,
+    setFilterStatus,
+    searchQuery,
+    setSearchQuery,
+    isDialogOpen,
+    setIsDialogOpen,
+    editingTask,
+    setEditingTask,
+    newSubTasks,
+    setNewSubTasks,
+    newTask,
+    setNewTask
+  } = useTaskState();
 
-  const [projects] = useState([
-    { id: 1, name: "Downtown Office Building" },
-    { id: 2, name: "Residential Complex" },
-    { id: 3, name: "Shopping Mall Renovation" },
-  ]);
-
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [newSubTasks, setNewSubTasks] = useState<{ [key: number]: string }>({});
-  const [newTask, setNewTask] = useState<Partial<Task>>({
-    title: "",
-    priority: "medium",
-    assignee: "",
-    dueDate: "",
-    project: "",
-    status: "in-progress",
-    subTasks: []
+  const { handleAddTask, handleEditTask, handleAddSubTask, toggleSubTask } = useTaskActions({
+    tasks,
+    setTasks,
+    setIsDialogOpen,
+    setNewTask,
+    setEditingTask
   });
 
-  const handleAddTask = () => {
-    if (newTask.title && newTask.assignee && newTask.dueDate && newTask.project) {
-      if (editingTask) {
-        setTasks(tasks.map(task => 
-          task.id === editingTask.id 
-            ? { 
-                ...task, 
-                ...newTask, 
-                id: task.id,
-                subTasks: task.subTasks || [] // Ensure subTasks array exists
-              } 
-            : task
-        ));
-        toast({
-          title: "Success",
-          description: "Task updated successfully",
-        });
-      } else {
-        const maxId = Math.max(0, ...tasks.map(t => t.id));
-        setTasks([...tasks, { 
-          ...newTask as Task, 
-          id: maxId + 1,
-          subTasks: [] // Initialize empty subTasks array
-        }]);
-        toast({
-          title: "Success",
-          description: "Task added successfully",
-        });
-      }
-      setIsDialogOpen(false);
-      setNewTask({
-        title: "",
-        priority: "medium",
-        assignee: "",
-        dueDate: "",
-        project: "",
-        status: "in-progress",
-        subTasks: []
-      });
-      setEditingTask(null);
-    }
-  };
-
-  const handleEditTask = (task: Task) => {
-    setEditingTask(task);
-    setNewTask({
-      title: task.title,
-      priority: task.priority,
-      assignee: task.assignee,
-      dueDate: task.dueDate,
-      project: task.project,
-      status: task.status,
-      subTasks: task.subTasks || [] // Ensure subTasks array exists
-    });
-    setIsDialogOpen(true);
-  };
-
-  const handleAddSubTask = (taskId: number) => {
-    if (!newSubTasks[taskId]?.trim()) {
-      toast({
-        title: "Error",
-        description: "Subtask title cannot be empty",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setTasks(tasks.map(task => {
-      if (task.id === taskId) {
-        const newSubTaskItem = {
-          id: (task.subTasks?.length || 0) + 1,
-          title: newSubTasks[taskId].trim(),
-          completed: false
-        };
-        return {
-          ...task,
-          subTasks: [...(task.subTasks || []), newSubTaskItem]
-        };
-      }
-      return task;
-    }));
-    
-    setNewSubTasks(prev => ({ ...prev, [taskId]: '' }));
-    toast({
-      title: "Success",
-      description: "Subtask added successfully",
-    });
-  };
-
-  const toggleSubTask = (taskId: number, subTaskId: number) => {
-    setTasks(tasks.map(task => {
-      if (task.id === taskId) {
-        return {
-          ...task,
-          subTasks: (task.subTasks || []).map(subTask => 
-            subTask.id === subTaskId 
-              ? { ...subTask, completed: !subTask.completed }
-              : subTask
-          )
-        };
-      }
-      return task;
-    }));
-  };
-
-  const filteredTasks = tasks.filter(task => {
-    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         task.assignee.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         task.project.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === "all" || task.status === filterStatus;
-    return matchesSearch && matchesStatus;
+  const { filteredTasks } = useTaskFilter({
+    tasks,
+    searchQuery,
+    filterStatus
   });
 
   return (
@@ -201,7 +65,7 @@ export const TaskManagement = () => {
         onOpenChange={setIsDialogOpen}
         newTask={newTask}
         setNewTask={setNewTask}
-        handleAddTask={handleAddTask}
+        handleAddTask={() => handleAddTask(newTask, editingTask)}
         editingTask={editingTask}
         projects={projects}
       />
@@ -228,7 +92,7 @@ export const TaskManagement = () => {
             description: "Task status updated",
           });
         }}
-        onAddSubTask={handleAddSubTask}
+        onAddSubTask={(taskId) => handleAddSubTask(taskId, newSubTasks, setNewSubTasks)}
         onToggleSubTask={toggleSubTask}
         newSubTasks={newSubTasks}
         setNewSubTasks={setNewSubTasks}
