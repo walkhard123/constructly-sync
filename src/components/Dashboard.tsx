@@ -2,11 +2,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { BarChart, Calendar, Clock, ClipboardList, ListTodo, Users, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
-  const navigate = useNavigate();
-  
   // Mock data fetching - in a real app, these would be API calls
   const { data: projectStats } = useQuery({
     queryKey: ['projectStats'],
@@ -37,8 +34,12 @@ export const Dashboard = () => {
     })
   });
 
+  // Function to dispatch a custom event that will be caught by the parent
   const handleCardClick = (section: string) => {
-    navigate(`/${section.toLowerCase().replace(/\s+/g, '-')}`);
+    const event = new CustomEvent('changeSection', { 
+      detail: { section }
+    });
+    window.dispatchEvent(event);
   };
 
   return (
