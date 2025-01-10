@@ -2,10 +2,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Clock, CheckCircle, XCircle } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export const TimeClock = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [entries] = useState([
+  const [isClockingIn, setIsClockingIn] = useState(true);
+  const { toast } = useToast();
+  const [entries, setEntries] = useState([
     { 
       id: 1,
       name: "John Smith", 
@@ -42,6 +45,28 @@ export const TimeClock = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const handleClockInOut = () => {
+    const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const newEntry = {
+      id: entries.length + 1,
+      name: "Current User", // In a real app, this would come from authentication
+      status: isClockingIn ? "Clocked In" : "Clocked Out",
+      time: currentTimeStr,
+      department: "Engineering",
+      duration: "0h 0m",
+      location: "Main Site"
+    };
+
+    setEntries([newEntry, ...entries]);
+    setIsClockingIn(!isClockingIn);
+
+    toast({
+      title: isClockingIn ? "Clocked In Successfully" : "Clocked Out Successfully",
+      description: `Time: ${currentTimeStr}`,
+      variant: "default",
+    });
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <Card className="bg-purple-50">
@@ -60,9 +85,12 @@ export const TimeClock = () => {
                 })}
               </p>
             </div>
-            <Button className="bg-purple-600 hover:bg-purple-700">
+            <Button 
+              className="bg-purple-600 hover:bg-purple-700"
+              onClick={handleClockInOut}
+            >
               <Clock className="mr-2 h-4 w-4" />
-              Clock In/Out
+              {isClockingIn ? 'Clock In' : 'Clock Out'}
             </Button>
           </div>
         </CardContent>
