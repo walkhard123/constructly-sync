@@ -18,9 +18,14 @@ export interface Task {
 export interface Project {
   id: number;
   name: string;
+  address: string;
+  type: "house" | "duplex" | "townhouse" | "apartment" | "others";
+  teamMember: string;
+  startDate: string;
+  endDate: string;
+  description: string;
   phase: string;
   progress: number;
-  due: string;
   status: string;
   budget: string;
   risk: string;

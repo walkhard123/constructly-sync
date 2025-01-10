@@ -37,9 +37,14 @@ export const ProjectManagement = () => {
   });
   const [newProject, setNewProject] = useState<Partial<Project>>({
     name: "",
+    address: "",
+    type: "house",
+    teamMember: "",
+    startDate: "",
+    endDate: "",
+    description: "",
     phase: "Phase 1",
     progress: 0,
-    due: "",
     status: "active",
     budget: "",
     risk: "low",
@@ -50,9 +55,14 @@ export const ProjectManagement = () => {
     setEditingProject(project);
     setNewProject({
       name: project.name,
+      address: project.address,
+      type: project.type,
+      teamMember: project.teamMember,
+      startDate: project.startDate,
+      endDate: project.endDate,
+      description: project.description,
       phase: project.phase,
       progress: project.progress,
-      due: project.due,
       status: project.status,
       budget: project.budget,
       risk: project.risk,
@@ -98,9 +108,14 @@ export const ProjectManagement = () => {
           setEditingProject(null);
           setNewProject({
             name: "",
+            address: "",
+            type: "house",
+            teamMember: "",
+            startDate: "",
+            endDate: "",
+            description: "",
             phase: "Phase 1",
             progress: 0,
-            due: "",
             status: "active",
             budget: "",
             risk: "low",

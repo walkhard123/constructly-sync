@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Project } from "../types/project";
 
 interface ProjectDialogFormProps {
@@ -24,15 +25,15 @@ export const ProjectDialogForm = ({
 }: ProjectDialogFormProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{editingProject ? 'Edit Project' : 'Add New Project'}</DialogTitle>
           <DialogDescription>
             {editingProject ? 'Edit the project details below' : 'Fill in the project details below'}
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="col-span-2">
             <Label htmlFor="name">Project Name</Label>
             <Input
               id="name"
@@ -40,55 +41,72 @@ export const ProjectDialogForm = ({
               onChange={(e) => setNewProject({...newProject, name: e.target.value})}
             />
           </div>
+          
+          <div className="col-span-2">
+            <Label htmlFor="address">Project Address</Label>
+            <Input
+              id="address"
+              value={newProject.address}
+              onChange={(e) => setNewProject({...newProject, address: e.target.value})}
+            />
+          </div>
+
           <div>
-            <Label htmlFor="phase">Phase</Label>
+            <Label htmlFor="type">Project Type</Label>
             <Select
-              value={newProject.phase}
-              onValueChange={(value) => setNewProject({...newProject, phase: value})}
+              value={newProject.type}
+              onValueChange={(value) => setNewProject({...newProject, type: value as Project['type']})}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select phase" />
+                <SelectValue placeholder="Select project type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Phase 1">Phase 1</SelectItem>
-                <SelectItem value="Phase 2">Phase 2</SelectItem>
-                <SelectItem value="Phase 3">Phase 3</SelectItem>
+                <SelectItem value="house">House</SelectItem>
+                <SelectItem value="duplex">Duplex</SelectItem>
+                <SelectItem value="townhouse">Townhouse</SelectItem>
+                <SelectItem value="apartment">Apartment</SelectItem>
+                <SelectItem value="others">Others</SelectItem>
               </SelectContent>
             </Select>
           </div>
+
           <div>
-            <Label htmlFor="due">Due Date</Label>
+            <Label htmlFor="teamMember">Assigned Team Member</Label>
             <Input
-              id="due"
+              id="teamMember"
+              value={newProject.teamMember}
+              onChange={(e) => setNewProject({...newProject, teamMember: e.target.value})}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="startDate">Start Date</Label>
+            <Input
+              id="startDate"
               type="date"
-              value={newProject.due}
-              onChange={(e) => setNewProject({...newProject, due: e.target.value})}
+              value={newProject.startDate}
+              onChange={(e) => setNewProject({...newProject, startDate: e.target.value})}
             />
           </div>
+
           <div>
-            <Label htmlFor="budget">Budget</Label>
+            <Label htmlFor="endDate">End Date</Label>
             <Input
-              id="budget"
-              value={newProject.budget}
-              onChange={(e) => setNewProject({...newProject, budget: e.target.value})}
-              placeholder="e.g. $1.5M"
+              id="endDate"
+              type="date"
+              value={newProject.endDate}
+              onChange={(e) => setNewProject({...newProject, endDate: e.target.value})}
             />
           </div>
-          <div>
-            <Label htmlFor="risk">Risk Level</Label>
-            <Select
-              value={newProject.risk}
-              onValueChange={(value) => setNewProject({...newProject, risk: value})}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select risk level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-              </SelectContent>
-            </Select>
+
+          <div className="col-span-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={newProject.description}
+              onChange={(e) => setNewProject({...newProject, description: e.target.value})}
+              className="h-32"
+            />
           </div>
         </div>
         <DialogFooter>
