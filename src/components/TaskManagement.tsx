@@ -26,7 +26,7 @@ export const TaskManagement = () => {
     setNewTask
   } = useTaskState();
 
-  const { handleAddTask, handleEditTask, handleAddSubTask, handleToggleSubTask } = useTaskActions({
+  const { handleAddTask, handleEditTask, handleAddSubTask, toggleSubTask } = useTaskActions({
     tasks,
     setTasks,
     setIsDialogOpen,
@@ -95,7 +95,7 @@ export const TaskManagement = () => {
           });
         }}
         onAddSubTask={(taskId) => handleAddSubTask(taskId, newSubTasks, setNewSubTasks)}
-        onToggleSubTask={handleToggleSubTask}
+        onToggleSubTask={toggleSubTask}
         newSubTasks={newSubTasks}
         setNewSubTasks={setNewSubTasks}
       />
