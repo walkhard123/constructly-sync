@@ -62,6 +62,12 @@ const Index = () => {
       description: "Manage time off and leave requests",
       icon: <ListChecks className="w-6 h-6" />,
       component: <LeaveRequests />
+    },
+    {
+      title: "Settings",
+      description: "Configure system preferences",
+      icon: <Settings2 className="w-6 h-6" />,
+      component: <div>Settings Page</div>
     }
   ];
 
@@ -81,13 +87,6 @@ const Index = () => {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
             ProBuilder 1.0
           </h1>
-          <Button
-            variant="outline"
-            size="icon"
-            className="rounded-full"
-          >
-            <Settings2 className="h-5 w-5" />
-          </Button>
         </div>
         
         {!selectedSection ? (
