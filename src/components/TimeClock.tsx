@@ -45,12 +45,7 @@ export const TimeClock = () => {
   }, []);
 
   const handleClockInOut = () => {
-    const currentTimeStr = currentTime.toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true 
-    });
-    
+    const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const newEntry = {
       id: entries.length + 1,
       name: "Current User",
@@ -67,6 +62,7 @@ export const TimeClock = () => {
     toast({
       title: isClockingIn ? "Clocked In Successfully" : "Clocked Out Successfully",
       description: `Time: ${currentTimeStr}`,
+      variant: "default",
     });
   };
 
