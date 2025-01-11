@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -47,11 +47,11 @@ const groupColors = [
   'bg-[#D3E4FD]', // Soft Blue
 ];
 
-// Status color mapping
-const statusColors: Record<string, string> = {
-  'stuck': 'text-[#F97316]', // Bright Orange
-  'done': 'text-[#0EA5E9]', // Ocean Blue
-  'in-progress': 'text-[#8B5CF6]', // Vivid Purple
+// Status styles mapping
+const statusStyles: Record<string, { bg: string, text: string }> = {
+  'stuck': { bg: 'bg-red-500 hover:bg-red-600', text: 'text-white' },
+  'done': { bg: 'bg-green-500 hover:bg-green-600', text: 'text-white' },
+  'in-progress': { bg: 'bg-yellow-500 hover:bg-yellow-600', text: 'text-white' }
 };
 
 interface SortableGroupProps {
@@ -80,6 +80,7 @@ const SortableGroup = ({
   } = useSortable({ id: groupTitle });
 
   const [editingTitle, setEditingTitle] = useState(groupTitle);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditingTitle(e.target.value);
@@ -89,6 +90,7 @@ const SortableGroup = ({
     if (editingTitle !== groupTitle) {
       onGroupTitleChange(groupTitle, editingTitle);
     }
+    setIsEditing(false);
   };
 
   const style = {
@@ -109,12 +111,22 @@ const SortableGroup = ({
           <div {...attributes} {...listeners} className="cursor-grab">
             <GripVertical className="h-4 w-4 text-gray-400" />
           </div>
-          <Input
-            value={editingTitle}
-            onChange={handleTitleChange}
-            onBlur={handleTitleBlur}
-            className="h-7 min-h-7 w-[200px] font-medium bg-white/50"
-          />
+          {isEditing ? (
+            <Input
+              value={editingTitle}
+              onChange={handleTitleChange}
+              onBlur={handleTitleBlur}
+              autoFocus
+              className="h-7 min-h-7 w-[200px] font-medium bg-white/50"
+            />
+          ) : (
+            <div
+              onClick={() => setIsEditing(true)}
+              className="cursor-pointer px-2 py-1 rounded hover:bg-white/20"
+            >
+              {editingTitle}
+            </div>
+          )}
         </div>
         <Button 
           onClick={() => onAddItem(groupTitle)} 
@@ -146,13 +158,13 @@ const SortableGroup = ({
               value={item.status} 
               onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
             >
-              <SelectTrigger className={`h-6 ${statusColors[item.status]}`}>
+              <SelectTrigger className={`h-6 ${statusStyles[item.status].bg} ${statusStyles[item.status].text}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="stuck">Stuck</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
+                <SelectItem value="stuck" className="text-red-500 font-medium">Stuck</SelectItem>
+                <SelectItem value="done" className="text-green-500 font-medium">Done</SelectItem>
+                <SelectItem value="in-progress" className="text-yellow-500 font-medium">In Progress</SelectItem>
               </SelectContent>
             </Select>
             <Input
