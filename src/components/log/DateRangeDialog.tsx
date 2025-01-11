@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import { addMonths, subMonths } from "date-fns";
 
 interface DateRangeDialogProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface DateRangeDialogProps {
 
 export const DateRangeDialog = ({ isOpen, onClose, onDateRangeSelect }: DateRangeDialogProps) => {
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const today = new Date();
+  const defaultMonth = subMonths(today, 1); // Set default to previous month
 
   const handleSelect = () => {
     onDateRangeSelect(dateRange);
@@ -30,6 +33,7 @@ export const DateRangeDialog = ({ isOpen, onClose, onDateRangeSelect }: DateRang
             selected={dateRange}
             onSelect={setDateRange}
             numberOfMonths={2}
+            defaultMonth={defaultMonth}
             className="rounded-md border bg-background"
           />
         </div>
