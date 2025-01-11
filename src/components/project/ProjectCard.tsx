@@ -28,7 +28,7 @@ export const ProjectCard = ({
 
   return (
     <Card 
-      className="hover:shadow-md transition-all cursor-pointer animate-fade-in"
+      className="hover:shadow-md transition-all cursor-pointer animate-fade-in group"
       onClick={handleCardClick}
       data-project-id={project.id}
     >

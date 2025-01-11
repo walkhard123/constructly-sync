@@ -8,10 +8,8 @@ export const useProjectActions = (
   const { toast } = useToast();
 
   const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
-    // Log the newProject object to debug
-    console.log('New project data:', newProject);
-
-    // Check only the essential fields that should be required
+    console.log("Adding/Editing project:", newProject);
+    
     if (!newProject.name?.trim()) {
       toast({
         title: "Error",
@@ -22,25 +20,19 @@ export const useProjectActions = (
     }
 
     if (editingProject) {
-      setProjects(projects.map((project: Project) => 
-        project.id === editingProject.id 
-          ? {
-              ...project,
-              ...newProject,
-              phase: newProject.phase || "Phase 1",
-              progress: newProject.progress || 0,
-              status: newProject.status || "active",
-              risk: newProject.risk || "low"
-            } as Project
+      const updatedProjects = projects.map((project) =>
+        project.id === editingProject.id
+          ? { ...project, ...newProject }
           : project
-      ));
+      );
+      setProjects(updatedProjects);
       toast({
         title: "Success",
         description: "Project updated successfully",
       });
     } else {
       const newProjectData: Project = {
-        id: projects.length + 1,
+        id: Math.max(0, ...projects.map((p) => p.id)) + 1,
         name: newProject.name,
         address: newProject.address || "",
         type: newProject.type || "house",
@@ -58,27 +50,32 @@ export const useProjectActions = (
 
       setProjects([...projects, newProjectData]);
       
-      // Add success toast with more descriptive message
+      // Enhanced success toast with more descriptive message
       toast({
         title: "Project Added Successfully",
         description: `"${newProjectData.name}" has been added to your projects list`,
         variant: "default",
       });
 
-      // Scroll to the new project after a short delay to ensure DOM update
+      // Improved scroll and highlight behavior
       setTimeout(() => {
         const projectElements = document.querySelectorAll('[data-project-id]');
         const newProjectElement = projectElements[projectElements.length - 1];
         if (newProjectElement) {
           newProjectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          newProjectElement.classList.add('animate-highlight');
+          // Remove any existing highlight classes first
+          document.querySelectorAll('.highlight-new-project').forEach(el => {
+            el.classList.remove('highlight-new-project');
+          });
+          // Add the highlight class
+          newProjectElement.classList.add('highlight-new-project');
         }
-      }, 100);
+      }, 300); // Increased delay to ensure DOM update
     }
   };
 
   const handleDeleteProject = (projectId: number) => {
-    setProjects(projects.filter((project: Project) => project.id !== projectId));
+    setProjects(projects.filter((project) => project.id !== projectId));
     toast({
       title: "Success",
       description: "Project deleted successfully",
@@ -87,6 +84,6 @@ export const useProjectActions = (
 
   return {
     handleAddProject,
-    handleDeleteProject
+    handleDeleteProject,
   };
 };
