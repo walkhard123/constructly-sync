@@ -5,6 +5,8 @@ import { LogEntry } from "./types/log";
 import { LogEntryForm } from "./log/LogEntryForm";
 import { LogEntryCard } from "./log/LogEntryCard";
 import { LogHeader } from "./log/LogHeader";
+import { DateRange } from "react-day-picker";
+import { isWithinInterval, parseISO } from "date-fns";
 
 export const DailyLogs = () => {
   const { toast } = useToast();
@@ -36,6 +38,7 @@ export const DailyLogs = () => {
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedTeamMember, setSelectedTeamMember] = useState<string>("");
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   const [projects] = useState([
     "Downtown Office Building",
@@ -141,8 +144,23 @@ export const DailyLogs = () => {
   };
 
   const filteredLogs = logs.filter(log => {
-    if (!selectedTeamMember) return true;
-    return log.tags.includes(selectedTeamMember);
+    let passes = true;
+
+    // Filter by team member
+    if (selectedTeamMember) {
+      passes = passes && log.tags.includes(selectedTeamMember);
+    }
+
+    // Filter by date range
+    if (dateRange?.from && dateRange?.to) {
+      const logDate = parseISO(log.date);
+      passes = passes && isWithinInterval(logDate, {
+        start: dateRange.from,
+        end: dateRange.to
+      });
+    }
+
+    return passes;
   });
 
   return (
@@ -163,6 +181,7 @@ export const DailyLogs = () => {
         }}
         teamMembers={teamMembers}
         onTeamMemberFilter={setSelectedTeamMember}
+        onDateRangeFilter={setDateRange}
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

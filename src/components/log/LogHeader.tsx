@@ -1,41 +1,28 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Calendar, Plus } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus } from "lucide-react";
+import { LogFilters } from "./LogFilters";
+import { DateRange } from "react-day-picker";
 
 interface LogHeaderProps {
   onAddNew: () => void;
   teamMembers: string[];
   onTeamMemberFilter: (member: string) => void;
+  onDateRangeFilter: (range: DateRange | undefined) => void;
 }
 
-export const LogHeader = ({ onAddNew, teamMembers, onTeamMemberFilter }: LogHeaderProps) => {
+export const LogHeader = ({ 
+  onAddNew, 
+  teamMembers, 
+  onTeamMemberFilter,
+  onDateRangeFilter 
+}: LogHeaderProps) => {
   return (
     <div className="flex justify-between items-center gap-4 flex-wrap">
-      <div className="flex gap-2 flex-1">
-        <Input 
-          placeholder="Search logs..." 
-          className="max-w-sm"
-          type="search"
-        />
-        <Button variant="outline">
-          <Calendar className="w-4 h-4 mr-2" />
-          Date Range
-        </Button>
-        <Select onValueChange={(value) => onTeamMemberFilter(value === "all" ? "" : value)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by member" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Members</SelectItem>
-            {teamMembers.map((member) => (
-              <SelectItem key={member} value={member}>
-                {member}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <LogFilters 
+        teamMembers={teamMembers}
+        onTeamMemberFilter={onTeamMemberFilter}
+        onDateRangeFilter={onDateRangeFilter}
+      />
       <Button 
         className="bg-purple-600 hover:bg-purple-700"
         onClick={onAddNew}
