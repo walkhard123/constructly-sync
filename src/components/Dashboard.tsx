@@ -87,6 +87,18 @@ export const Dashboard = () => {
     }
   ];
 
+  const recentActivities = [
+    { time: "2h ago", text: "New task added to Downtown Office Building" },
+    { time: "4h ago", text: "Sarah completed site inspection" },
+    { time: "Yesterday", text: "Project milestone achieved" }
+  ];
+
+  const projectProgress = [
+    { name: "Downtown Office Building", progress: 65 },
+    { name: "Residential Complex", progress: 30 },
+    { name: "Shopping Mall Renovation", progress: 85 }
+  ];
+
   return (
     <div className="space-y-6 animate-fade-in">
       <h1 className="text-3xl font-bold">Dashboard Overview</h1>
