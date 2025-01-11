@@ -5,6 +5,16 @@ import { ProjectDialogForm } from "./project/ProjectDialogForm";
 import { ProjectTabs } from "./project/ProjectTabs";
 import { Project } from "./types/project";
 import { useProjects } from "@/hooks/useProjects";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export const ProjectManagement = () => {
   const { toast } = useToast();
@@ -17,6 +27,7 @@ export const ProjectManagement = () => {
 
   const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [deleteProjectId, setDeleteProjectId] = useState<number | null>(null);
   const [newProject, setNewProject] = useState<Partial<Project>>({
     name: "",
     address: "",
@@ -81,14 +92,24 @@ export const ProjectManagement = () => {
       risk: "low",
       tasks: []
     });
+    
+    toast({
+      title: editingProject ? "Project Updated" : "Project Added",
+      description: editingProject 
+        ? "Project has been updated successfully"
+        : "New project has been added successfully",
+    });
   };
 
-  const handleConfirmDelete = (projectId: number) => {
-    handleDeleteProject(projectId);
-    toast({
-      title: "Success",
-      description: "Project deleted successfully",
-    });
+  const handleConfirmDelete = () => {
+    if (deleteProjectId) {
+      handleDeleteProject(deleteProjectId);
+      setDeleteProjectId(null);
+      toast({
+        title: "Success",
+        description: "Project deleted successfully",
+      });
+    }
   };
 
   return (
@@ -128,8 +149,23 @@ export const ProjectManagement = () => {
       <ProjectTabs
         projects={projects}
         onEditProject={handleEditProject}
-        onDeleteProject={handleConfirmDelete}
+        onDeleteProject={(projectId) => setDeleteProjectId(projectId)}
       />
+
+      <AlertDialog open={deleteProjectId !== null} onOpenChange={() => setDeleteProjectId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the project and all its data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

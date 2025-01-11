@@ -8,8 +8,6 @@ export const useProjectActions = (
   const { toast } = useToast();
 
   const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
-    console.log("Adding/Editing project:", newProject);
-    
     if (!newProject.name?.trim()) {
       toast({
         title: "Error",
@@ -26,10 +24,6 @@ export const useProjectActions = (
           : project
       );
       setProjects(updatedProjects);
-      toast({
-        title: "Success",
-        description: "Project updated successfully",
-      });
     } else {
       const newProjectData: Project = {
         id: Math.max(0, ...projects.map((p) => p.id)) + 1,
@@ -49,12 +43,6 @@ export const useProjectActions = (
       };
 
       setProjects([...projects, newProjectData]);
-      
-      toast({
-        title: "Project Added Successfully",
-        description: `"${newProjectData.name}" has been added to your projects list`,
-        variant: "default",
-      });
 
       setTimeout(() => {
         const projectElements = document.querySelectorAll('[data-project-id]');
