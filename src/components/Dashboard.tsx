@@ -3,11 +3,8 @@ import { StatCard } from "./dashboard/StatCard";
 import { ActivityList } from "./dashboard/ActivityList";
 import { ProjectProgress } from "./dashboard/ProjectProgress";
 import { BarChart, Calendar, Clock, ClipboardList, ListTodo, Users, FileText } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
-  const navigate = useNavigate();
-
   const { data: projectStats } = useQuery({
     queryKey: ['projectStats'],
     queryFn: () => ({
@@ -43,24 +40,21 @@ export const Dashboard = () => {
       value: projectStats?.total || 0,
       subtitle: `${projectStats?.active || 0} Active • ${projectStats?.completed || 0} Completed`,
       highlight: `${projectStats?.upcomingDeadlines || 0} upcoming deadlines`,
-      icon: ClipboardList,
-      onClick: () => navigate('/', { state: { section: 'Projects Management' } })
+      icon: ClipboardList
     },
     {
       title: "Tasks",
       value: taskStats?.total || 0,
       subtitle: `${taskStats?.completed || 0} Completed • ${taskStats?.inProgress || 0} In Progress`,
       highlight: `${taskStats?.pending || 0} tasks pending`,
-      icon: ListTodo,
-      onClick: () => navigate('/', { state: { section: 'Tasks' } })
+      icon: ListTodo
     },
     {
       title: "Team",
       value: teamStats?.totalMembers || 0,
       subtitle: `${teamStats?.activeToday || 0} active today`,
       highlight: `${teamStats?.averageHours || 0}h avg. working hours`,
-      icon: Users,
-      onClick: () => navigate('/', { state: { section: 'Team Members' } })
+      icon: Users
     },
     {
       title: "Time Tracking",
@@ -74,16 +68,14 @@ export const Dashboard = () => {
       value: "12",
       subtitle: "Logs submitted today",
       highlight: "3 requiring review",
-      icon: Calendar,
-      onClick: () => navigate('/', { state: { section: 'Daily Logs' } })
+      icon: Calendar
     },
     {
       title: "Documents",
       value: "45",
       subtitle: "Total documents",
       highlight: "5 recent uploads",
-      icon: FileText,
-      onClick: () => navigate('/', { state: { section: 'File Upload' } })
+      icon: FileText
     }
   ];
 
