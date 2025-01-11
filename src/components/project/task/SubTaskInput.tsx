@@ -9,20 +9,30 @@ interface SubTaskInputProps {
 }
 
 export const SubTaskInput = ({ value, onChange, onAdd }: SubTaskInputProps) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value);
+  };
+
+  const handleAdd = () => {
+    if (value.trim()) {
+      onAdd();
+    }
+  };
+
   return (
     <div className="flex items-center gap-2">
       <Input
         placeholder="Add subtask..."
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
         onKeyPress={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === 'Enter' && value.trim()) {
             onAdd();
           }
         }}
         className="max-w-md"
       />
-      <Button size="sm" onClick={onAdd}>
+      <Button size="sm" onClick={handleAdd}>
         <Plus className="w-4 h-4" />
       </Button>
     </div>
