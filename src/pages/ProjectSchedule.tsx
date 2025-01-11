@@ -9,7 +9,7 @@ import {
   useSensors,
   DragEndEvent,
 } from "@dnd-kit/core";
-import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { ScheduleItem } from "@/components/project/schedule/types";
 import { SortableGroup } from "@/components/project/schedule/SortableGroup";
 import { ScheduleHeader } from "@/components/project/schedule/ScheduleHeader";
@@ -59,35 +59,37 @@ export default function ProjectSchedule() {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     
-    if (over && active.id !== over.id) {
-      setScheduleItems((items) => {
-        const activeItem = items.find(item => item.id === active.id);
-        const overItem = items.find(item => item.id === over.id);
-        
-        if (activeItem && overItem) {
-          const activeIndex = items.indexOf(activeItem);
-          const overIndex = items.indexOf(overItem);
-          
-          const newItems = [...items];
-          newItems.splice(activeIndex, 1);
-          newItems.splice(overIndex, 0, activeItem);
-          
-          return newItems;
-        }
-        
-        return items;
-      });
-    }
-  };
+    if (!over) return;
 
-  const handleItemUpdate = (id: number, field: keyof ScheduleItem, value: any) => {
-    setScheduleItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, [field]: value }
-          : item
-      )
-    );
+    if (active.data.current?.type === 'group') {
+      const oldIndex = groupTitles.indexOf(active.id as string);
+      const newIndex = groupTitles.indexOf(over.id as string);
+      
+      if (oldIndex !== newIndex) {
+        const newGroupOrder = arrayMove(groupTitles, oldIndex, newIndex);
+        const newItems = [...scheduleItems];
+        
+        // Update all items to maintain their group associations while reordering groups
+        scheduleItems.forEach(item => {
+          const itemIndex = newItems.findIndex(i => i.id === item.id);
+          if (itemIndex !== -1) {
+            const groupIndex = newGroupOrder.indexOf(item.groupTitle);
+            newItems.splice(itemIndex, 1);
+            newItems.splice(groupIndex * (scheduleItems.length / groupTitles.length) + 
+              (itemIndex % (scheduleItems.length / groupTitles.length)), 0, item);
+          }
+        });
+        
+        setScheduleItems(newItems);
+      }
+    } else {
+      const oldIndex = scheduleItems.findIndex(item => item.id === active.id);
+      const newIndex = scheduleItems.findIndex(item => item.id === over.id);
+      
+      if (oldIndex !== newIndex) {
+        setScheduleItems(items => arrayMove(items, oldIndex, newIndex));
+      }
+    }
   };
 
   const handleGroupTitleChange = (oldTitle: string, newTitle: string) => {
@@ -100,24 +102,21 @@ export default function ProjectSchedule() {
     );
   };
 
-  const addNewGroup = () => {
-    const newGroupTitle = `New Group ${Math.floor(Math.random() * 1000)}`;
-    const newItem = {
-      id: Math.max(...scheduleItems.map(item => item.id), 0) + 1,
-      title: "New Item",
-      status: "in-progress" as const,
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      groupTitle: newGroupTitle
-    };
-    setScheduleItems([...scheduleItems, newItem]);
+  const handleItemUpdate = (id: number, field: keyof ScheduleItem, value: any) => {
+    setScheduleItems(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, [field]: value }
+          : item
+      )
+    );
   };
 
   const addNewItem = (groupTitle: string) => {
-    const newItem = {
+    const newItem: ScheduleItem = {
       id: Math.max(...scheduleItems.map(item => item.id), 0) + 1,
       title: "New Item",
-      status: "in-progress" as const,
+      status: "in-progress",
       startDate: new Date().toISOString(),
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       groupTitle
@@ -134,7 +133,7 @@ export default function ProjectSchedule() {
     return acc;
   }, {} as Record<string, ScheduleItem[]>);
 
-  const groupTitles = Object.keys(groupedItems);
+  const groupTitles = Array.from(new Set(scheduleItems.map(item => item.groupTitle)));
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
@@ -142,7 +141,7 @@ export default function ProjectSchedule() {
         onNavigateBack={() => navigate(-1)}
         view={view}
         onViewChange={setView}
-        onAddGroup={addNewGroup}
+        onAddGroup={addNewItem}
       />
 
       <DndContext
@@ -151,11 +150,11 @@ export default function ProjectSchedule() {
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={groupTitles} strategy={verticalListSortingStrategy}>
-          {Object.entries(groupedItems).map(([groupTitle, items]) => (
+          {groupTitles.map((groupTitle) => (
             <SortableGroup
               key={groupTitle}
               groupTitle={groupTitle}
-              items={items}
+              items={groupedItems[groupTitle]}
               onGroupTitleChange={handleGroupTitleChange}
               onAddItem={addNewItem}
               handleItemUpdate={handleItemUpdate}
