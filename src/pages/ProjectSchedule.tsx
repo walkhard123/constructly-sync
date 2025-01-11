@@ -36,15 +36,41 @@ interface ScheduleItem {
   groupTitle: string;
 }
 
+// Array of background colors for groups
+const groupColors = [
+  'bg-[#F2FCE2]', // Soft Green
+  'bg-[#FEF7CD]', // Soft Yellow
+  'bg-[#FEC6A1]', // Soft Orange
+  'bg-[#E5DEFF]', // Soft Purple
+  'bg-[#FFDEE2]', // Soft Pink
+  'bg-[#FDE1D3]', // Soft Peach
+  'bg-[#D3E4FD]', // Soft Blue
+];
+
+// Status color mapping
+const statusColors: Record<string, string> = {
+  'stuck': 'text-[#F97316]', // Bright Orange
+  'done': 'text-[#0EA5E9]', // Ocean Blue
+  'in-progress': 'text-[#8B5CF6]', // Vivid Purple
+};
+
 interface SortableGroupProps {
   groupTitle: string;
   items: ScheduleItem[];
   onGroupTitleChange: (oldTitle: string, newTitle: string) => void;
   onAddItem: (groupTitle: string) => void;
   handleItemUpdate: (id: number, field: keyof ScheduleItem, value: string) => void;
+  colorIndex: number;
 }
 
-const SortableGroup = ({ groupTitle, items, onGroupTitleChange, onAddItem, handleItemUpdate }: SortableGroupProps) => {
+const SortableGroup = ({ 
+  groupTitle, 
+  items, 
+  onGroupTitleChange, 
+  onAddItem, 
+  handleItemUpdate,
+  colorIndex 
+}: SortableGroupProps) => {
   const {
     attributes,
     listeners,
@@ -53,55 +79,74 @@ const SortableGroup = ({ groupTitle, items, onGroupTitleChange, onAddItem, handl
     transition,
   } = useSortable({ id: groupTitle });
 
+  const [editingTitle, setEditingTitle] = useState(groupTitle);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingTitle(e.target.value);
+  };
+
+  const handleTitleBlur = () => {
+    if (editingTitle !== groupTitle) {
+      onGroupTitleChange(groupTitle, editingTitle);
+    }
+  };
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
+  const groupColorClass = groupColors[colorIndex % groupColors.length];
+
   return (
-    <Card ref={setNodeRef} style={style} className="mb-4 last:mb-0 p-4">
+    <Card 
+      ref={setNodeRef} 
+      style={style} 
+      className={`mb-2 last:mb-0 p-3 ${groupColorClass} border-2`}
+    >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <div {...attributes} {...listeners} className="cursor-grab">
             <GripVertical className="h-4 w-4 text-gray-400" />
           </div>
           <Input
-            value={groupTitle}
-            onChange={(e) => onGroupTitleChange(groupTitle, e.target.value)}
-            className="h-8 min-h-8 w-[200px] font-medium"
+            value={editingTitle}
+            onChange={handleTitleChange}
+            onBlur={handleTitleBlur}
+            className="h-7 min-h-7 w-[200px] font-medium bg-white/50"
           />
         </div>
         <Button 
           onClick={() => onAddItem(groupTitle)} 
           variant="outline" 
           size="sm"
-          className="gap-2"
+          className="gap-1 bg-white/50"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-3 w-3" />
           New Item
         </Button>
       </div>
-      <div className="grid grid-cols-[2fr,1fr,1fr] gap-2 mb-1 font-medium text-sm text-gray-600">
+      <div className="grid grid-cols-[2fr,1fr,1fr] gap-1 mb-1 font-medium text-sm text-gray-600">
         <div>Title</div>
         <div>Status</div>
         <div>Date</div>
       </div>
-      <div className="space-y-1">
+      <div className="space-y-0.5">
         {items.map((item) => (
           <div
             key={item.id}
-            className="grid grid-cols-[2fr,1fr,1fr] gap-2 py-1 border-b last:border-b-0 text-sm"
+            className="grid grid-cols-[2fr,1fr,1fr] gap-1 py-0.5 border-b last:border-b-0 text-sm bg-white/50 rounded px-1"
           >
             <Input
               value={item.title}
               onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
-              className="h-7 min-h-7"
+              className="h-6 min-h-6"
             />
             <Select 
               value={item.status} 
               onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
             >
-              <SelectTrigger className="h-7">
+              <SelectTrigger className={`h-6 ${statusColors[item.status]}`}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -114,7 +159,7 @@ const SortableGroup = ({ groupTitle, items, onGroupTitleChange, onAddItem, handl
               type="date"
               value={item.date}
               onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
-              className="h-7 min-h-7"
+              className="h-6 min-h-6"
             />
           </div>
         ))}
