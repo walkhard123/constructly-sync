@@ -28,7 +28,7 @@ export const ScheduleHeader = ({
           <ChevronLeft className="h-4 w-4" />
           Back
         </Button>
-        <h1 className="text-2xl font-bold">Project Timeline</h1>
+        <h1 className="text-2xl font-bold">Project Schedule</h1>
       </div>
 
       <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
