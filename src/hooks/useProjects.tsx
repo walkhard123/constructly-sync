@@ -32,7 +32,7 @@ export const useProjects = () => {
   };
 
   const handleToggleTaskStatus = (projectId: number, taskId: number) => {
-    setProjects(projects.map(project => {
+    setProjects(prevProjects => prevProjects.map(project => {
       if (project.id === projectId) {
         return {
           ...project,
@@ -52,7 +52,7 @@ export const useProjects = () => {
   };
 
   const handleDeleteTask = (projectId: number, taskId: number) => {
-    setProjects(projects.map(project => {
+    setProjects(prevProjects => prevProjects.map(project => {
       if (project.id === projectId) {
         return {
           ...project,
@@ -77,28 +77,34 @@ export const useProjects = () => {
       return;
     }
 
-    setProjects(projects.map(project => {
-      if (project.id === projectId) {
-        return {
-          ...project,
-          tasks: project.tasks.map(task => {
-            if (task.id === taskId) {
-              const newSubTask = {
-                id: (task.subTasks?.length || 0) + 1,
-                title: title.trim(),
-                completed: false
-              };
-              return {
-                ...task,
-                subTasks: [...(task.subTasks || []), newSubTask]
-              };
-            }
-            return task;
-          })
-        };
-      }
-      return project;
-    }));
+    setProjects(prevProjects => {
+      const updatedProjects = prevProjects.map(project => {
+        if (project.id === projectId) {
+          return {
+            ...project,
+            tasks: project.tasks.map(task => {
+              if (task.id === taskId) {
+                const currentSubTasks = task.subTasks || [];
+                const newSubTask = {
+                  id: currentSubTasks.length + 1,
+                  title: title.trim(),
+                  completed: false
+                };
+                return {
+                  ...task,
+                  subTasks: [...currentSubTasks, newSubTask]
+                };
+              }
+              return task;
+            })
+          };
+        }
+        return project;
+      });
+      
+      console.log('Updated projects after adding subtask:', updatedProjects);
+      return updatedProjects;
+    });
     
     toast({
       title: "Success",
@@ -107,7 +113,7 @@ export const useProjects = () => {
   };
 
   const handleToggleSubTask = (projectId: number, taskId: number, subTaskId: number) => {
-    setProjects(projects.map(project => {
+    setProjects(prevProjects => prevProjects.map(project => {
       if (project.id === projectId) {
         return {
           ...project,
@@ -115,7 +121,7 @@ export const useProjects = () => {
             if (task.id === taskId) {
               return {
                 ...task,
-                subTasks: task.subTasks.map(subTask => 
+                subTasks: (task.subTasks || []).map(subTask => 
                   subTask.id === subTaskId 
                     ? { ...subTask, completed: !subTask.completed }
                     : subTask

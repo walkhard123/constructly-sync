@@ -52,7 +52,10 @@ export const ProjectTaskList = ({
             <TaskHeader
               task={task}
               isExpanded={expandedTasks[task.id]}
-              onToggleStatus={() => onToggleStatus(task.id)}
+              onToggleStatus={(e) => {
+                e.stopPropagation();
+                onToggleStatus(task.id);
+              }}
             />
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-500">{task.assignee}</span>
@@ -65,8 +68,14 @@ export const ProjectTaskList = ({
                 {task.priority}
               </span>
               <TaskActions
-                onEdit={() => onEditTask(task.id)}
-                onDelete={() => onDeleteTask(task.id)}
+                onEdit={(e) => {
+                  e.stopPropagation();
+                  onEditTask(task.id);
+                }}
+                onDelete={(e) => {
+                  e.stopPropagation();
+                  onDeleteTask(task.id);
+                }}
               />
             </div>
           </div>
