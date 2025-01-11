@@ -36,22 +36,67 @@ interface ScheduleItem {
   groupTitle: string;
 }
 
-// Array of background colors for groups
-const groupColors = [
-  'bg-[#F2FCE2]', // Soft Green
-  'bg-[#FEF7CD]', // Soft Yellow
-  'bg-[#FEC6A1]', // Soft Orange
-  'bg-[#E5DEFF]', // Soft Purple
-  'bg-[#FFDEE2]', // Soft Pink
-  'bg-[#FDE1D3]', // Soft Peach
-  'bg-[#D3E4FD]', // Soft Blue
-];
-
 // Status styles mapping
 const statusStyles: Record<string, { bg: string, text: string }> = {
   'stuck': { bg: 'bg-red-500 hover:bg-red-600', text: 'text-white' },
   'done': { bg: 'bg-green-500 hover:bg-green-600', text: 'text-white' },
   'in-progress': { bg: 'bg-yellow-500 hover:bg-yellow-600', text: 'text-white' }
+};
+
+interface SortableItemProps {
+  id: number;
+  item: ScheduleItem;
+  handleItemUpdate: (id: number, field: keyof ScheduleItem, value: string) => void;
+}
+
+const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="grid grid-cols-[2fr,1fr,1fr] gap-1 py-0.5 border-b last:border-b-0 text-sm bg-white rounded px-1 cursor-move"
+    >
+      <Input
+        value={item.title}
+        onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
+        className="h-6 min-h-6"
+      />
+      <Select 
+        value={item.status} 
+        onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
+      >
+        <SelectTrigger className={`h-6 ${statusStyles[item.status].bg} ${statusStyles[item.status].text}`}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="stuck" className="text-red-500 font-medium">Stuck</SelectItem>
+          <SelectItem value="done" className="text-green-500 font-medium">Done</SelectItem>
+          <SelectItem value="in-progress" className="text-yellow-500 font-medium">In Progress</SelectItem>
+        </SelectContent>
+      </Select>
+      <Input
+        type="date"
+        value={item.date}
+        onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
+        className="h-6 min-h-6"
+      />
+    </div>
+  );
 };
 
 interface SortableGroupProps {
@@ -60,7 +105,6 @@ interface SortableGroupProps {
   onGroupTitleChange: (oldTitle: string, newTitle: string) => void;
   onAddItem: (groupTitle: string) => void;
   handleItemUpdate: (id: number, field: keyof ScheduleItem, value: string) => void;
-  colorIndex: number;
 }
 
 const SortableGroup = ({ 
@@ -69,7 +113,6 @@ const SortableGroup = ({
   onGroupTitleChange, 
   onAddItem, 
   handleItemUpdate,
-  colorIndex 
 }: SortableGroupProps) => {
   const {
     attributes,
@@ -98,13 +141,11 @@ const SortableGroup = ({
     transition,
   };
 
-  const groupColorClass = groupColors[colorIndex % groupColors.length];
-
   return (
     <Card 
       ref={setNodeRef} 
       style={style} 
-      className={`mb-2 last:mb-0 p-3 ${groupColorClass} border-2`}
+      className="mb-2 last:mb-0 p-3 border-2"
     >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
@@ -117,12 +158,12 @@ const SortableGroup = ({
               onChange={handleTitleChange}
               onBlur={handleTitleBlur}
               autoFocus
-              className="h-7 min-h-7 w-[200px] font-medium bg-white/50"
+              className="h-7 min-h-7 w-[200px] font-medium"
             />
           ) : (
             <div
               onClick={() => setIsEditing(true)}
-              className="cursor-pointer px-2 py-1 rounded hover:bg-white/20"
+              className="cursor-pointer px-2 py-1 rounded hover:bg-gray-100"
             >
               {editingTitle}
             </div>
@@ -132,7 +173,7 @@ const SortableGroup = ({
           onClick={() => onAddItem(groupTitle)} 
           variant="outline" 
           size="sm"
-          className="gap-1 bg-white/50"
+          className="gap-1"
         >
           <Plus className="h-3 w-3" />
           New Item
@@ -143,39 +184,18 @@ const SortableGroup = ({
         <div>Status</div>
         <div>Date</div>
       </div>
-      <div className="space-y-0.5">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="grid grid-cols-[2fr,1fr,1fr] gap-1 py-0.5 border-b last:border-b-0 text-sm bg-white/50 rounded px-1"
-          >
-            <Input
-              value={item.title}
-              onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
-              className="h-6 min-h-6"
+      <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
+        <div className="space-y-0.5">
+          {items.map((item) => (
+            <SortableItem
+              key={item.id}
+              id={item.id}
+              item={item}
+              handleItemUpdate={handleItemUpdate}
             />
-            <Select 
-              value={item.status} 
-              onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
-            >
-              <SelectTrigger className={`h-6 ${statusStyles[item.status].bg} ${statusStyles[item.status].text}`}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="stuck" className="text-red-500 font-medium">Stuck</SelectItem>
-                <SelectItem value="done" className="text-green-500 font-medium">Done</SelectItem>
-                <SelectItem value="in-progress" className="text-yellow-500 font-medium">In Progress</SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              type="date"
-              value={item.date}
-              onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
-              className="h-6 min-h-6"
-            />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </SortableContext>
     </Card>
   );
 };
