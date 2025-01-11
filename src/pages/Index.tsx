@@ -91,27 +91,28 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-4">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-full md:max-w-7xl mx-auto px-4 py-4 md:p-8">
+        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             {selectedSection && (
               <Button
                 variant="ghost"
                 onClick={() => setSelectedSection(null)}
+                className="w-full sm:w-auto"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Main Menu
               </Button>
             )}
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
               ProBuilder 1.0
             </h1>
           </div>
           <Button
             variant="outline"
             onClick={handleLogout}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-full sm:w-auto"
           >
             <LogOut className="h-4 w-4" />
             Sign Out
@@ -119,21 +120,21 @@ const Index = () => {
         </div>
         
         {!selectedSection ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {menuItems.map((item) => (
               <Card 
                 key={item.title} 
-                className="hover:shadow-lg transition-shadow cursor-pointer hover:border-purple-200"
+                className="hover:shadow-lg transition-shadow cursor-pointer hover:border-purple-200 w-full"
                 onClick={() => setSelectedSection(item.title)}
               >
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
+                    <div className="p-2 rounded-lg bg-purple-100 text-purple-600 flex-shrink-0">
                       {item.icon}
                     </div>
-                    <div>
-                      <CardTitle>{item.title}</CardTitle>
-                      <CardDescription>{item.description}</CardDescription>
+                    <div className="min-w-0">
+                      <CardTitle className="text-lg truncate">{item.title}</CardTitle>
+                      <CardDescription className="text-sm truncate">{item.description}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
@@ -141,7 +142,7 @@ const Index = () => {
             ))}
           </div>
         ) : (
-          <div className="mt-8">
+          <div className="mt-4 md:mt-8 w-full">
             {menuItems.find(item => item.title === selectedSection)?.component}
           </div>
         )}
