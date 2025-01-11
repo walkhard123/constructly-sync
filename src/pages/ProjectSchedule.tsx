@@ -365,7 +365,7 @@ export default function ProjectSchedule() {
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={groupTitles} strategy={verticalListSortingStrategy}>
-          {Object.entries(groupedItems).map(([groupTitle, items], index) => (
+          {Object.entries(groupedItems).map(([groupTitle, items]) => (
             <SortableGroup
               key={groupTitle}
               groupTitle={groupTitle}
@@ -373,7 +373,6 @@ export default function ProjectSchedule() {
               onGroupTitleChange={handleGroupTitleChange}
               onAddItem={addNewItem}
               handleItemUpdate={handleItemUpdate}
-              colorIndex={index}
             />
           ))}
         </SortableContext>
