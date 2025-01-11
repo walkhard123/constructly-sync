@@ -4,7 +4,7 @@ import { Clock, FileText, Tag, Pencil, MessageSquare } from "lucide-react";
 import { LogEntry } from "../types/log";
 import { useState } from "react";
 import { LogComments } from "./LogComments";
-import { useAuth } from "@supabase/auth-helpers-react";
+import { useSession } from "@supabase/auth-helpers-react";
 
 interface LogEntryCardProps {
   log: LogEntry;
@@ -13,7 +13,7 @@ interface LogEntryCardProps {
 
 export const LogEntryCard = ({ log, onEdit }: LogEntryCardProps) => {
   const [showComments, setShowComments] = useState(false);
-  const user = useAuth();
+  const session = useSession();
 
   return (
     <Card>
@@ -77,7 +77,7 @@ export const LogEntryCard = ({ log, onEdit }: LogEntryCardProps) => {
           </div>
           {showComments && (
             <div className="mt-4 pt-4 border-t">
-              <LogComments logId={log.id} user={user} />
+              <LogComments logId={log.id} user={session?.user} />
             </div>
           )}
         </div>
