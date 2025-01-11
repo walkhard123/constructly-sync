@@ -30,7 +30,12 @@ export const SortableGroup = ({
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: groupTitle });
+  } = useSortable({ 
+    id: groupTitle,
+    data: {
+      type: 'group',
+    }
+  });
 
   const [editingTitle, setEditingTitle] = useState(groupTitle);
   const [isEditing, setIsEditing] = useState(false);
@@ -40,10 +45,16 @@ export const SortableGroup = ({
   };
 
   const handleTitleBlur = () => {
-    if (editingTitle !== groupTitle) {
-      onGroupTitleChange(groupTitle, editingTitle);
+    if (editingTitle.trim() !== groupTitle) {
+      onGroupTitleChange(groupTitle, editingTitle.trim());
     }
     setIsEditing(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleTitleBlur();
+    }
   };
 
   const style = {
@@ -67,6 +78,7 @@ export const SortableGroup = ({
               value={editingTitle}
               onChange={handleTitleChange}
               onBlur={handleTitleBlur}
+              onKeyDown={handleKeyDown}
               autoFocus
               className="h-7 min-h-7 w-[200px] font-medium"
             />

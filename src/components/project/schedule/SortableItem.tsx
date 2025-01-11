@@ -18,11 +18,30 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id });
+  } = useSortable({ 
+    id,
+    data: {
+      type: 'item',
+    }
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleItemUpdate(item.id, 'title', e.target.value);
+  };
+
+  const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    handleItemUpdate(item.id, 'title', e.target.value.trim());
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
   };
 
   const getStatusStyle = (status: string) => {
@@ -48,7 +67,9 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
     >
       <Input
         value={item.title}
-        onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
+        onChange={handleTitleChange}
+        onBlur={handleTitleBlur}
+        onKeyDown={handleKeyDown}
         className="h-8"
       />
       <Select 
