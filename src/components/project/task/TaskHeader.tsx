@@ -4,17 +4,14 @@ import { Task } from "../../types/project";
 interface TaskHeaderProps {
   task: Task;
   isExpanded: boolean;
-  onToggleStatus: () => void;
+  onToggleStatus: (e: React.MouseEvent) => void;
 }
 
 export const TaskHeader = ({ task, isExpanded, onToggleStatus }: TaskHeaderProps) => {
   return (
     <div className="flex items-center gap-2 flex-1">
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggleStatus();
-        }}
+        onClick={onToggleStatus}
         className="hover:scale-110 transition-transform"
       >
         {task.status === 'completed' ? (

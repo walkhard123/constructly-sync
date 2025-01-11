@@ -1,29 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { FileEdit, Trash2 } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 
 interface TaskActionsProps {
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit: (e: React.MouseEvent) => void;
+  onDelete: (e: React.MouseEvent) => void;
 }
 
 export const TaskActions = ({ onEdit, onDelete }: TaskActionsProps) => {
   return (
-    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-      <Button
-        variant="ghost"
-        size="sm"
+    <div className="flex items-center gap-2">
+      <button
         onClick={onEdit}
+        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
       >
-        <FileEdit className="w-4 h-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
+        <Pencil className="w-4 h-4 text-gray-500" />
+      </button>
+      <button
         onClick={onDelete}
-        className="text-red-500 hover:text-red-600"
+        className="p-1 hover:bg-gray-100 rounded-full transition-colors"
       >
-        <Trash2 className="w-4 h-4" />
-      </Button>
+        <Trash className="w-4 h-4 text-gray-500" />
+      </button>
     </div>
   );
 };
