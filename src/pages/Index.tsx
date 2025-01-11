@@ -1,5 +1,5 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Plus, Search, Calendar, Clock, Upload, Users, ClipboardList, ListTodo, LayoutDashboard, Settings2, ListChecks, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectManagement } from "@/components/ProjectManagement";
@@ -12,13 +12,20 @@ import { Dashboard } from "@/components/Dashboard";
 import { LeaveRequests } from "@/components/LeaveRequests";
 import { Settings } from "@/components/Settings";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
+  const location = useLocation();
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (location.state?.selectedSection) {
+      setSelectedSection(location.state.selectedSection);
+    }
+  }, [location.state]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();

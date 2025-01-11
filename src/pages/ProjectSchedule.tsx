@@ -69,7 +69,6 @@ export default function ProjectSchedule() {
         const newGroupOrder = arrayMove(groupTitles, oldIndex, newIndex);
         const newItems = [...scheduleItems];
         
-        // Update all items to maintain their group associations while reordering groups
         scheduleItems.forEach(item => {
           const itemIndex = newItems.findIndex(i => i.id === item.id);
           if (itemIndex !== -1) {
@@ -138,7 +137,7 @@ export default function ProjectSchedule() {
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <ScheduleHeader
-        onNavigateBack={() => navigate(-1)}
+        onNavigateBack={() => navigate('/', { state: { selectedSection: "Projects Management" } })}
         view={view}
         onViewChange={setView}
         onAddGroup={addNewItem}
