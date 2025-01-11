@@ -52,7 +52,7 @@ export const LogEntryForm = ({
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Start Date</Label>
+          <Label>Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -77,64 +77,28 @@ export const LogEntryForm = ({
           </Popover>
         </div>
         <div>
-          <Label>End Date</Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !newLog.endTime && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {newLog.endTime ? format(new Date(newLog.endTime), "PPP") : <span>Pick a date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={newLog.endTime ? new Date(newLog.endTime) : undefined}
-                onSelect={(date) => setNewLog({...newLog, endTime: date?.toISOString() || ""})}
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover>
+          <Label>Team Member</Label>
+          <Select 
+            onValueChange={(value) => {
+              const currentTags = Array.isArray(newLog.tags) ? newLog.tags : [];
+              if (!currentTags.includes(value)) {
+                setNewLog({
+                  ...newLog,
+                  tags: [...currentTags, value]
+                });
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select team member" />
+            </SelectTrigger>
+            <SelectContent>
+              {teamMembers.map((member) => (
+                <SelectItem key={member} value={member}>{member}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </div>
-      <div>
-        <Label>Team Member</Label>
-        <Select 
-          onValueChange={(value) => {
-            const currentTags = Array.isArray(newLog.tags) ? newLog.tags : [];
-            if (!currentTags.includes(value)) {
-              setNewLog({
-                ...newLog,
-                tags: [...currentTags, value]
-              });
-            }
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select team member" />
-          </SelectTrigger>
-          <SelectContent>
-            {teamMembers.map((member) => (
-              <SelectItem key={member} value={member}>{member}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {((editingLog?.tags && editingLog.tags.length > 0) || 
-          (Array.isArray(newLog.tags) && newLog.tags.length > 0)) && (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {(editingLog ? editingLog.tags : newLog.tags).map((tag, index) => (
-              <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm">
-                <Tag className="w-3 h-3 mr-1" />
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
       <div>
         <Label>Activities</Label>
@@ -152,6 +116,17 @@ export const LogEntryForm = ({
           placeholder="List any deliveries received or ordered..."
         />
       </div>
+      {((editingLog?.tags && editingLog.tags.length > 0) || 
+        (Array.isArray(newLog.tags) && newLog.tags.length > 0)) && (
+        <div className="mt-2 flex flex-wrap gap-2">
+          {(editingLog ? editingLog.tags : newLog.tags).map((tag, index) => (
+            <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm">
+              <Tag className="w-3 h-3 mr-1" />
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
       <div>
         <Label>Upload Photos</Label>
         <Input
