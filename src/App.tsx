@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import { Dashboard } from "./components/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -47,7 +48,10 @@ const App = () => (
                 <Index />
               </PrivateRoute>
             }
-          />
+          >
+            <Route index element={<Dashboard />} />
+            {/* Keep other routes as children of the main layout */}
+          </Route>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
