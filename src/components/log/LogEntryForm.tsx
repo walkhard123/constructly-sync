@@ -30,13 +30,12 @@ export const LogEntryForm = ({
   onSave
 }: LogEntryFormProps) => {
   const handleRemoveTag = (tagToRemove: string) => {
-    const currentTags = Array.isArray(editingLog ? editingLog.tags : newLog.tags) ? 
-      (editingLog ? editingLog.tags : newLog.tags) : [];
-    const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
-    
     if (editingLog) {
+      const updatedTags = editingLog.tags.filter(tag => tag !== tagToRemove);
       setNewLog({ ...editingLog, tags: updatedTags });
     } else {
+      const currentTags = Array.isArray(newLog.tags) ? newLog.tags : [];
+      const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
       setNewLog({ ...newLog, tags: updatedTags });
     }
   };
@@ -46,23 +45,24 @@ export const LogEntryForm = ({
       <ProjectSelect
         value={editingLog?.project || newLog.project}
         projects={projects}
-        onChange={(value) => setNewLog({...newLog, project: value})}
+        onChange={(value) => setNewLog(editingLog ? {...editingLog, project: value} : {...newLog, project: value})}
       />
 
       <div className="grid grid-cols-2 gap-4">
         <DateSelect
-          value={newLog.startTime}
-          onChange={(date) => setNewLog({...newLog, startTime: date})}
+          value={editingLog?.startTime || newLog.startTime}
+          onChange={(date) => setNewLog(editingLog ? {...editingLog, startTime: date} : {...newLog, startTime: date})}
         />
         <TeamMemberSelect
           teamMembers={teamMembers}
           onSelect={(value) => {
-            const currentTags = Array.isArray(newLog.tags) ? newLog.tags : [];
+            const currentTags = Array.isArray(editingLog ? editingLog.tags : newLog.tags) ? 
+              (editingLog ? editingLog.tags : newLog.tags) : [];
             if (!currentTags.includes(value)) {
-              setNewLog({
-                ...newLog,
-                tags: [...currentTags, value]
-              });
+              setNewLog(editingLog ? 
+                {...editingLog, tags: [...currentTags, value]} : 
+                {...newLog, tags: [...currentTags, value]}
+              );
             }
           }}
         />
@@ -72,7 +72,7 @@ export const LogEntryForm = ({
         <Label>Activities</Label>
         <Textarea
           value={editingLog ? editingLog.activities : newLog.activities}
-          onChange={(e) => setNewLog({...newLog, activities: e.target.value})}
+          onChange={(e) => setNewLog(editingLog ? {...editingLog, activities: e.target.value} : {...newLog, activities: e.target.value})}
           placeholder="Describe today's activities..."
         />
       </div>
@@ -81,7 +81,7 @@ export const LogEntryForm = ({
         <Label>Deliveries</Label>
         <Textarea
           value={editingLog ? editingLog.deliveries : newLog.deliveries}
-          onChange={(e) => setNewLog({...newLog, deliveries: e.target.value})}
+          onChange={(e) => setNewLog(editingLog ? {...editingLog, deliveries: e.target.value} : {...newLog, deliveries: e.target.value})}
           placeholder="List any deliveries received or ordered..."
         />
       </div>
