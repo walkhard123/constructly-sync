@@ -1,44 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ListTodo, Plus } from "lucide-react";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Plus } from "lucide-react";
 
 interface ProjectHeaderProps {
-  onOpenTaskDialog: () => void;
   onOpenProjectDialog: () => void;
   onSearch: (query: string) => void;
 }
 
-export const ProjectHeader = ({ onOpenTaskDialog, onOpenProjectDialog, onSearch }: ProjectHeaderProps) => {
+export const ProjectHeader = ({ 
+  onOpenProjectDialog,
+  onSearch
+}: ProjectHeaderProps) => {
   return (
-    <div className="flex justify-between items-center gap-4 flex-wrap">
-      <div className="flex gap-2 flex-1">
-        <Input 
-          placeholder="Search projects..." 
-          className="max-w-sm"
-          type="search"
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex-1 w-full sm:w-auto">
+        <Input
+          placeholder="Search projects..."
           onChange={(e) => onSearch(e.target.value)}
+          className="max-w-sm"
         />
       </div>
-      <div className="flex gap-2">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button 
-              variant="outline" 
-              className="bg-purple-100 hover:bg-purple-200"
-              onClick={onOpenTaskDialog}
-            >
-              <ListTodo className="mr-2 h-4 w-4" /> Add Task
-            </Button>
-          </DialogTrigger>
-        </Dialog>
-        <Button 
-          className="bg-purple-600 hover:bg-purple-700"
-          onClick={onOpenProjectDialog}
-        >
-          <Plus className="mr-2 h-4 w-4" /> New Project
-        </Button>
-      </div>
+      <Button onClick={onOpenProjectDialog}>
+        <Plus className="w-4 h-4 mr-2" />
+        Add Project
+      </Button>
     </div>
   );
 };
