@@ -27,7 +27,7 @@ export const ProjectTaskList = ({
 
   const handleAddSubTask = (taskId: number) => {
     if (newSubTasks[taskId]?.trim()) {
-      onAddSubTask(taskId, newSubTasks[taskId]);
+      onAddSubTask(taskId, newSubTasks[taskId].trim());
       setNewSubTasks(prev => ({ ...prev, [taskId]: '' }));
     }
   };

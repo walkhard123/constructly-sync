@@ -2,8 +2,10 @@ import { Project, Task } from "@/components/types/project";
 import { useProjectState } from "./useProjectState";
 import { useProjectActions } from "./useProjectActions";
 import { useTaskActions } from "./useTaskActions";
+import { useToast } from "./use-toast";
 
 export const useProjects = () => {
+  const { toast } = useToast();
   const { projects, setProjects, searchQuery, setSearchQuery } = useProjectState();
   const { handleAddProject, handleDeleteProject } = useProjectActions(projects, setProjects);
   const { handleAddTask, handleEditTask, handleAddSubTask, toggleSubTask } = useTaskActions({
@@ -59,9 +61,22 @@ export const useProjects = () => {
       }
       return project;
     }));
+    toast({
+      title: "Success",
+      description: "Task deleted successfully",
+    });
   };
 
   const projectAddSubTask = (projectId: number, taskId: number, title: string) => {
+    if (!title.trim()) {
+      toast({
+        title: "Error",
+        description: "Subtask title cannot be empty",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setProjects(projects.map(project => {
       if (project.id === projectId) {
         return {
@@ -70,12 +85,41 @@ export const useProjects = () => {
             if (task.id === taskId) {
               const newSubTask = {
                 id: (task.subTasks?.length || 0) + 1,
-                title,
+                title: title.trim(),
                 completed: false
               };
               return {
                 ...task,
                 subTasks: [...(task.subTasks || []), newSubTask]
+              };
+            }
+            return task;
+          })
+        };
+      }
+      return project;
+    }));
+    
+    toast({
+      title: "Success",
+      description: "Subtask added successfully",
+    });
+  };
+
+  const handleToggleSubTask = (projectId: number, taskId: number, subTaskId: number) => {
+    setProjects(projects.map(project => {
+      if (project.id === projectId) {
+        return {
+          ...project,
+          tasks: project.tasks.map(task => {
+            if (task.id === taskId) {
+              return {
+                ...task,
+                subTasks: task.subTasks.map(subTask => 
+                  subTask.id === subTaskId 
+                    ? { ...subTask, completed: !subTask.completed }
+                    : subTask
+                )
               };
             }
             return task;
@@ -95,6 +139,6 @@ export const useProjects = () => {
     handleToggleTaskStatus,
     handleDeleteTask,
     handleAddSubTask: projectAddSubTask,
-    toggleSubTask
+    toggleSubTask: handleToggleSubTask
   };
 };
