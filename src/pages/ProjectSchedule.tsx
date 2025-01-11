@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, Filter, Plus, Search } from "lucide-react";
+import { ChevronLeft, Filter, Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -47,6 +47,18 @@ export default function ProjectSchedule() {
       groupTitle: "Group Title"
     }
   ]);
+
+  const handleItemUpdate = (id: number, field: keyof ScheduleItem, value: string) => {
+    setScheduleItems(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, [field]: field === 'status' 
+              ? (value as "stuck" | "done" | "in-progress") 
+              : value }
+          : item
+      )
+    );
+  };
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
@@ -100,29 +112,34 @@ export default function ProjectSchedule() {
               key={item.id}
               className="grid grid-cols-[2fr,1fr,1fr] gap-4 py-3 border-b last:border-b-0 text-sm"
             >
-              <div>{item.title}</div>
-              <div>
-                <span
-                  className={`inline-block px-3 py-1 rounded-full text-white text-xs
-                    ${item.status === 'stuck' ? 'bg-red-500' :
-                      item.status === 'done' ? 'bg-green-500' :
-                        'bg-gray-500'}`}
-                >
-                  {item.status}
-                </span>
-              </div>
-              <div>{item.date}</div>
+              <Input
+                value={item.title}
+                onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
+                className="h-8 min-h-8"
+              />
+              <Select 
+                value={item.status} 
+                onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
+              >
+                <SelectTrigger className="h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="stuck">Stuck</SelectItem>
+                  <SelectItem value="done">Done</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input
+                type="date"
+                value={item.date}
+                onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
+                className="h-8 min-h-8"
+              />
             </div>
           ))}
         </div>
       </Card>
-
-      <Button
-        className="fixed bottom-6 right-6 rounded-full w-12 h-12 p-0 shadow-lg"
-        size="lg"
-      >
-        <Plus className="h-6 w-6" />
-      </Button>
     </div>
   );
 }
