@@ -138,8 +138,8 @@ export default function ProjectSchedule() {
 
       <Card className="p-4">
         {Object.entries(groupedItems).map(([groupTitle, items]) => (
-          <div key={groupTitle} className="mb-8 last:mb-0">
-            <div className="flex items-center justify-between mb-4">
+          <div key={groupTitle} className="mb-4 last:mb-0">
+            <div className="flex items-center justify-between mb-2">
               <Input
                 value={groupTitle}
                 onChange={(e) => {
@@ -164,27 +164,27 @@ export default function ProjectSchedule() {
                 New Item
               </Button>
             </div>
-            <div className="grid grid-cols-[2fr,1fr,1fr] gap-4 mb-4 font-medium text-sm text-gray-600">
+            <div className="grid grid-cols-[2fr,1fr,1fr] gap-2 mb-1 font-medium text-sm text-gray-600">
               <div>Title</div>
               <div>Status</div>
               <div>Date</div>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1">
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="grid grid-cols-[2fr,1fr,1fr] gap-4 py-3 border-b last:border-b-0 text-sm"
+                  className="grid grid-cols-[2fr,1fr,1fr] gap-2 py-1 border-b last:border-b-0 text-sm"
                 >
                   <Input
                     value={item.title}
                     onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
-                    className="h-8 min-h-8"
+                    className="h-7 min-h-7"
                   />
                   <Select 
                     value={item.status} 
                     onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
                   >
-                    <SelectTrigger className="h-8">
+                    <SelectTrigger className="h-7">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -197,7 +197,7 @@ export default function ProjectSchedule() {
                     type="date"
                     value={item.date}
                     onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
-                    className="h-8 min-h-8"
+                    className="h-7 min-h-7"
                   />
                 </div>
               ))}
