@@ -3,7 +3,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScheduleItem } from "./types";
-import { DateRangeSelect } from "./DateRangeSelect";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format, differenceInBusinessDays } from "date-fns";
 
 interface SortableItemProps {
   id: number;
@@ -71,6 +75,21 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
     }
   };
 
+  const getDaysLeft = () => {
+    if (!item.endDate) return "No due date";
+    const today = new Date();
+    const dueDate = new Date(item.endDate);
+    const daysLeft = differenceInBusinessDays(dueDate, today);
+    
+    if (daysLeft < 0) {
+      return "Overdue";
+    } else if (daysLeft === 0) {
+      return "Due today";
+    } else {
+      return `${daysLeft} days left`;
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -95,12 +114,27 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
         className="h-8"
         placeholder="Enter contractor"
       />
-      <DateRangeSelect
-        startDate={item.startDate ? new Date(item.startDate) : undefined}
-        endDate={item.endDate ? new Date(item.endDate) : undefined}
-        onStartDateChange={(date) => handleItemUpdate(item.id, 'startDate', date?.toISOString())}
-        onEndDateChange={(date) => handleItemUpdate(item.id, 'endDate', date?.toISOString())}
-      />
+      <div className="flex items-center gap-2">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={`w-full h-8 justify-start text-left font-normal ${!item.endDate && "text-muted-foreground"}`}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {item.endDate ? getDaysLeft() : "Set due date"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={item.endDate ? new Date(item.endDate) : undefined}
+              onSelect={(date) => handleItemUpdate(item.id, 'endDate', date?.toISOString())}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
       <Select 
         value={item.status} 
         onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
