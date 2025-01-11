@@ -22,12 +22,12 @@ export const LogHeader = ({ onAddNew, teamMembers, onTeamMemberFilter }: LogHead
           <Calendar className="w-4 h-4 mr-2" />
           Date Range
         </Button>
-        <Select onValueChange={onTeamMemberFilter}>
+        <Select onValueChange={(value) => onTeamMemberFilter(value === "all" ? "" : value)}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by member" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Members</SelectItem>
+            <SelectItem value="all">All Members</SelectItem>
             {teamMembers.map((member) => (
               <SelectItem key={member} value={member}>
                 {member}
