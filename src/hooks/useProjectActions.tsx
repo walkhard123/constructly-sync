@@ -44,17 +44,15 @@ export const useProjectActions = (
 
       setProjects([...projects, newProjectData]);
 
+      // Scroll to the new project after a short delay to ensure the DOM has updated
       setTimeout(() => {
         const projectElements = document.querySelectorAll('[data-project-id]');
         const newProjectElement = projectElements[projectElements.length - 1];
         if (newProjectElement) {
           newProjectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          document.querySelectorAll('.highlight-new-project').forEach(el => {
-            el.classList.remove('highlight-new-project');
-          });
-          newProjectElement.classList.add('highlight-new-project');
+          newProjectElement.classList.add('animate-fade-in');
         }
-      }, 300);
+      }, 100);
     }
   };
 
