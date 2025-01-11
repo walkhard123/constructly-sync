@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Project } from "../types/project";
 import { Button } from "@/components/ui/button";
 import { FileEdit, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface ProjectCardProps {
   project: Project;
@@ -15,9 +16,12 @@ export const ProjectCard = ({
   onDeleteProject
 }: ProjectCardProps) => {
   return (
-    <Card>
+    <Card className="hover:shadow-md transition-all">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-xl font-bold">{project.name}</CardTitle>
+        <div className="space-y-1">
+          <CardTitle className="text-lg font-semibold">{project.name}</CardTitle>
+          <p className="text-sm text-muted-foreground">{project.address}</p>
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -37,35 +41,44 @@ export const ProjectCard = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-2">
+        <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Status</span>
-            <span className={`px-2 py-1 rounded-full text-xs ${
-              project.status === 'completed' ? 'bg-green-100 text-green-700' :
-              project.status === 'upcoming' ? 'bg-blue-100 text-blue-700' :
-              'bg-yellow-100 text-yellow-700'
-            }`}>
+            <span className="text-muted-foreground">Type</span>
+            <Badge variant="outline" className="capitalize">
+              {project.type}
+            </Badge>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Status</span>
+            <Badge 
+              variant="outline"
+              className={`${
+                project.status === 'completed' ? 'bg-green-100 text-green-700' :
+                project.status === 'upcoming' ? 'bg-blue-100 text-blue-700' :
+                'bg-yellow-100 text-yellow-700'
+              }`}
+            >
               {project.status}
-            </span>
+            </Badge>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Progress</span>
-            <span className="text-sm">{project.progress}%</span>
+            <span className="text-muted-foreground">Team Member</span>
+            <span>{project.teamMember || 'Unassigned'}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Budget</span>
-            <span className="text-sm">{project.budget}</span>
+            <span className="text-muted-foreground">Start Date</span>
+            <span>{project.startDate || 'Not set'}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Risk Level</span>
-            <span className={`px-2 py-1 rounded-full text-xs ${
-              project.risk === 'high' ? 'bg-red-100 text-red-700' :
-              project.risk === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-              'bg-green-100 text-green-700'
-            }`}>
-              {project.risk}
-            </span>
+            <span className="text-muted-foreground">End Date</span>
+            <span>{project.endDate || 'Not set'}</span>
           </div>
+          {project.description && (
+            <div className="col-span-2">
+              <span className="text-muted-foreground block mb-1">Description</span>
+              <p className="text-sm line-clamp-2">{project.description}</p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
