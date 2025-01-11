@@ -146,12 +146,10 @@ export const DailyLogs = () => {
   const filteredLogs = logs.filter(log => {
     let passes = true;
 
-    // Filter by team member
     if (selectedTeamMember) {
       passes = passes && log.tags.includes(selectedTeamMember);
     }
 
-    // Filter by date range
     if (dateRange?.from && dateRange?.to) {
       const logDate = parseISO(log.date);
       passes = passes && isWithinInterval(logDate, {
