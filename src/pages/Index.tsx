@@ -53,10 +53,10 @@ const Index = () => {
       component: <TaskManagement />
     },
     {
-      title: "Team Members",
-      description: "Manage team and permissions",
-      icon: <Users className="w-6 h-6" />,
-      component: <TeamMembers />
+      title: "Time Clock",
+      description: "Track working hours",
+      icon: <Clock className="w-6 h-6" />,
+      component: <TimeClock />
     },
     {
       title: "Daily Logs",
@@ -65,16 +65,16 @@ const Index = () => {
       component: <DailyLogs />
     },
     {
-      title: "Time Clock",
-      description: "Track working hours",
-      icon: <Clock className="w-6 h-6" />,
-      component: <TimeClock />
-    },
-    {
       title: "File Upload",
       description: "Manage project documents",
       icon: <Upload className="w-6 h-6" />,
       component: <FileUpload />
+    },
+    {
+      title: "Team Members",
+      description: "Manage team and permissions",
+      icon: <Users className="w-6 h-6" />,
+      component: <TeamMembers />
     },
     {
       title: "Leave Requests",
