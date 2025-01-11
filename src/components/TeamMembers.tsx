@@ -11,6 +11,13 @@ export const TeamMembers = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState<null | {
+    id: number;
+    name: string;
+    role: string;
+    email: string;
+    phone: string;
+  }>(null);
   const [newMember, setNewMember] = useState({
     name: "",
     role: "",
@@ -57,7 +64,24 @@ export const TeamMembers = () => {
     }
   ]);
 
-  const handleAddMember = () => {
+  const handleEditMember = (member: typeof members[0]) => {
+    setEditingMember({
+      id: member.id,
+      name: member.name,
+      role: member.role,
+      email: member.email,
+      phone: member.phone,
+    });
+    setNewMember({
+      name: member.name,
+      role: member.role,
+      email: member.email,
+      phone: member.phone,
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveMember = () => {
     if (!newMember.name || !newMember.role || !newMember.email || !newMember.phone) {
       toast({
         title: "Error",
@@ -67,27 +91,59 @@ export const TeamMembers = () => {
       return;
     }
 
-    const avatar = newMember.name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
-      .toUpperCase();
+    if (editingMember) {
+      // Update existing member
+      setMembers(members.map(member => {
+        if (member.id === editingMember.id) {
+          return {
+            ...member,
+            name: newMember.name,
+            role: newMember.role,
+            email: newMember.email,
+            phone: newMember.phone,
+            avatar: newMember.name
+              .split(' ')
+              .map(word => word[0])
+              .join('')
+              .toUpperCase(),
+          };
+        }
+        return member;
+      }));
 
-    setMembers([
-      ...members,
-      {
-        id: members.length + 1,
-        name: newMember.name,
-        role: newMember.role,
-        email: newMember.email,
-        phone: newMember.phone,
-        avatar,
-        projects: 0,
-        activeHours: 0,
-        completedTasks: 0,
-        status: "active"
-      }
-    ]);
+      toast({
+        title: "Success",
+        description: "Team member updated successfully",
+      });
+    } else {
+      // Add new member
+      const avatar = newMember.name
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+
+      setMembers([
+        ...members,
+        {
+          id: members.length + 1,
+          name: newMember.name,
+          role: newMember.role,
+          email: newMember.email,
+          phone: newMember.phone,
+          avatar,
+          projects: 0,
+          activeHours: 0,
+          completedTasks: 0,
+          status: "active"
+        }
+      ]);
+
+      toast({
+        title: "Success",
+        description: "Team member added successfully",
+      });
+    }
 
     setNewMember({
       name: "",
@@ -95,12 +151,8 @@ export const TeamMembers = () => {
       email: "",
       phone: "",
     });
+    setEditingMember(null);
     setIsDialogOpen(false);
-    
-    toast({
-      title: "Success",
-      description: "Team member added successfully",
-    });
   };
 
   const filteredMembers = members.filter(member =>
@@ -121,7 +173,16 @@ export const TeamMembers = () => {
         </div>
         <Button 
           className="bg-purple-600 hover:bg-purple-700"
-          onClick={() => setIsDialogOpen(true)}
+          onClick={() => {
+            setEditingMember(null);
+            setNewMember({
+              name: "",
+              role: "",
+              email: "",
+              phone: "",
+            });
+            setIsDialogOpen(true);
+          }}
         >
           <Plus className="mr-2 h-4 w-4" /> Add Member
         </Button>
@@ -130,9 +191,9 @@ export const TeamMembers = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add New Team Member</DialogTitle>
+            <DialogTitle>{editingMember ? 'Edit Team Member' : 'Add New Team Member'}</DialogTitle>
             <DialogDescription>
-              Fill in the details to add a new team member.
+              {editingMember ? 'Edit the team member details below.' : 'Fill in the details to add a new team member.'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -171,11 +232,20 @@ export const TeamMembers = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <Button variant="outline" onClick={() => {
+              setIsDialogOpen(false);
+              setEditingMember(null);
+              setNewMember({
+                name: "",
+                role: "",
+                email: "",
+                phone: "",
+              });
+            }}>
               Cancel
             </Button>
-            <Button onClick={handleAddMember}>
-              Add Member
+            <Button onClick={handleSaveMember}>
+              {editingMember ? 'Save Changes' : 'Add Member'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -196,7 +266,11 @@ export const TeamMembers = () => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleEditMember(member)}
+                  >
                     <FileEdit className="w-4 h-4" />
                   </Button>
                   <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600">
