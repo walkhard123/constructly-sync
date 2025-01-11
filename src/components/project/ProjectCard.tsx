@@ -3,6 +3,7 @@ import { Project } from "../types/project";
 import { Button } from "@/components/ui/button";
 import { FileEdit, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface ProjectCardProps {
   project: Project;
@@ -15,8 +16,21 @@ export const ProjectCard = ({
   onEditProject,
   onDeleteProject
 }: ProjectCardProps) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Prevent navigation if clicking on action buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    navigate(`/project/${project.id}/schedule`);
+  };
+
   return (
-    <Card className="hover:shadow-md transition-all">
+    <Card 
+      className="hover:shadow-md transition-all cursor-pointer"
+      onClick={handleCardClick}
+    >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4">
         <div className="space-y-1 flex-1 min-w-0">
           <div className="flex items-center gap-2">

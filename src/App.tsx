@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import ProjectSchedule from "./pages/ProjectSchedule";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,14 @@ const App = () => (
             element={
               <PrivateRoute>
                 <Index />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/project/:projectId/schedule"
+            element={
+              <PrivateRoute>
+                <ProjectSchedule />
               </PrivateRoute>
             }
           />
