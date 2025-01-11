@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AccountSection } from "./settings/AccountSection";
 import { NotificationsSection } from "./settings/NotificationsSection";
 import { LanguageSection } from "./settings/LanguageSection";
+import { ChangePasswordSection } from "./settings/ChangePasswordSection";
 
 export function Settings() {
   const [activeSection, setActiveSection] = useState<string>("account");
@@ -52,6 +53,8 @@ export function Settings() {
             onLanguageChange={handleLanguageChange}
           />
         );
+      case "password":
+        return <ChangePasswordSection />;
       default:
         return <div>Select a section to view settings</div>;
     }
