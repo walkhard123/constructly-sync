@@ -104,7 +104,7 @@ export const SortableGroup = ({
       <div className="grid grid-cols-[2fr,1fr,2fr] gap-2 mb-1 font-medium text-sm text-gray-600">
         <div>Title</div>
         <div>Status</div>
-        <div>Timeline</div>
+        <div>Schedule</div>
       </div>
       <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-1">
