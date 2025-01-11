@@ -113,7 +113,7 @@ const Index = () => {
               </Button>
             )}
             <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
-              ProBuilder 1.0
+              Construction Management System
             </h1>
           </div>
           <Button
