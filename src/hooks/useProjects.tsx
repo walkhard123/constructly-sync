@@ -102,7 +102,6 @@ export const useProjects = () => {
         return project;
       });
       
-      console.log('Updated projects after adding subtask:', updatedProjects);
       return updatedProjects;
     });
     

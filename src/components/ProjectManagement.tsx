@@ -53,6 +53,44 @@ export const ProjectManagement = () => {
     setIsProjectDialogOpen(true);
   };
 
+  const handleSaveProject = () => {
+    if (!newProject.name?.trim()) {
+      toast({
+        title: "Error",
+        description: "Project name is required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    handleAddProject(newProject, editingProject);
+    setIsProjectDialogOpen(false);
+    setEditingProject(null);
+    setNewProject({
+      name: "",
+      address: "",
+      type: "house",
+      teamMember: "",
+      startDate: "",
+      endDate: "",
+      description: "",
+      phase: "Phase 1",
+      progress: 0,
+      status: "active",
+      budget: "",
+      risk: "low",
+      tasks: []
+    });
+  };
+
+  const handleConfirmDelete = (projectId: number) => {
+    handleDeleteProject(projectId);
+    toast({
+      title: "Success",
+      description: "Project deleted successfully",
+    });
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <ProjectHeader 
@@ -84,13 +122,13 @@ export const ProjectManagement = () => {
         editingProject={editingProject}
         newProject={newProject}
         setNewProject={setNewProject}
-        onSave={() => handleAddProject(newProject, editingProject)}
+        onSave={handleSaveProject}
       />
 
       <ProjectTabs
         projects={projects}
         onEditProject={handleEditProject}
-        onDeleteProject={handleDeleteProject}
+        onDeleteProject={handleConfirmDelete}
       />
     </div>
   );

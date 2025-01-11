@@ -50,36 +50,29 @@ export const useProjectActions = (
 
       setProjects([...projects, newProjectData]);
       
-      // Enhanced success toast with more descriptive message
       toast({
         title: "Project Added Successfully",
         description: `"${newProjectData.name}" has been added to your projects list`,
         variant: "default",
       });
 
-      // Improved scroll and highlight behavior
       setTimeout(() => {
         const projectElements = document.querySelectorAll('[data-project-id]');
         const newProjectElement = projectElements[projectElements.length - 1];
         if (newProjectElement) {
           newProjectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Remove any existing highlight classes first
           document.querySelectorAll('.highlight-new-project').forEach(el => {
             el.classList.remove('highlight-new-project');
           });
-          // Add the highlight class
           newProjectElement.classList.add('highlight-new-project');
         }
-      }, 300); // Increased delay to ensure DOM update
+      }, 300);
     }
   };
 
   const handleDeleteProject = (projectId: number) => {
-    setProjects(projects.filter((project) => project.id !== projectId));
-    toast({
-      title: "Success",
-      description: "Project deleted successfully",
-    });
+    const updatedProjects = projects.filter((project) => project.id !== projectId);
+    setProjects(updatedProjects);
   };
 
   return {
