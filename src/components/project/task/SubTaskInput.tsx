@@ -19,20 +19,31 @@ export const SubTaskInput = ({ value, onChange, onAdd }: SubTaskInputProps) => {
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && value.trim()) {
+      e.preventDefault(); // Prevent form submission on iOS
+      onAdd();
+    }
+  };
+
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full px-2 py-1">
       <Input
         placeholder="Add subtask..."
         value={value}
         onChange={handleChange}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter' && value.trim()) {
-            onAdd();
-          }
+        onKeyPress={handleKeyPress}
+        className="flex-1 min-w-0 text-base"
+        style={{
+          WebkitAppearance: 'none', // Remove iOS input styling
+          borderRadius: '0.375rem' // Maintain rounded corners
         }}
-        className="max-w-md"
       />
-      <Button size="sm" onClick={handleAdd}>
+      <Button 
+        size="sm" 
+        onClick={handleAdd}
+        className="touch-manipulation" // Improve touch response
+      >
         <Plus className="w-4 h-4" />
       </Button>
     </div>
