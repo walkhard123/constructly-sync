@@ -4,12 +4,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Task } from "../types/task";
+import { Project } from "../types/project";
 
 interface TaskDialogFormProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   selectedProject: number | null;
-  projects: Array<{ id: number; name: string }>;
+  projects: Project[];
   setSelectedProject: (id: number) => void;
   editingTask: Task | null;
   newTask: Partial<Task>;
@@ -28,6 +29,12 @@ export const TaskDialogForm = ({
   setNewTask,
   onSave
 }: TaskDialogFormProps) => {
+  const teamMembers = [
+    { id: 1, name: "John Smith" },
+    { id: 2, name: "Sarah Johnson" },
+    { id: 3, name: "Mike Williams" }
+  ];
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -82,11 +89,21 @@ export const TaskDialogForm = ({
           </div>
           <div>
             <Label htmlFor="assignee">Assignee</Label>
-            <Input
-              id="assignee"
+            <Select
               value={newTask.assignee}
-              onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
-            />
+              onValueChange={(value) => setNewTask({...newTask, assignee: value})}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select team member" />
+              </SelectTrigger>
+              <SelectContent>
+                {teamMembers.map((member) => (
+                  <SelectItem key={member.id} value={member.name}>
+                    {member.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label htmlFor="dueDate">Due Date</Label>
