@@ -16,7 +16,6 @@ import { ScheduleHeader } from "@/components/project/schedule/ScheduleHeader";
 
 export default function ProjectSchedule() {
   const navigate = useNavigate();
-  const [view, setView] = useState<"table" | "board">("table");
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([
     {
       id: 1,
@@ -142,8 +141,6 @@ export default function ProjectSchedule() {
     <div className="container mx-auto p-6 max-w-7xl">
       <ScheduleHeader
         onNavigateBack={() => navigate('/', { state: { selectedSection: "Projects Management" } })}
-        view={view}
-        onViewChange={setView}
         onAddGroup={addNewItem}
       />
 
