@@ -44,18 +44,18 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
       style={style}
       {...attributes}
       {...listeners}
-      className="grid grid-cols-[2fr,1fr,2fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
+      className="grid grid-cols-[minmax(200px,2fr),minmax(120px,1fr),minmax(180px,1fr)] items-center gap-4 py-2 border-b last:border-b-0 text-sm bg-white rounded px-4 cursor-move hover:bg-gray-50"
     >
       <Input
         value={item.title}
         onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
-        className="h-8"
+        className="h-8 min-w-[200px]"
       />
       <Select 
         value={item.status} 
         onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
       >
-        <SelectTrigger className={`h-8 ${getStatusStyle(item.status)}`}>
+        <SelectTrigger className={`h-8 min-w-[120px] ${getStatusStyle(item.status)}`}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
