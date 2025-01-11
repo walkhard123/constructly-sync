@@ -35,6 +35,7 @@ export const DailyLogs = () => {
 
   const [editingLog, setEditingLog] = useState<LogEntry | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedTeamMember, setSelectedTeamMember] = useState<string>("");
 
   const [projects] = useState([
     "Downtown Office Building",
@@ -139,6 +140,11 @@ export const DailyLogs = () => {
     });
   };
 
+  const filteredLogs = logs.filter(log => {
+    if (!selectedTeamMember) return true;
+    return log.tags.includes(selectedTeamMember);
+  });
+
   return (
     <div className="space-y-6 animate-fade-in">
       <LogHeader 
@@ -154,7 +160,9 @@ export const DailyLogs = () => {
             photos: []
           });
           setIsDialogOpen(true);
-        }} 
+        }}
+        teamMembers={teamMembers}
+        onTeamMemberFilter={setSelectedTeamMember}
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -182,7 +190,7 @@ export const DailyLogs = () => {
       </Dialog>
 
       <div className="space-y-4">
-        {logs.map((log) => (
+        {filteredLogs.map((log) => (
           <LogEntryCard
             key={log.id}
             log={log}
