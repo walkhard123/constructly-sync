@@ -14,10 +14,28 @@ import { PrivacySection } from "./settings/PrivacySection";
 
 export function Settings() {
   const [activeSection, setActiveSection] = useState<string>("account");
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(true);
+  const [selectedLanguage, setSelectedLanguage] = useState("english");
 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
     toast.info(`Navigated to ${section} settings`);
+  };
+
+  const handleNotificationChange = (type: 'email' | 'push', enabled: boolean) => {
+    if (type === 'email') {
+      setEmailNotifications(enabled);
+      toast.success(`Email notifications ${enabled ? 'enabled' : 'disabled'}`);
+    } else {
+      setPushNotifications(enabled);
+      toast.success(`Push notifications ${enabled ? 'enabled' : 'disabled'}`);
+    }
+  };
+
+  const handleLanguageChange = (language: string) => {
+    setSelectedLanguage(language);
+    toast.success(`Language changed to ${language}`);
   };
 
   const renderContent = () => {
@@ -25,9 +43,16 @@ export function Settings() {
       case "account":
         return <AccountSection />;
       case "notifications":
-        return <NotificationsSection />;
+        return <NotificationsSection 
+          emailNotifications={emailNotifications}
+          pushNotifications={pushNotifications}
+          onNotificationChange={handleNotificationChange}
+        />;
       case "language":
-        return <LanguageSection />;
+        return <LanguageSection 
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={handleLanguageChange}
+        />;
       case "password":
         return <ChangePasswordSection />;
       case "tutorial":
