@@ -111,6 +111,7 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
 
     handleItemUpdate(item.id, 'subItems', [...(item.subItems || []), newSubItem]);
     setNewSubItemTitle("");
+    setIsExpanded(true); // Ensure the sub-items are visible after adding
   };
 
   const toggleSubItemCompletion = (subItemId: number) => {
