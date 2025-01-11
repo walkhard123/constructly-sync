@@ -25,6 +25,19 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
     transition,
   };
 
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case 'done':
+        return 'bg-[#F2FCE2] text-green-700';
+      case 'stuck':
+        return 'bg-[#FFDEE2] text-red-700';
+      case 'in-progress':
+        return 'bg-[#FEF7CD] text-yellow-700';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -42,7 +55,7 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
         value={item.status} 
         onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
       >
-        <SelectTrigger className="h-8">
+        <SelectTrigger className={`h-8 ${getStatusStyle(item.status)}`}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
