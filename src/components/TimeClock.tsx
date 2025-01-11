@@ -10,6 +10,7 @@ export const TimeClock = () => {
   const [isClockingIn, setIsClockingIn] = useState(true);
   const [selectedMember, setSelectedMember] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<string>("");
+  const [lastClockedInMember, setLastClockedInMember] = useState<string>("");
   const { toast } = useToast();
 
   // Mock data for team members and projects
@@ -75,6 +76,15 @@ export const TimeClock = () => {
       return;
     }
 
+    if (!isClockingIn && selectedMember !== lastClockedInMember) {
+      toast({
+        title: "Error",
+        description: "You must clock out with the same team member who clocked in",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const currentTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const selectedMemberData = teamMembers.find(m => m.id === selectedMember);
     
@@ -90,6 +100,13 @@ export const TimeClock = () => {
     };
 
     setEntries([newEntry, ...entries]);
+    
+    if (isClockingIn) {
+      setLastClockedInMember(selectedMember);
+    } else {
+      setLastClockedInMember("");
+    }
+    
     setIsClockingIn(!isClockingIn);
 
     toast({
@@ -107,6 +124,7 @@ export const TimeClock = () => {
           <Select
             value={selectedMember}
             onValueChange={setSelectedMember}
+            disabled={!isClockingIn && lastClockedInMember !== ""}
           >
             <SelectTrigger id="team-member">
               <SelectValue placeholder="Select team member" />
