@@ -17,42 +17,15 @@ export const ProjectCard = ({
 }: ProjectCardProps) => {
   return (
     <Card className="hover:shadow-md transition-all">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="space-y-1">
-          <CardTitle className="text-lg font-semibold">{project.name}</CardTitle>
-          <p className="text-sm text-muted-foreground">{project.address}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onEditProject}
-          >
-            <FileEdit className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onDeleteProject}
-            className="text-red-500 hover:text-red-600"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Type</span>
-            <Badge variant="outline" className="capitalize">
-              {project.type}
-            </Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Status</span>
+      <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4">
+        <div className="space-y-1 flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-base font-medium truncate">
+              {project.name}
+            </CardTitle>
             <Badge 
               variant="outline"
-              className={`${
+              className={`shrink-0 ${
                 project.status === 'completed' ? 'bg-green-100 text-green-700' :
                 project.status === 'upcoming' ? 'bg-blue-100 text-blue-700' :
                 'bg-yellow-100 text-yellow-700'
@@ -61,22 +34,48 @@ export const ProjectCard = ({
               {project.status}
             </Badge>
           </div>
+          <p className="text-sm text-muted-foreground truncate">{project.address}</p>
+        </div>
+        <div className="flex items-center gap-1 shrink-0 ml-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onEditProject}
+            className="h-8 w-8 p-0"
+          >
+            <FileEdit className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDeleteProject}
+            className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Team Member</span>
-            <span>{project.teamMember || 'Unassigned'}</span>
+            <span className="text-muted-foreground">Type</span>
+            <span className="font-medium capitalize">{project.type}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">Start Date</span>
+            <span className="text-muted-foreground">Team</span>
+            <span className="font-medium">{project.teamMember || 'Unassigned'}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-muted-foreground">Start</span>
             <span>{project.startDate || 'Not set'}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground">End Date</span>
+            <span className="text-muted-foreground">End</span>
             <span>{project.endDate || 'Not set'}</span>
           </div>
           {project.description && (
-            <div className="col-span-2">
-              <span className="text-muted-foreground block mb-1">Description</span>
-              <p className="text-sm line-clamp-2">{project.description}</p>
+            <div className="col-span-2 mt-2">
+              <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>
             </div>
           )}
         </div>
