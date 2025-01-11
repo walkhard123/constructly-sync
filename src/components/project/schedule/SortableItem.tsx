@@ -3,11 +3,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScheduleItem } from "./types";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format, differenceInBusinessDays } from "date-fns";
+import { format, differenceInDays, isAfter, isSunday, isSameDay } from "date-fns";
 
 interface SortableItemProps {
   id: number;
@@ -79,15 +79,21 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
     if (!item.endDate) return "No due date";
     const today = new Date();
     const dueDate = new Date(item.endDate);
-    const daysLeft = differenceInBusinessDays(dueDate, today);
     
-    if (daysLeft < 0) {
-      return "Overdue";
-    } else if (daysLeft === 0) {
-      return "Due today";
-    } else {
-      return `${daysLeft} days left`;
+    if (isSameDay(today, dueDate)) return "Due today";
+    if (isAfter(today, dueDate)) return "Overdue";
+    
+    let daysLeft = 0;
+    let currentDate = today;
+    
+    while (!isSameDay(currentDate, dueDate)) {
+      currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+      if (!isSunday(currentDate)) {
+        daysLeft++;
+      }
     }
+    
+    return `${daysLeft} days left`;
   };
 
   return (
@@ -98,14 +104,28 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
       {...listeners}
       className="grid grid-cols-[2.5fr,1fr,1fr,1fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
     >
-      <Input
-        value={item.title}
-        onChange={handleTitleChange}
-        onBlur={handleTitleBlur}
-        onKeyDown={handleKeyDown}
-        className="h-8"
-        placeholder="Enter item"
-      />
+      <div className="flex items-center gap-2">
+        <Input
+          value={item.title}
+          onChange={handleTitleChange}
+          onBlur={handleTitleBlur}
+          onKeyDown={handleKeyDown}
+          className="h-8"
+          placeholder="Enter item"
+        />
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            // Add sub-item functionality will be implemented here
+            console.log('Add sub-item clicked for:', item.id);
+          }}
+        >
+          <Plus className="h-4 w-4" />
+        </Button>
+      </div>
       <Input
         value={item.contractor || ''}
         onChange={handleContractorChange}
