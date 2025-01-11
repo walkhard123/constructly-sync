@@ -101,10 +101,11 @@ export const SortableGroup = ({
           New Item
         </Button>
       </div>
-      <div className="grid grid-cols-[2fr,1fr,2fr] gap-2 mb-1 font-medium text-sm text-gray-600">
+      <div className="grid grid-cols-[1.5fr,1fr,1.5fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
         <div className="h-8 flex items-center">Title</div>
-        <div className="h-8 flex items-center">Status</div>
+        <div className="h-8 flex items-center">Contractor</div>
         <div className="h-8 flex items-center">Timeline</div>
+        <div className="h-8 flex items-center">Status</div>
       </div>
       <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-1">
