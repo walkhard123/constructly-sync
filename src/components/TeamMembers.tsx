@@ -1,11 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Phone, FileEdit, Trash2, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { MemberCard } from "./team/MemberCard";
+import { MemberDialog } from "./team/MemberDialog";
 
 export const TeamMembers = () => {
   const { toast } = useToast();
@@ -81,6 +80,14 @@ export const TeamMembers = () => {
     setIsDialogOpen(true);
   };
 
+  const handleDeleteMember = (memberId: number) => {
+    setMembers(members.filter(member => member.id !== memberId));
+    toast({
+      title: "Success",
+      description: "Team member deleted successfully",
+    });
+  };
+
   const handleSaveMember = () => {
     if (!newMember.name || !newMember.role || !newMember.email || !newMember.phone) {
       toast({
@@ -92,7 +99,6 @@ export const TeamMembers = () => {
     }
 
     if (editingMember) {
-      // Update existing member
       setMembers(members.map(member => {
         if (member.id === editingMember.id) {
           return {
@@ -116,28 +122,26 @@ export const TeamMembers = () => {
         description: "Team member updated successfully",
       });
     } else {
-      // Add new member
       const avatar = newMember.name
         .split(' ')
         .map(word => word[0])
         .join('')
         .toUpperCase();
 
-      setMembers([
-        ...members,
-        {
-          id: members.length + 1,
-          name: newMember.name,
-          role: newMember.role,
-          email: newMember.email,
-          phone: newMember.phone,
-          avatar,
-          projects: 0,
-          activeHours: 0,
-          completedTasks: 0,
-          status: "active"
-        }
-      ]);
+      const newMemberData = {
+        id: members.length + 1,
+        name: newMember.name,
+        role: newMember.role,
+        email: newMember.email,
+        phone: newMember.phone,
+        avatar,
+        projects: 0,
+        activeHours: 0,
+        completedTasks: 0,
+        status: "active"
+      };
+
+      setMembers([...members, newMemberData]);
 
       toast({
         title: "Success",
@@ -187,125 +191,33 @@ export const TeamMembers = () => {
           <Plus className="mr-2 h-4 w-4" /> Add Member
         </Button>
       </div>
-      
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{editingMember ? 'Edit Team Member' : 'Add New Team Member'}</DialogTitle>
-            <DialogDescription>
-              {editingMember ? 'Edit the team member details below.' : 'Fill in the details to add a new team member.'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={newMember.name}
-                onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="role">Role</Label>
-              <Input
-                id="role"
-                value={newMember.role}
-                onChange={(e) => setNewMember({ ...newMember, role: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={newMember.email}
-                onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="phone">Phone</Label>
-              <Input
-                id="phone"
-                value={newMember.phone}
-                onChange={(e) => setNewMember({ ...newMember, phone: e.target.value })}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setIsDialogOpen(false);
-              setEditingMember(null);
-              setNewMember({
-                name: "",
-                role: "",
-                email: "",
-                phone: "",
-              });
-            }}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveMember}>
-              {editingMember ? 'Save Changes' : 'Add Member'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+
+      <MemberDialog
+        isOpen={isDialogOpen}
+        onClose={() => {
+          setIsDialogOpen(false);
+          setEditingMember(null);
+          setNewMember({
+            name: "",
+            role: "",
+            email: "",
+            phone: "",
+          });
+        }}
+        onSave={handleSaveMember}
+        member={newMember}
+        onMemberChange={(changes) => setNewMember({ ...newMember, ...changes })}
+        mode={editingMember ? 'edit' : 'add'}
+      />
 
       <div className="grid gap-4">
         {filteredMembers.map((member) => (
-          <Card key={member.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <div className="flex gap-4 items-center">
-                  <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold">
-                    {member.avatar}
-                  </div>
-                  <div>
-                    <CardTitle>{member.name}</CardTitle>
-                    <CardDescription>{member.role}</CardDescription>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleEditMember(member)}
-                  >
-                    <FileEdit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600">
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-4 gap-4">
-                <div>
-                  <div className="flex items-center gap-2 text-gray-500">
-                    <Mail className="w-4 h-4" />
-                    <span className="text-sm">{member.email}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-500 mt-2">
-                    <Phone className="w-4 h-4" />
-                    <span className="text-sm">{member.phone}</span>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Active Projects</span>
-                  <p className="font-medium">{member.projects}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Hours This Month</span>
-                  <p className="font-medium">{member.activeHours}h</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Completed Tasks</span>
-                  <p className="font-medium">{member.completedTasks}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <MemberCard
+            key={member.id}
+            member={member}
+            onEdit={handleEditMember}
+            onDelete={handleDeleteMember}
+          />
         ))}
       </div>
     </div>
