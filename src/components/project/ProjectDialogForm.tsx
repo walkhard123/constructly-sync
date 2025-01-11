@@ -7,7 +7,6 @@ import { TeamMemberSelect } from "./form/TeamMemberSelect";
 import { ProjectDates } from "./form/ProjectDates";
 import { ProjectDescription } from "./form/ProjectDescription";
 import { ProjectStatusSelect } from "./form/ProjectStatusSelect";
-import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 
 interface ProjectDialogFormProps {
@@ -27,20 +26,6 @@ export const ProjectDialogForm = ({
   setNewProject,
   onSave
 }: ProjectDialogFormProps) => {
-  const { toast } = useToast();
-
-  const handleSave = () => {
-    if (!newProject.name || !newProject.address) {
-      toast({
-        title: "Error",
-        description: "Project name and address are required fields",
-        variant: "destructive",
-      });
-      return;
-    }
-    onSave();
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -50,9 +35,6 @@ export const ProjectDialogForm = ({
           </DialogTitle>
           <DialogDescription className="text-base">
             {editingProject ? 'Edit the project details below' : 'Fill in the project details below'}
-            <span className="text-sm text-muted-foreground block mt-1">
-              Fields marked with <span className="text-red-500">*</span> are required
-            </span>
           </DialogDescription>
         </DialogHeader>
 
@@ -109,7 +91,7 @@ export const ProjectDialogForm = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>
+          <Button onClick={onSave}>
             {editingProject ? 'Update Project' : 'Add Project'}
           </Button>
         </DialogFooter>
