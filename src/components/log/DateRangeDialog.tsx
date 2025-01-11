@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
 
 interface DateRangeDialogProps {
   isOpen: boolean;
@@ -21,17 +20,17 @@ export const DateRangeDialog = ({ isOpen, onClose, onDateRangeSelect }: DateRang
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[600px] bg-background">
         <DialogHeader>
           <DialogTitle>Select Date Range</DialogTitle>
         </DialogHeader>
-        <div className="py-4">
+        <div className="py-4 bg-background">
           <Calendar
             mode="range"
             selected={dateRange}
             onSelect={setDateRange}
             numberOfMonths={2}
-            className="rounded-md border"
+            className="rounded-md border bg-background"
           />
         </div>
         <div className="flex justify-end space-x-2">
