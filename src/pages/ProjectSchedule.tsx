@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, Filter, Plus, Search } from "lucide-react";
+import { ChevronLeft, Filter, Plus, Search, GripVertical } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -11,6 +11,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ScheduleItem {
   id: number;
@@ -19,6 +35,93 @@ interface ScheduleItem {
   date: string;
   groupTitle: string;
 }
+
+interface SortableGroupProps {
+  groupTitle: string;
+  items: ScheduleItem[];
+  onGroupTitleChange: (oldTitle: string, newTitle: string) => void;
+  onAddItem: (groupTitle: string) => void;
+  handleItemUpdate: (id: number, field: keyof ScheduleItem, value: string) => void;
+}
+
+const SortableGroup = ({ groupTitle, items, onGroupTitleChange, onAddItem, handleItemUpdate }: SortableGroupProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({ id: groupTitle });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <Card ref={setNodeRef} style={style} className="mb-4 last:mb-0 p-4">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <div {...attributes} {...listeners} className="cursor-grab">
+            <GripVertical className="h-4 w-4 text-gray-400" />
+          </div>
+          <Input
+            value={groupTitle}
+            onChange={(e) => onGroupTitleChange(groupTitle, e.target.value)}
+            className="h-8 min-h-8 w-[200px] font-medium"
+          />
+        </div>
+        <Button 
+          onClick={() => onAddItem(groupTitle)} 
+          variant="outline" 
+          size="sm"
+          className="gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          New Item
+        </Button>
+      </div>
+      <div className="grid grid-cols-[2fr,1fr,1fr] gap-2 mb-1 font-medium text-sm text-gray-600">
+        <div>Title</div>
+        <div>Status</div>
+        <div>Date</div>
+      </div>
+      <div className="space-y-1">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="grid grid-cols-[2fr,1fr,1fr] gap-2 py-1 border-b last:border-b-0 text-sm"
+          >
+            <Input
+              value={item.title}
+              onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
+              className="h-7 min-h-7"
+            />
+            <Select 
+              value={item.status} 
+              onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
+            >
+              <SelectTrigger className="h-7">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="stuck">Stuck</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+                <SelectItem value="in-progress">In Progress</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              type="date"
+              value={item.date}
+              onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
+              className="h-7 min-h-7"
+            />
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+};
 
 export default function ProjectSchedule() {
   const { projectId } = useParams();
@@ -48,6 +151,37 @@ export default function ProjectSchedule() {
     }
   ]);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      setScheduleItems((items) => {
+        const oldGroupTitle = String(active.id);
+        const newGroupTitle = String(over.id);
+        
+        return items.map(item => 
+          item.groupTitle === oldGroupTitle 
+            ? { ...item, groupTitle: newGroupTitle }
+            : item.groupTitle === newGroupTitle
+              ? { ...item, groupTitle: oldGroupTitle }
+              : item
+        );
+      });
+    }
+  };
+
   const handleItemUpdate = (id: number, field: keyof ScheduleItem, value: string) => {
     setScheduleItems(items =>
       items.map(item =>
@@ -55,6 +189,16 @@ export default function ProjectSchedule() {
           ? { ...item, [field]: field === 'status' 
               ? (value as "stuck" | "done" | "in-progress") 
               : value }
+          : item
+      )
+    );
+  };
+
+  const handleGroupTitleChange = (oldTitle: string, newTitle: string) => {
+    setScheduleItems(items =>
+      items.map(item =>
+        item.groupTitle === oldTitle
+          ? { ...item, groupTitle: newTitle }
           : item
       )
     );
@@ -91,6 +235,8 @@ export default function ProjectSchedule() {
     acc[item.groupTitle].push(item);
     return acc;
   }, {} as Record<string, ScheduleItem[]>);
+
+  const groupTitles = Object.keys(groupedItems);
 
   return (
     <div className="container mx-auto p-6 max-w-7xl">
@@ -136,75 +282,24 @@ export default function ProjectSchedule() {
         </div>
       </div>
 
-      <Card className="p-4">
-        {Object.entries(groupedItems).map(([groupTitle, items]) => (
-          <div key={groupTitle} className="mb-4 last:mb-0">
-            <div className="flex items-center justify-between mb-2">
-              <Input
-                value={groupTitle}
-                onChange={(e) => {
-                  const newGroupTitle = e.target.value;
-                  setScheduleItems(items =>
-                    items.map(item =>
-                      item.groupTitle === groupTitle
-                        ? { ...item, groupTitle: newGroupTitle }
-                        : item
-                    )
-                  );
-                }}
-                className="h-8 min-h-8 w-[200px] font-medium"
-              />
-              <Button 
-                onClick={() => addNewItem(groupTitle)} 
-                variant="outline" 
-                size="sm"
-                className="gap-2"
-              >
-                <Plus className="h-4 w-4" />
-                New Item
-              </Button>
-            </div>
-            <div className="grid grid-cols-[2fr,1fr,1fr] gap-2 mb-1 font-medium text-sm text-gray-600">
-              <div>Title</div>
-              <div>Status</div>
-              <div>Date</div>
-            </div>
-            <div className="space-y-1">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-[2fr,1fr,1fr] gap-2 py-1 border-b last:border-b-0 text-sm"
-                >
-                  <Input
-                    value={item.title}
-                    onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
-                    className="h-7 min-h-7"
-                  />
-                  <Select 
-                    value={item.status} 
-                    onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
-                  >
-                    <SelectTrigger className="h-7">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="stuck">Stuck</SelectItem>
-                      <SelectItem value="done">Done</SelectItem>
-                      <SelectItem value="in-progress">In Progress</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    type="date"
-                    value={item.date}
-                    onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
-                    className="h-7 min-h-7"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </Card>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={groupTitles} strategy={verticalListSortingStrategy}>
+          {Object.entries(groupedItems).map(([groupTitle, items]) => (
+            <SortableGroup
+              key={groupTitle}
+              groupTitle={groupTitle}
+              items={items}
+              onGroupTitleChange={handleGroupTitleChange}
+              onAddItem={addNewItem}
+              handleItemUpdate={handleItemUpdate}
+            />
+          ))}
+        </SortableContext>
+      </DndContext>
     </div>
   );
 }
