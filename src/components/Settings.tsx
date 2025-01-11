@@ -65,10 +65,10 @@ export function Settings() {
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "language", label: "Language", icon: Globe },
     { id: "password", label: "Change Password", icon: Key },
-    { id: "privacy", label: "Privacy Policy", icon: BookOpen },
     { id: "tutorial", label: "Intro Tutorial", icon: BookOpen },
     { id: "feedback", label: "Feedback", icon: MessageSquare },
     { id: "rate", label: "Rate the App", icon: Star },
+    { id: "privacy", label: "Privacy Policy", icon: BookOpen },
   ];
 
   return (
