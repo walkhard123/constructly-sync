@@ -7,7 +7,7 @@ interface ScheduleHeaderProps {
   onNavigateBack: () => void;
   view: "table" | "board";
   onViewChange: (value: "table" | "board") => void;
-  onAddGroup: () => void;
+  onAddGroup: (groupTitle: string) => void;
 }
 
 export const ScheduleHeader = ({
@@ -53,7 +53,7 @@ export const ScheduleHeader = ({
               className="pl-10"
             />
           </div>
-          <Button onClick={onAddGroup} variant="outline" className="gap-2">
+          <Button onClick={() => onAddGroup("New Group")} variant="outline" className="gap-2">
             <Plus className="h-4 w-4" />
             New Group
           </Button>
