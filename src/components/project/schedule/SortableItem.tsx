@@ -31,15 +31,24 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Allow spaces during typing by not trimming the value
     handleItemUpdate(item.id, 'title', e.target.value);
   };
 
+  const handleContractorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleItemUpdate(item.id, 'contractor', e.target.value);
+  };
+
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Only trim when the input loses focus
     const trimmedValue = e.target.value.trim();
     if (trimmedValue !== item.title) {
       handleItemUpdate(item.id, 'title', trimmedValue);
+    }
+  };
+
+  const handleContractorBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const trimmedValue = e.target.value.trim();
+    if (trimmedValue !== item.contractor) {
+      handleItemUpdate(item.id, 'contractor', trimmedValue);
     }
   };
 
@@ -68,7 +77,7 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
       style={style}
       {...attributes}
       {...listeners}
-      className="grid grid-cols-[2fr,1fr,2fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
+      className="grid grid-cols-[1.5fr,1fr,1.5fr,1fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
     >
       <Input
         value={item.title}
@@ -76,6 +85,21 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
         onBlur={handleTitleBlur}
         onKeyDown={handleKeyDown}
         className="h-8"
+        placeholder="Enter item"
+      />
+      <Input
+        value={item.contractor || ''}
+        onChange={handleContractorChange}
+        onBlur={handleContractorBlur}
+        onKeyDown={handleKeyDown}
+        className="h-8"
+        placeholder="Enter contractor"
+      />
+      <DateRangeSelect
+        startDate={item.startDate ? new Date(item.startDate) : undefined}
+        endDate={item.endDate ? new Date(item.endDate) : undefined}
+        onStartDateChange={(date) => handleItemUpdate(item.id, 'startDate', date?.toISOString())}
+        onEndDateChange={(date) => handleItemUpdate(item.id, 'endDate', date?.toISOString())}
       />
       <Select 
         value={item.status} 
@@ -90,12 +114,6 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
           <SelectItem value="in-progress">In Progress</SelectItem>
         </SelectContent>
       </Select>
-      <DateRangeSelect
-        startDate={item.startDate ? new Date(item.startDate) : undefined}
-        endDate={item.endDate ? new Date(item.endDate) : undefined}
-        onStartDateChange={(date) => handleItemUpdate(item.id, 'startDate', date?.toISOString())}
-        onEndDateChange={(date) => handleItemUpdate(item.id, 'endDate', date?.toISOString())}
-      />
     </div>
   );
 };
