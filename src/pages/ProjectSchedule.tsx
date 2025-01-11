@@ -21,6 +21,7 @@ export default function ProjectSchedule() {
     {
       id: 1,
       title: "Item 1",
+      contractor: "",
       status: "stuck",
       startDate: new Date().toISOString(),
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -29,6 +30,7 @@ export default function ProjectSchedule() {
     {
       id: 2,
       title: "Item 2",
+      contractor: "",
       status: "done",
       startDate: new Date().toISOString(),
       endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
@@ -37,6 +39,7 @@ export default function ProjectSchedule() {
     {
       id: 3,
       title: "Item 3",
+      contractor: "",
       status: "in-progress",
       startDate: new Date().toISOString(),
       endDate: new Date(Date.now() + 21 * 24 * 60 * 60 * 1000).toISOString(),
@@ -115,6 +118,7 @@ export default function ProjectSchedule() {
     const newItem: ScheduleItem = {
       id: Math.max(...scheduleItems.map(item => item.id), 0) + 1,
       title: "New Item",
+      contractor: "",
       status: "in-progress",
       startDate: new Date().toISOString(),
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
