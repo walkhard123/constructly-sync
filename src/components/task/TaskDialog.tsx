@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Task } from "../types/task";
-import { useState } from "react";
 
 interface TaskDialogProps {
   isOpen: boolean;
@@ -39,14 +38,14 @@ export const TaskDialog = ({
             <Label htmlFor="title">Task Title</Label>
             <Input
               id="title"
-              value={newTask.title}
+              value={newTask.title || ''}
               onChange={(e) => setNewTask({...newTask, title: e.target.value})}
             />
           </div>
           <div>
             <Label htmlFor="project">Project</Label>
             <Select
-              value={newTask.project}
+              value={newTask.project || ''}
               onValueChange={(value) => setNewTask({...newTask, project: value})}
             >
               <SelectTrigger>
@@ -64,7 +63,7 @@ export const TaskDialog = ({
           <div>
             <Label htmlFor="priority">Priority</Label>
             <Select
-              value={newTask.priority}
+              value={newTask.priority || 'medium'}
               onValueChange={(value) => setNewTask({...newTask, priority: value})}
             >
               <SelectTrigger>
@@ -81,7 +80,7 @@ export const TaskDialog = ({
             <Label htmlFor="assignee">Assignee</Label>
             <Input
               id="assignee"
-              value={newTask.assignee}
+              value={newTask.assignee || ''}
               onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
             />
           </div>
@@ -90,7 +89,7 @@ export const TaskDialog = ({
             <Input
               id="dueDate"
               type="date"
-              value={newTask.dueDate}
+              value={newTask.dueDate || ''}
               onChange={(e) => setNewTask({...newTask, dueDate: e.target.value})}
             />
           </div>

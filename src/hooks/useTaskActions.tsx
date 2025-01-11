@@ -19,46 +19,50 @@ export const useTaskActions = ({
   const { toast } = useToast();
 
   const handleAddTask = (newTask: Partial<Task>, editingTask: Task | null) => {
-    if (newTask.title && newTask.assignee && newTask.dueDate && newTask.project) {
-      if (editingTask) {
-        setTasks(tasks.map(task => 
-          task.id === editingTask.id 
-            ? { 
-                ...task, 
-                ...newTask, 
-                id: task.id,
-                subTasks: task.subTasks || []
-              } 
-            : task
-        ));
-        toast({
-          title: "Success",
-          description: "Task updated successfully",
-        });
-      } else {
-        const maxId = Math.max(0, ...tasks.map(t => t.id));
-        setTasks([...tasks, { 
-          ...newTask as Task, 
-          id: maxId + 1,
-          subTasks: []
-        }]);
-        toast({
-          title: "Success",
-          description: "Task added successfully",
-        });
-      }
-      setIsDialogOpen(false);
-      setNewTask({
-        title: "",
-        priority: "medium",
-        assignee: "",
-        dueDate: "",
-        project: "",
-        status: "in-progress",
-        subTasks: []
+    if (editingTask) {
+      setTasks(tasks.map(task => 
+        task.id === editingTask.id 
+          ? { 
+              ...task, 
+              ...newTask, 
+              id: task.id,
+              subTasks: task.subTasks || []
+            } 
+          : task
+      ));
+      toast({
+        title: "Success",
+        description: "Task updated successfully",
       });
-      setEditingTask(null);
+    } else {
+      const maxId = Math.max(0, ...tasks.map(t => t.id));
+      setTasks([...tasks, { 
+        ...newTask as Task, 
+        id: maxId + 1,
+        status: newTask.status || 'in-progress',
+        priority: newTask.priority || 'medium',
+        subTasks: [],
+        title: newTask.title || '',
+        assignee: newTask.assignee || '',
+        dueDate: newTask.dueDate || '',
+        project: newTask.project || ''
+      }]);
+      toast({
+        title: "Success",
+        description: "Task added successfully",
+      });
     }
+    setIsDialogOpen(false);
+    setNewTask({
+      title: "",
+      priority: "medium",
+      assignee: "",
+      dueDate: "",
+      project: "",
+      status: "in-progress",
+      subTasks: []
+    });
+    setEditingTask(null);
   };
 
   const handleEditTask = (task: Task) => {
