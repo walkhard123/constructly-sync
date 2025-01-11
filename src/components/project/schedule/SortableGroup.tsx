@@ -101,7 +101,7 @@ export const SortableGroup = ({
           New Item
         </Button>
       </div>
-      <div className="grid grid-cols-[1.5fr,1fr,1.5fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
+      <div className="grid grid-cols-[2.5fr,1fr,1fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
         <div className="h-8 flex items-center">Title</div>
         <div className="h-8 flex items-center">Contractor</div>
         <div className="h-8 flex items-center">Due Day</div>

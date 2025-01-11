@@ -96,7 +96,7 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
       style={style}
       {...attributes}
       {...listeners}
-      className="grid grid-cols-[1.5fr,1fr,1.5fr,1fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
+      className="grid grid-cols-[2.5fr,1fr,1fr,1fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
     >
       <Input
         value={item.title}
