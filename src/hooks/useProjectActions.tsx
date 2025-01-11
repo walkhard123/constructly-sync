@@ -57,10 +57,23 @@ export const useProjectActions = (
       };
 
       setProjects([...projects, newProjectData]);
+      
+      // Add success toast with more descriptive message
       toast({
-        title: "Success",
-        description: "Project added successfully",
+        title: "Project Added Successfully",
+        description: `"${newProjectData.name}" has been added to your projects list`,
+        variant: "default",
       });
+
+      // Scroll to the new project after a short delay to ensure DOM update
+      setTimeout(() => {
+        const projectElements = document.querySelectorAll('[data-project-id]');
+        const newProjectElement = projectElements[projectElements.length - 1];
+        if (newProjectElement) {
+          newProjectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          newProjectElement.classList.add('animate-highlight');
+        }
+      }, 100);
     }
   };
 

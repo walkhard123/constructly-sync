@@ -28,8 +28,9 @@ export const ProjectCard = ({
 
   return (
     <Card 
-      className="hover:shadow-md transition-all cursor-pointer"
+      className="hover:shadow-md transition-all cursor-pointer animate-fade-in"
       onClick={handleCardClick}
+      data-project-id={project.id}
     >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 p-4">
         <div className="space-y-1 flex-1 min-w-0">
