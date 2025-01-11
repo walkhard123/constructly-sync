@@ -13,8 +13,8 @@ export const DailyLogs = () => {
       id: 1,
       project: "Downtown Office Building",
       date: "2024-03-20",
-      startTime: "08:00",
-      endTime: "17:00",
+      startTime: new Date().toISOString(),
+      endTime: new Date().toISOString(),
       activities: "Completed foundation inspection, started electrical work",
       deliveries: "Received steel beams, ordered concrete",
       attachments: 2,
@@ -27,8 +27,8 @@ export const DailyLogs = () => {
     project: "",
     activities: "",
     deliveries: "",
-    startTime: "",
-    endTime: "",
+    startTime: new Date().toISOString(),
+    endTime: new Date().toISOString(),
     tags: [],
     photos: []
   });
@@ -148,8 +148,8 @@ export const DailyLogs = () => {
             project: "",
             activities: "",
             deliveries: "",
-            startTime: "",
-            endTime: "",
+            startTime: new Date().toISOString(),
+            endTime: new Date().toISOString(),
             tags: [],
             photos: []
           });

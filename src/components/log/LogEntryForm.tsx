@@ -5,6 +5,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Tag } from "lucide-react";
 import { LogEntry } from "../types/log";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface LogEntryFormProps {
   editingLog: LogEntry | null;
@@ -47,51 +52,71 @@ export const LogEntryForm = ({
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label>Start Time</Label>
-          <Input
-            type="time"
-            value={editingLog ? editingLog.startTime : newLog.startTime}
-            onChange={(e) => setNewLog({...newLog, startTime: e.target.value})}
-          />
+          <Label>Start Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !newLog.startTime && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {newLog.startTime ? format(new Date(newLog.startTime), "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={newLog.startTime ? new Date(newLog.startTime) : undefined}
+                onSelect={(date) => setNewLog({...newLog, startTime: date?.toISOString() || ""})}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         <div>
-          <Label>End Time</Label>
-          <Input
-            type="time"
-            value={editingLog ? editingLog.endTime : newLog.endTime}
-            onChange={(e) => setNewLog({...newLog, endTime: e.target.value})}
-          />
+          <Label>End Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !newLog.endTime && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {newLog.endTime ? format(new Date(newLog.endTime), "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={newLog.endTime ? new Date(newLog.endTime) : undefined}
+                onSelect={(date) => setNewLog({...newLog, endTime: date?.toISOString() || ""})}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
       <div>
-        <Label>Activities</Label>
-        <Textarea
-          value={editingLog ? editingLog.activities : newLog.activities}
-          onChange={(e) => setNewLog({...newLog, activities: e.target.value})}
-          placeholder="Describe today's activities..."
-        />
-      </div>
-      <div>
-        <Label>Deliveries</Label>
-        <Textarea
-          value={editingLog ? editingLog.deliveries : newLog.deliveries}
-          onChange={(e) => setNewLog({...newLog, deliveries: e.target.value})}
-          placeholder="List any deliveries received or ordered..."
-        />
-      </div>
-      <div>
-        <Label>Tag Team Members</Label>
+        <Label>Team Member</Label>
         <Select 
           onValueChange={(value) => {
             const currentTags = Array.isArray(newLog.tags) ? newLog.tags : [];
-            setNewLog({
-              ...newLog,
-              tags: [...currentTags, value]
-            });
+            if (!currentTags.includes(value)) {
+              setNewLog({
+                ...newLog,
+                tags: [...currentTags, value]
+              });
+            }
           }}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Select team members" />
+            <SelectValue placeholder="Select team member" />
           </SelectTrigger>
           <SelectContent>
             {teamMembers.map((member) => (
@@ -110,6 +135,22 @@ export const LogEntryForm = ({
             ))}
           </div>
         )}
+      </div>
+      <div>
+        <Label>Activities</Label>
+        <Textarea
+          value={editingLog ? editingLog.activities : newLog.activities}
+          onChange={(e) => setNewLog({...newLog, activities: e.target.value})}
+          placeholder="Describe today's activities..."
+        />
+      </div>
+      <div>
+        <Label>Deliveries</Label>
+        <Textarea
+          value={editingLog ? editingLog.deliveries : newLog.deliveries}
+          onChange={(e) => setNewLog({...newLog, deliveries: e.target.value})}
+          placeholder="List any deliveries received or ordered..."
+        />
       </div>
       <div>
         <Label>Upload Photos</Label>
