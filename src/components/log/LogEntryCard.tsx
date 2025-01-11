@@ -1,10 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, FileText, Tag, Pencil, MessageSquare } from "lucide-react";
+import { Clock, FileText, Tag, Pencil } from "lucide-react";
 import { LogEntry } from "../types/log";
-import { useState } from "react";
-import { LogComments } from "./LogComments";
-import { useSession } from "@supabase/auth-helpers-react";
 
 interface LogEntryCardProps {
   log: LogEntry;
@@ -12,9 +9,6 @@ interface LogEntryCardProps {
 }
 
 export const LogEntryCard = ({ log, onEdit }: LogEntryCardProps) => {
-  const [showComments, setShowComments] = useState(false);
-  const session = useSession();
-
   return (
     <Card>
       <CardHeader>
@@ -59,27 +53,11 @@ export const LogEntryCard = ({ log, onEdit }: LogEntryCardProps) => {
                 </span>
               ))}
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <FileText className="w-4 h-4" />
-                <span>{log.attachments} files</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center gap-2"
-                onClick={() => setShowComments(!showComments)}
-              >
-                <MessageSquare className="w-4 h-4" />
-                <span>Comments</span>
-              </Button>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <FileText className="w-4 h-4" />
+              <span>{log.attachments} files</span>
             </div>
           </div>
-          {showComments && (
-            <div className="mt-4 pt-4 border-t">
-              <LogComments logId={log.id} user={session?.user} />
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
