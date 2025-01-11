@@ -8,10 +8,14 @@ export const useProjectActions = (
   const { toast } = useToast();
 
   const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
-    if (!newProject.name || !newProject.endDate || !newProject.budget) {
+    // Log the newProject object to debug
+    console.log('New project data:', newProject);
+
+    // Check only the essential fields that should be required
+    if (!newProject.name?.trim()) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields",
+        description: "Project name is required",
         variant: "destructive",
       });
       return;
@@ -42,12 +46,12 @@ export const useProjectActions = (
         type: newProject.type || "house",
         teamMember: newProject.teamMember || "",
         startDate: newProject.startDate || "",
-        endDate: newProject.endDate!,
+        endDate: newProject.endDate || "",
         description: newProject.description || "",
         phase: newProject.phase || "Phase 1",
         progress: newProject.progress || 0,
         status: newProject.status || "active",
-        budget: newProject.budget!,
+        budget: newProject.budget || "",
         risk: newProject.risk || "low",
         tasks: []
       };
