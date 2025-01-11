@@ -1,9 +1,16 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Project } from "../types/project";
 import { ProjectCard } from "./ProjectCard";
 import { DndContext, DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 interface ProjectTabsProps {
   projects: Project[];
@@ -27,6 +34,7 @@ export const ProjectTabs = ({
   onDeleteProject
 }: ProjectTabsProps) => {
   const [localProjects, setLocalProjects] = useState(projects);
+  const [selectedFilter, setSelectedFilter] = useState<string>("active");
   
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -56,6 +64,18 @@ export const ProjectTabs = ({
     }
   };
 
+  const filterOptions = [
+    { label: "Active Projects", value: "active" },
+    { label: "Upcoming", value: "upcoming" },
+    { label: "Completed", value: "completed" },
+    { label: "All Projects", value: "all" },
+  ];
+
+  const getFilteredProjects = () => {
+    if (selectedFilter === "all") return localProjects;
+    return localProjects.filter(p => p.status === selectedFilter);
+  };
+
   const renderProjectList = (filteredProjects: Project[]) => (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <SortableContext items={filteredProjects.map(p => p.id)} strategy={verticalListSortingStrategy}>
@@ -79,25 +99,28 @@ export const ProjectTabs = ({
   );
 
   return (
-    <Tabs defaultValue="active" className="w-full">
-      <TabsList className="w-full justify-start">
-        <TabsTrigger value="active">Active Projects</TabsTrigger>
-        <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-        <TabsTrigger value="completed">Completed</TabsTrigger>
-        <TabsTrigger value="all">All Projects</TabsTrigger>
-      </TabsList>
-      <TabsContent value="active" className="space-y-4">
-        {renderProjectList(localProjects.filter(p => p.status === 'active'))}
-      </TabsContent>
-      <TabsContent value="upcoming" className="space-y-4">
-        {renderProjectList(localProjects.filter(p => p.status === 'upcoming'))}
-      </TabsContent>
-      <TabsContent value="completed" className="space-y-4">
-        {renderProjectList(localProjects.filter(p => p.status === 'completed'))}
-      </TabsContent>
-      <TabsContent value="all" className="space-y-4">
-        {renderProjectList(localProjects)}
-      </TabsContent>
-    </Tabs>
+    <div className="space-y-4">
+      <div className="flex items-center justify-start">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-[200px] justify-between">
+              {filterOptions.find(option => option.value === selectedFilter)?.label}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[200px]">
+            {filterOptions.map((option) => (
+              <DropdownMenuItem
+                key={option.value}
+                onClick={() => setSelectedFilter(option.value)}
+              >
+                {option.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      {renderProjectList(getFilteredProjects())}
+    </div>
   );
 };
