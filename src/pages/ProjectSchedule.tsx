@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ChevronLeft, Filter, Search } from "lucide-react";
+import { ChevronLeft, Filter, Plus, Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -60,6 +60,38 @@ export default function ProjectSchedule() {
     );
   };
 
+  const addNewGroup = () => {
+    const newGroupTitle = `New Group ${Math.floor(Math.random() * 1000)}`;
+    const newItem = {
+      id: Math.max(...scheduleItems.map(item => item.id), 0) + 1,
+      title: "New Item",
+      status: "in-progress" as const,
+      date: new Date().toISOString().split('T')[0],
+      groupTitle: newGroupTitle
+    };
+    setScheduleItems([...scheduleItems, newItem]);
+  };
+
+  const addNewItem = (groupTitle: string) => {
+    const newItem = {
+      id: Math.max(...scheduleItems.map(item => item.id), 0) + 1,
+      title: "New Item",
+      status: "in-progress" as const,
+      date: new Date().toISOString().split('T')[0],
+      groupTitle
+    };
+    setScheduleItems([...scheduleItems, newItem]);
+  };
+
+  // Group items by groupTitle
+  const groupedItems = scheduleItems.reduce((acc, item) => {
+    if (!acc[item.groupTitle]) {
+      acc[item.groupTitle] = [];
+    }
+    acc[item.groupTitle].push(item);
+    return acc;
+  }, {} as Record<string, ScheduleItem[]>);
+
   return (
     <div className="container mx-auto p-6 max-w-7xl">
       <div className="flex items-center gap-4 mb-8">
@@ -97,48 +129,81 @@ export default function ProjectSchedule() {
               className="pl-10"
             />
           </div>
+          <Button onClick={addNewGroup} variant="outline" className="gap-2">
+            <Plus className="h-4 w-4" />
+            New Group
+          </Button>
         </div>
       </div>
 
       <Card className="p-4">
-        <div className="grid grid-cols-[2fr,1fr,1fr] gap-4 mb-4 font-medium text-sm text-gray-600">
-          <div>Group Title</div>
-          <div>Status</div>
-          <div>Date</div>
-        </div>
-        <div className="space-y-2">
-          {scheduleItems.map((item) => (
-            <div
-              key={item.id}
-              className="grid grid-cols-[2fr,1fr,1fr] gap-4 py-3 border-b last:border-b-0 text-sm"
-            >
+        {Object.entries(groupedItems).map(([groupTitle, items]) => (
+          <div key={groupTitle} className="mb-8 last:mb-0">
+            <div className="flex items-center justify-between mb-4">
               <Input
-                value={item.title}
-                onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
-                className="h-8 min-h-8"
+                value={groupTitle}
+                onChange={(e) => {
+                  const newGroupTitle = e.target.value;
+                  setScheduleItems(items =>
+                    items.map(item =>
+                      item.groupTitle === groupTitle
+                        ? { ...item, groupTitle: newGroupTitle }
+                        : item
+                    )
+                  );
+                }}
+                className="h-8 min-h-8 w-[200px] font-medium"
               />
-              <Select 
-                value={item.status} 
-                onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
+              <Button 
+                onClick={() => addNewItem(groupTitle)} 
+                variant="outline" 
+                size="sm"
+                className="gap-2"
               >
-                <SelectTrigger className="h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="stuck">Stuck</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="date"
-                value={item.date}
-                onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
-                className="h-8 min-h-8"
-              />
+                <Plus className="h-4 w-4" />
+                New Item
+              </Button>
             </div>
-          ))}
-        </div>
+            <div className="grid grid-cols-[2fr,1fr,1fr] gap-4 mb-4 font-medium text-sm text-gray-600">
+              <div>Title</div>
+              <div>Status</div>
+              <div>Date</div>
+            </div>
+            <div className="space-y-2">
+              {items.map((item) => (
+                <div
+                  key={item.id}
+                  className="grid grid-cols-[2fr,1fr,1fr] gap-4 py-3 border-b last:border-b-0 text-sm"
+                >
+                  <Input
+                    value={item.title}
+                    onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
+                    className="h-8 min-h-8"
+                  />
+                  <Select 
+                    value={item.status} 
+                    onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
+                  >
+                    <SelectTrigger className="h-8">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="stuck">Stuck</SelectItem>
+                      <SelectItem value="done">Done</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    type="date"
+                    value={item.date}
+                    onChange={(e) => handleItemUpdate(item.id, 'date', e.target.value)}
+                    className="h-8 min-h-8"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </Card>
     </div>
   );
