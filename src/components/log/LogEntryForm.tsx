@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Tag } from "lucide-react";
+import { Tag, X } from "lucide-react";
 import { LogEntry } from "../types/log";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -32,6 +32,18 @@ export const LogEntryForm = ({
   onCancel,
   onSave
 }: LogEntryFormProps) => {
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = Array.isArray(editingLog ? editingLog.tags : newLog.tags) ? 
+      (editingLog ? editingLog.tags : newLog.tags) : [];
+    const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
+    
+    if (editingLog) {
+      setNewLog({ ...editingLog, tags: updatedTags });
+    } else {
+      setNewLog({ ...newLog, tags: updatedTags });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -94,7 +106,7 @@ export const LogEntryForm = ({
             </SelectTrigger>
             <SelectContent>
               {teamMembers.map((member) => (
-                <SelectItem key={member} value={member}>{member}</SelectItem>
+                <SelectItem key={member} value={member}>{member.replace('@', '')}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -122,7 +134,13 @@ export const LogEntryForm = ({
           {(editingLog ? editingLog.tags : newLog.tags).map((tag, index) => (
             <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm">
               <Tag className="w-3 h-3 mr-1" />
-              {tag}
+              {tag.replace('@', '')}
+              <button
+                onClick={() => handleRemoveTag(tag)}
+                className="ml-1 p-0.5 hover:bg-purple-200 rounded-full"
+              >
+                <X className="w-3 h-3" />
+              </button>
             </span>
           ))}
         </div>
