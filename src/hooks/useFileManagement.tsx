@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FileItem {
   id: number;
@@ -20,77 +21,115 @@ interface Folder {
 
 export const useFileManagement = () => {
   const { toast } = useToast();
-  const [files, setFiles] = useState<FileItem[]>([
-    { 
-      id: 1,
-      name: "Site Plans.pdf", 
-      size: "2.5 MB", 
-      date: "2024-03-20",
-      type: "PDF",
-      uploadedBy: "John Smith",
-      category: "Documentation",
-      downloads: 12,
-      folderId: null
-    },
-    { 
-      id: 2,
-      name: "Safety Protocol.docx", 
-      size: "1.2 MB", 
-      date: "2024-03-19",
-      type: "DOCX",
-      uploadedBy: "Sarah Johnson",
-      category: "Safety",
-      downloads: 8,
-      folderId: null
-    },
-    { 
-      id: 3,
-      name: "Budget Report.xlsx", 
-      size: "3.8 MB", 
-      date: "2024-03-18",
-      type: "XLSX",
-      uploadedBy: "Mike Williams",
-      category: "Financial",
-      downloads: 15,
-      folderId: null
-    }
-  ]);
+  const [files, setFiles] = useState<FileItem[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
 
-  const handleFilesSelected = (selectedFiles: File[]) => {
-    const newFiles = selectedFiles.map((file, index) => ({
-      id: files.length + index + 1,
-      name: file.name,
-      size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-      date: new Date().toISOString().split('T')[0],
-      type: file.name.split('.').pop()?.toUpperCase() || 'Unknown',
-      uploadedBy: "Current User",
-      category: "New Upload",
-      downloads: 0,
-      folderId: null
-    }));
+  const handleFilesSelected = async (selectedFiles: File[]) => {
+    for (const file of selectedFiles) {
+      try {
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('project-files')
+          .upload(filePath, file);
 
-    setFiles([...newFiles, ...files]);
+        if (uploadError) throw uploadError;
+
+        const { data: urlData } = supabase.storage
+          .from('project-files')
+          .getPublicUrl(filePath);
+
+        const newFile: FileItem = {
+          id: files.length + 1,
+          name: file.name,
+          size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          date: new Date().toISOString().split('T')[0],
+          type: file.type,
+          uploadedBy: "Current User",
+          category: "New Upload",
+          downloads: 0,
+          folderId: null
+        };
+
+        setFiles(prev => [...prev, newFile]);
+
+        toast({
+          title: "File uploaded",
+          description: `${file.name} has been uploaded successfully.`,
+        });
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        toast({
+          title: "Upload failed",
+          description: `Failed to upload ${file.name}. Please try again.`,
+          variant: "destructive",
+        });
+      }
+    }
   };
 
-  const handleDeleteFile = (fileId: number) => {
-    setFiles(files.filter(file => file.id !== fileId));
-    toast({
-      title: "File deleted",
-      description: "The file has been successfully deleted.",
-    });
+  const handleDeleteFile = async (fileId: number) => {
+    const file = files.find(f => f.id === fileId);
+    if (!file) return;
+
+    try {
+      const { error } = await supabase.storage
+        .from('project-files')
+        .remove([file.name]);
+
+      if (error) throw error;
+
+      setFiles(files.filter(f => f.id !== fileId));
+      toast({
+        title: "File deleted",
+        description: "The file has been successfully deleted.",
+      });
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      toast({
+        title: "Delete failed",
+        description: "Failed to delete the file. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleDownloadFile = (file: FileItem) => {
-    setFiles(files.map(f => 
-      f.id === file.id 
-        ? { ...f, downloads: f.downloads + 1 }
-        : f
-    ));
-    toast({
-      title: "File download started",
-      description: `Downloading ${file.name}...`,
-    });
+  const handleDownloadFile = async (file: FileItem) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('project-files')
+        .download(file.name);
+
+      if (error) throw error;
+
+      const url = window.URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      setFiles(files.map(f => 
+        f.id === file.id 
+          ? { ...f, downloads: f.downloads + 1 }
+          : f
+      ));
+
+      toast({
+        title: "File download started",
+        description: `Downloading ${file.name}...`,
+      });
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast({
+        title: "Download failed",
+        description: "Failed to download the file. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCreateFolder = (folderName: string) => {
