@@ -1,3 +1,9 @@
+export interface SubScheduleItem {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
 export interface ScheduleItem {
   id: number;
   title: string;
@@ -6,4 +12,5 @@ export interface ScheduleItem {
   startDate?: string;
   endDate?: string;
   groupTitle: string;
+  subItems?: SubScheduleItem[];
 }
