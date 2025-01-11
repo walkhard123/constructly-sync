@@ -8,6 +8,7 @@ interface StatCardProps {
   highlight?: string;
   icon: LucideIcon;
   iconColor?: string;
+  onClick?: () => void;
 }
 
 export const StatCard = ({
@@ -16,10 +17,14 @@ export const StatCard = ({
   subtitle,
   highlight,
   icon: Icon,
-  iconColor = "text-purple-600"
+  iconColor = "text-purple-600",
+  onClick
 }: StatCardProps) => {
   return (
-    <Card>
+    <Card 
+      className={`${onClick ? 'cursor-pointer hover:shadow-lg transition-all' : ''}`}
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <Icon className={`h-4 w-4 ${iconColor}`} />
