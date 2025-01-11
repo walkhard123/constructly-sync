@@ -31,11 +31,16 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Allow spaces during typing by not trimming the value
     handleItemUpdate(item.id, 'title', e.target.value);
   };
 
   const handleTitleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    handleItemUpdate(item.id, 'title', e.target.value.trim());
+    // Only trim when the input loses focus
+    const trimmedValue = e.target.value.trim();
+    if (trimmedValue !== item.title) {
+      handleItemUpdate(item.id, 'title', trimmedValue);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
