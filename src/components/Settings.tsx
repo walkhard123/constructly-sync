@@ -1,15 +1,29 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Bell, Globe, Key, BookOpen, MessageSquare, Star } from "lucide-react";
+import { User, Bell, Globe, Key, BookOpen, MessageSquare, Star, Mail, BellRing } from "lucide-react";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export function Settings() {
   const [activeSection, setActiveSection] = useState<string>("account");
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const [pushNotifications, setPushNotifications] = useState(true);
 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
     toast.info(`Navigated to ${section} settings`);
+  };
+
+  const handleNotificationChange = (type: 'email' | 'push', enabled: boolean) => {
+    if (type === 'email') {
+      setEmailNotifications(enabled);
+      toast.success(`Email notifications ${enabled ? 'enabled' : 'disabled'}`);
+    } else {
+      setPushNotifications(enabled);
+      toast.success(`Push notifications ${enabled ? 'enabled' : 'disabled'}`);
+    }
   };
 
   const renderContent = () => {
@@ -20,11 +34,36 @@ export function Settings() {
           <p>Manage your account preferences and personal information.</p>
         </div>;
       case "notifications":
-        return <div className="space-y-4">
+        return <div className="space-y-6">
           <h3 className="text-lg font-medium">Notification Preferences</h3>
-          <p>Control how you receive notifications and updates.</p>
+          <p className="text-sm text-muted-foreground">Choose how you want to receive notifications.</p>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between space-x-2">
+              <div className="flex items-center space-x-2">
+                <Mail className="h-4 w-4" />
+                <Label htmlFor="email-notifications">Email Notifications</Label>
+              </div>
+              <Switch
+                id="email-notifications"
+                checked={emailNotifications}
+                onCheckedChange={(checked) => handleNotificationChange('email', checked)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <div className="flex items-center space-x-2">
+                <BellRing className="h-4 w-4" />
+                <Label htmlFor="push-notifications">Push Notifications</Label>
+              </div>
+              <Switch
+                id="push-notifications"
+                checked={pushNotifications}
+                onCheckedChange={(checked) => handleNotificationChange('push', checked)}
+              />
+            </div>
+          </div>
         </div>;
-      // Add similar content for other sections
       default:
         return <div>Select a section to view settings</div>;
     }
