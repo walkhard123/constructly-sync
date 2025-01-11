@@ -30,17 +30,17 @@ export const DateRangeSelect = ({
   };
 
   return (
-    <div className="flex w-[180px]">
+    <div className="flex">
       <Popover>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal px-2",
+              "w-full justify-start text-left font-normal",
               !startDate && !endDate && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-1 h-4 w-4" />
+            <CalendarIcon className="mr-2 h-4 w-4" />
             {displayText()}
           </Button>
         </PopoverTrigger>
