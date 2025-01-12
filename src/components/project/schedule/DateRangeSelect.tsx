@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format, addDays } from "date-fns";
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface DateRangeSelectProps {
@@ -21,7 +21,7 @@ export const DateRangeSelect = ({
   onDurationChange
 }: DateRangeSelectProps) => {
   const formatDate = (date: Date) => {
-    return format(date, "dd/MM/yy");
+    return format(date, "MMM dd, yyyy");
   };
 
   const displayText = () => {
@@ -34,8 +34,11 @@ export const DateRangeSelect = ({
   const calculateDuration = (start: Date, end: Date) => {
     let duration = 0;
     let currentDate = new Date(start);
+    currentDate.setHours(0, 0, 0, 0);
+    const endDateNormalized = new Date(end);
+    endDateNormalized.setHours(0, 0, 0, 0);
     
-    while (currentDate <= end) {
+    while (currentDate <= endDateNormalized) {
       if (currentDate.getDay() !== 0) { // Skip Sundays
         duration++;
       }
@@ -45,21 +48,10 @@ export const DateRangeSelect = ({
     return duration;
   };
 
-  const calculateEndDate = (start: Date, duration: number) => {
-    let currentDate = new Date(start);
-    let daysCount = 0;
-    
-    while (daysCount < duration) {
-      currentDate = addDays(currentDate, 1);
-      if (currentDate.getDay() !== 0) { // Skip Sundays
-        daysCount++;
-      }
-    }
-    
-    return currentDate;
-  };
-
   const handleStartDateChange = (date: Date | undefined) => {
+    if (date) {
+      date.setHours(0, 0, 0, 0);
+    }
     onStartDateChange(date);
     if (date && endDate) {
       const duration = calculateDuration(date, endDate);
@@ -68,6 +60,9 @@ export const DateRangeSelect = ({
   };
 
   const handleEndDateChange = (date: Date | undefined) => {
+    if (date) {
+      date.setHours(0, 0, 0, 0);
+    }
     onEndDateChange(date);
     if (startDate && date) {
       const duration = calculateDuration(startDate, date);
@@ -98,6 +93,12 @@ export const DateRangeSelect = ({
               selected={startDate}
               onSelect={handleStartDateChange}
               initialFocus
+              disabled={(date) => {
+                if (endDate) {
+                  return date > endDate;
+                }
+                return false;
+              }}
             />
           </div>
           <div>
