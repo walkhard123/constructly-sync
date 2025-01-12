@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
-import { Bell, Home, Users, ListTodo, LayoutDashboard, Settings2, ListChecks, LogOut, Upload, Clock, Calendar } from "lucide-react";
+import { Bell, Home, Users, ListTodo, LayoutDashboard, Settings2, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectManagement } from "@/components/ProjectManagement";
 import { TeamMembers } from "@/components/TeamMembers";
@@ -98,7 +98,7 @@ const Index = () => {
     {
       title: "Files",
       description: "Documents",
-      icon: <Upload className="w-6 h-6 text-indigo-500" />,
+      icon: <FileUpload className="w-6 h-6 text-indigo-500" />,
       component: <FileUpload />,
       items: "45 files"
     }
@@ -106,7 +106,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-full md:max-w-7xl mx-auto px-4 py-4">
+      <div className="max-w-full md:max-w-7xl mx-auto px-4 py-4 pb-20">
         {!selectedSection ? (
           <>
             <div className="flex justify-between items-center mb-8">
@@ -122,7 +122,7 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 mb-20">
               {menuItems.map((item) => (
                 <Card 
                   key={item.title} 
