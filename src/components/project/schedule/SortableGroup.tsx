@@ -119,12 +119,12 @@ export const SortableGroup = ({
     <Card 
       ref={setNodeRef} 
       style={style} 
-      className="mb-2 last:mb-0 p-3 border hover:border-gray-300 transition-colors"
+      className="mb-4 p-4 border hover:border-gray-300 transition-colors"
     >
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
           <div {...attributes} {...listeners} className="cursor-grab">
-            <GripVertical className="h-4 w-4 text-gray-400" />
+            <GripVertical className="h-5 w-5 text-gray-400" />
           </div>
           {isEditing ? (
             <Input
@@ -133,12 +133,12 @@ export const SortableGroup = ({
               onBlur={handleTitleBlur}
               onKeyDown={handleKeyDown}
               autoFocus
-              className="h-7 min-h-7 w-[200px] font-medium"
+              className="h-8 min-h-8 w-[240px] font-medium"
             />
           ) : (
             <div
               onClick={() => setIsEditing(true)}
-              className="cursor-pointer px-2 py-1 rounded hover:bg-gray-100"
+              className="cursor-pointer px-3 py-1.5 rounded hover:bg-gray-100 font-medium"
             >
               {editingTitle}
             </div>
@@ -147,14 +147,24 @@ export const SortableGroup = ({
             variant="ghost"
             size="sm"
             onClick={() => setIsLinking(!isLinking)}
-            className={cn("gap-1", isLinking && "bg-blue-100")}
+            className={cn("gap-2 h-8 px-3", isLinking && "bg-blue-100")}
           >
-            {isLinking ? <Link2Off className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+            {isLinking ? (
+              <>
+                <Link2Off className="h-4 w-4" />
+                <span>Cancel Linking</span>
+              </>
+            ) : (
+              <>
+                <Link2 className="h-4 w-4" />
+                <span>Link Group</span>
+              </>
+            )}
           </Button>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {isLinking && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 bg-gray-50 p-2 rounded-lg">
               {allGroups
                 .filter(g => g !== groupTitle)
                 .map(g => (
@@ -164,8 +174,8 @@ export const SortableGroup = ({
                     size="sm"
                     onClick={() => toggleGroupLink(g)}
                     className={cn(
-                      "text-xs",
-                      linkedGroups.includes(g) && "bg-blue-100"
+                      "h-8 px-3 text-sm font-medium",
+                      linkedGroups.includes(g) && "bg-blue-100 border-blue-200"
                     )}
                   >
                     {g}
@@ -177,14 +187,14 @@ export const SortableGroup = ({
             onClick={() => onAddItem(groupTitle)} 
             variant="outline" 
             size="sm"
-            className="gap-1"
+            className="gap-2 h-8 px-3"
           >
-            <Plus className="h-3 w-3" />
+            <Plus className="h-4 w-4" />
             New Item
           </Button>
         </div>
       </div>
-      <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
+      <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-4 mb-2 px-3 font-medium text-sm text-gray-600">
         <div className="h-8 flex items-center">Title</div>
         <div className="h-8 flex items-center">Contractor</div>
         <div className="h-8 flex items-center">Duration (days)</div>
@@ -192,7 +202,7 @@ export const SortableGroup = ({
         <div className="h-8 flex items-center">Status</div>
       </div>
       <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-1">
+        <div className="space-y-2">
           {items.map((item) => (
             <SortableItem
               key={item.id}

@@ -12,6 +12,7 @@ import { SubItemsList } from "./components/SubItemsList";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 interface SortableItemProps {
   id: number;
@@ -25,6 +26,7 @@ export const SortableItem = ({ id, item, handleItemUpdate, allItems }: SortableI
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
   const [linkedItems, setLinkedItems] = useState<number[]>([]);
+  const [showSubItems, setShowSubItems] = useState(false);
 
   const {
     attributes,
@@ -184,24 +186,6 @@ export const SortableItem = ({ id, item, handleItemUpdate, allItems }: SortableI
     }
   };
 
-  const handleAddSubItem = (title: string) => {
-    const newSubItem: SubScheduleItem = {
-      id: (item.subItems?.length || 0) + 1,
-      title: title,
-      completed: false
-    };
-    handleItemUpdate(item.id, 'subItems', [...(item.subItems || []), newSubItem]);
-  };
-
-  const toggleSubItemCompletion = (subItemId: number) => {
-    const updatedSubItems = item.subItems?.map(subItem => 
-      subItem.id === subItemId 
-        ? { ...subItem, completed: !subItem.completed }
-        : subItem
-    );
-    handleItemUpdate(item.id, 'subItems', updatedSubItems);
-  };
-
   return (
     <div className="space-y-2">
       <div
@@ -209,17 +193,17 @@ export const SortableItem = ({ id, item, handleItemUpdate, allItems }: SortableI
         style={style}
         {...attributes}
         {...listeners}
-        className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
+        className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-4 p-3 bg-white rounded-lg border cursor-move hover:bg-gray-50"
       >
         <div className="flex items-center gap-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setIsExpanded(!isExpanded);
+              setShowSubItems(!showSubItems);
             }}
             className="p-1 hover:bg-gray-100 rounded"
           >
-            {isExpanded ? (
+            {showSubItems ? (
               <ChevronDown className="h-4 w-4 text-gray-500" />
             ) : (
               <ChevronRight className="h-4 w-4 text-gray-500" />
@@ -285,11 +269,25 @@ export const SortableItem = ({ id, item, handleItemUpdate, allItems }: SortableI
           onStatusChange={(value) => handleItemUpdate(item.id, 'status', value)}
         />
       </div>
-      {isExpanded && (
+      {showSubItems && (
         <SubItemsList
           subItems={item.subItems}
-          onAddSubItem={handleAddSubItem}
-          onToggleSubItem={toggleSubItemCompletion}
+          onAddSubItem={(title) => {
+            const newSubItem: SubScheduleItem = {
+              id: (item.subItems?.length || 0) + 1,
+              title,
+              completed: false
+            };
+            handleItemUpdate(item.id, 'subItems', [...(item.subItems || []), newSubItem]);
+          }}
+          onToggleSubItem={(subItemId) => {
+            const updatedSubItems = item.subItems?.map(subItem => 
+              subItem.id === subItemId 
+                ? { ...subItem, completed: !subItem.completed }
+                : subItem
+            );
+            handleItemUpdate(item.id, 'subItems', updatedSubItems);
+          }}
         />
       )}
     </div>
