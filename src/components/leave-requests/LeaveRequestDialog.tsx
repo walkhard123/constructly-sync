@@ -39,17 +39,14 @@ export const LeaveRequestDialog = ({
 }: LeaveRequestDialogProps) => {
   const handleStartDateSelect = (date: Date | undefined) => {
     setStartDate(date);
-    // If the selected start date is after the current end date, reset end date
+    // Reset end date if start date is after it
     if (date && endDate && date > endDate) {
       setEndDate(undefined);
     }
   };
 
   const handleEndDateSelect = (date: Date | undefined) => {
-    // Only set end date if it's after or equal to start date
-    if (!startDate || (date && date >= startDate)) {
-      setEndDate(date);
-    }
+    setEndDate(date);
   };
 
   return (

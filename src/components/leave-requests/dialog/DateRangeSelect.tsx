@@ -19,6 +19,9 @@ export const DateRangeSelect = ({
   onStartDateSelect,
   onEndDateSelect,
 }: DateRangeSelectProps) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>
@@ -36,12 +39,12 @@ export const DateRangeSelect = ({
               {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent align="start" className="w-auto p-0">
             <Calendar
               mode="single"
               selected={startDate}
               onSelect={onStartDateSelect}
-              disabled={(date) => date < new Date()}
+              disabled={(date) => date < today}
               initialFocus
             />
           </PopoverContent>
@@ -62,14 +65,16 @@ export const DateRangeSelect = ({
               {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
+          <PopoverContent align="start" className="w-auto p-0">
             <Calendar
               mode="single"
               selected={endDate}
               onSelect={onEndDateSelect}
-              disabled={(date) => 
-                date < new Date() || (startDate ? date < startDate : false)
-              }
+              disabled={(date) => {
+                if (date < today) return true;
+                if (startDate && date < startDate) return true;
+                return false;
+              }}
               initialFocus
             />
           </PopoverContent>
