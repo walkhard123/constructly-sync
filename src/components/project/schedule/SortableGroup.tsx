@@ -10,6 +10,7 @@ import { SortableItem } from "./SortableItem";
 import { ScheduleItem } from "./types";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface SortableGroupProps {
   groupTitle: string;
