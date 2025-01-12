@@ -10,13 +10,15 @@ interface DateRangeSelectProps {
   endDate: Date | undefined;
   onStartDateChange: (date: Date | undefined) => void;
   onEndDateChange: (date: Date | undefined) => void;
+  onDurationChange: (duration: number) => void;
 }
 
 export const DateRangeSelect = ({
   startDate,
   endDate,
   onStartDateChange,
-  onEndDateChange
+  onEndDateChange,
+  onDurationChange
 }: DateRangeSelectProps) => {
   const formatDate = (date: Date) => {
     return format(date, "dd/MM/yy");
@@ -27,6 +29,36 @@ export const DateRangeSelect = ({
       return `${formatDate(startDate)} - ${formatDate(endDate)}`;
     }
     return "Select timeline";
+  };
+
+  const calculateDuration = (start: Date, end: Date) => {
+    let duration = 0;
+    let currentDate = new Date(start);
+    
+    while (currentDate <= end) {
+      if (currentDate.getDay() !== 0) { // Skip Sundays
+        duration++;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    
+    return duration;
+  };
+
+  const handleStartDateChange = (date: Date | undefined) => {
+    onStartDateChange(date);
+    if (date && endDate) {
+      const duration = calculateDuration(date, endDate);
+      onDurationChange(duration);
+    }
+  };
+
+  const handleEndDateChange = (date: Date | undefined) => {
+    onEndDateChange(date);
+    if (startDate && date) {
+      const duration = calculateDuration(startDate, date);
+      onDurationChange(duration);
+    }
   };
 
   return (
@@ -50,7 +82,7 @@ export const DateRangeSelect = ({
             <Calendar
               mode="single"
               selected={startDate}
-              onSelect={onStartDateChange}
+              onSelect={handleStartDateChange}
               initialFocus
             />
           </div>
@@ -59,7 +91,7 @@ export const DateRangeSelect = ({
             <Calendar
               mode="single"
               selected={endDate}
-              onSelect={onEndDateChange}
+              onSelect={handleEndDateChange}
               disabled={(date) => startDate ? date < startDate : false}
               initialFocus
             />

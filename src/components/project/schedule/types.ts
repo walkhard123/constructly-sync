@@ -11,6 +11,7 @@ export interface ScheduleItem {
   status: "stuck" | "done" | "in-progress";
   startDate?: string;
   endDate?: string;
+  duration?: number;
   groupTitle: string;
   subItems?: SubScheduleItem[];
 }
