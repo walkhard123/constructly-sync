@@ -21,14 +21,14 @@ export const DateRangeSelect = ({
   onDurationChange
 }: DateRangeSelectProps) => {
   const formatDate = (date: Date) => {
-    return format(date, "MMM dd, yyyy");
+    return format(date, "dd/MM/yy");
   };
 
   const displayText = () => {
     if (startDate && endDate) {
       return `${formatDate(startDate)} - ${formatDate(endDate)}`;
     }
-    return "Select dates";
+    return "Select timeline";
   };
 
   const calculateDuration = (start: Date, end: Date) => {
@@ -43,6 +43,20 @@ export const DateRangeSelect = ({
     }
     
     return duration;
+  };
+
+  const calculateEndDate = (start: Date, duration: number) => {
+    let currentDate = new Date(start);
+    let daysCount = 0;
+    
+    while (daysCount < duration) {
+      currentDate = addDays(currentDate, 1);
+      if (currentDate.getDay() !== 0) { // Skip Sundays
+        daysCount++;
+      }
+    }
+    
+    return currentDate;
   };
 
   const handleStartDateChange = (date: Date | undefined) => {
@@ -76,7 +90,7 @@ export const DateRangeSelect = ({
             {displayText()}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="flex flex-col gap-4 p-4 w-auto" align="start">
+        <PopoverContent className="flex flex-col gap-4 p-4" align="start">
           <div>
             <p className="mb-2 text-sm font-medium">Start Date</p>
             <Calendar
@@ -84,7 +98,6 @@ export const DateRangeSelect = ({
               selected={startDate}
               onSelect={handleStartDateChange}
               initialFocus
-              className="rounded-md border"
             />
           </div>
           <div>
@@ -95,7 +108,6 @@ export const DateRangeSelect = ({
               onSelect={handleEndDateChange}
               disabled={(date) => startDate ? date < startDate : false}
               initialFocus
-              className="rounded-md border"
             />
           </div>
         </PopoverContent>
