@@ -21,7 +21,7 @@ export const DateRangeSelect = ({
   onDurationChange
 }: DateRangeSelectProps) => {
   const formatDate = (date: Date) => {
-    return format(date, "MMM dd, yyyy");
+    return format(date, "dd/MM/yy");
   };
 
   const displayText = () => {
@@ -48,23 +48,18 @@ export const DateRangeSelect = ({
   const handleSelect = (date: Date | undefined) => {
     if (!date) return;
     
-    // Set time to midnight for consistent comparison
     date.setHours(0, 0, 0, 0);
 
     if (!startDate || (startDate && endDate)) {
-      // If no start date is set, or both dates are set, set new start date
       onStartDateChange(date);
       onEndDateChange(undefined);
     } else {
-      // If start date is set but no end date, set end date
       if (date < startDate) {
-        // If selected date is before start date, swap them
         onEndDateChange(startDate);
         onStartDateChange(date);
       } else {
         onEndDateChange(date);
       }
-      // Calculate duration when both dates are set
       const duration = calculateDuration(startDate, date);
       onDurationChange(duration);
     }

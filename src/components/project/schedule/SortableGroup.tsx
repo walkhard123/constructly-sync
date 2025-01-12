@@ -4,10 +4,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { GripVertical, Plus } from "lucide-react";
+import { GripVertical, Plus, Link2, Link2Off } from "lucide-react";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableItem } from "./SortableItem";
 import { ScheduleItem } from "./types";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface SortableGroupProps {
   groupTitle: string;
@@ -15,6 +17,7 @@ interface SortableGroupProps {
   onGroupTitleChange: (oldTitle: string, newTitle: string) => void;
   onAddItem: (groupTitle: string) => void;
   handleItemUpdate: (id: number, field: keyof ScheduleItem, value: any) => void;
+  allGroups: string[];
 }
 
 export const SortableGroup = ({ 
@@ -23,7 +26,12 @@ export const SortableGroup = ({
   onGroupTitleChange, 
   onAddItem, 
   handleItemUpdate,
+  allGroups
 }: SortableGroupProps) => {
+  const { toast } = useToast();
+  const [isLinking, setIsLinking] = useState(false);
+  const [linkedGroups, setLinkedGroups] = useState<string[]>([]);
+
   const {
     attributes,
     listeners,
@@ -54,6 +62,50 @@ export const SortableGroup = ({
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleTitleBlur();
+    }
+  };
+
+  const toggleGroupLink = async (successorGroupTitle: string) => {
+    try {
+      const { data: existingLink } = await supabase
+        .from('group_relationships')
+        .select()
+        .eq('predecessor_group_title', groupTitle)
+        .eq('successor_group_title', successorGroupTitle)
+        .single();
+
+      if (existingLink) {
+        await supabase
+          .from('group_relationships')
+          .delete()
+          .eq('predecessor_group_title', groupTitle)
+          .eq('successor_group_title', successorGroupTitle);
+
+        setLinkedGroups(prev => prev.filter(g => g !== successorGroupTitle));
+        toast({
+          title: "Success",
+          description: "Group relationship removed",
+        });
+      } else {
+        await supabase
+          .from('group_relationships')
+          .insert({
+            predecessor_group_title: groupTitle,
+            successor_group_title: successorGroupTitle
+          });
+
+        setLinkedGroups(prev => [...prev, successorGroupTitle]);
+        toast({
+          title: "Success",
+          description: "Groups linked successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to manage group relationship",
+        variant: "destructive",
+      });
     }
   };
 
@@ -90,16 +142,46 @@ export const SortableGroup = ({
               {editingTitle}
             </div>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsLinking(!isLinking)}
+            className={cn("gap-1", isLinking && "bg-blue-100")}
+          >
+            {isLinking ? <Link2Off className="h-4 w-4" /> : <Link2 className="h-4 w-4" />}
+          </Button>
         </div>
-        <Button 
-          onClick={() => onAddItem(groupTitle)} 
-          variant="outline" 
-          size="sm"
-          className="gap-1"
-        >
-          <Plus className="h-3 w-3" />
-          New Item
-        </Button>
+        <div className="flex gap-2">
+          {isLinking && (
+            <div className="flex gap-2">
+              {allGroups
+                .filter(g => g !== groupTitle)
+                .map(g => (
+                  <Button
+                    key={g}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleGroupLink(g)}
+                    className={cn(
+                      "text-xs",
+                      linkedGroups.includes(g) && "bg-blue-100"
+                    )}
+                  >
+                    {g}
+                  </Button>
+                ))}
+            </div>
+          )}
+          <Button 
+            onClick={() => onAddItem(groupTitle)} 
+            variant="outline" 
+            size="sm"
+            className="gap-1"
+          >
+            <Plus className="h-3 w-3" />
+            New Item
+          </Button>
+        </div>
       </div>
       <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
         <div className="h-8 flex items-center">Title</div>
@@ -116,6 +198,7 @@ export const SortableGroup = ({
               id={item.id}
               item={item}
               handleItemUpdate={handleItemUpdate}
+              allItems={items}
             />
           ))}
         </div>

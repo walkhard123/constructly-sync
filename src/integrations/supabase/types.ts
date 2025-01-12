@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      group_relationships: {
+        Row: {
+          created_at: string
+          id: number
+          predecessor_group_title: string
+          successor_group_title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          predecessor_group_title: string
+          successor_group_title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          predecessor_group_title?: string
+          successor_group_title?: string
+        }
+        Relationships: []
+      }
+      item_relationships: {
+        Row: {
+          created_at: string
+          id: number
+          predecessor_item_id: number
+          successor_item_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          predecessor_item_id: number
+          successor_item_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          predecessor_item_id?: number
+          successor_item_id?: number
+        }
+        Relationships: []
+      }
       log_comments: {
         Row: {
           content: string
