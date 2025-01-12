@@ -84,27 +84,32 @@ export const DateRangeSelect = ({
             {displayText()}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="flex flex-col gap-4 p-4 w-auto" align="start">
-          <div>
-            <p className="mb-2 text-sm font-medium">Start Date</p>
-            <Calendar
-              mode="single"
-              selected={startDate}
-              onSelect={handleStartDateChange}
-              initialFocus
-              className="rounded-md border"
-            />
-          </div>
-          <div>
-            <p className="mb-2 text-sm font-medium">End Date</p>
-            <Calendar
-              mode="single"
-              selected={endDate}
-              onSelect={handleEndDateChange}
-              disabled={(date) => startDate ? date < startDate : false}
-              initialFocus
-              className="rounded-md border"
-            />
+        <PopoverContent className="w-auto p-0" align="start">
+          <div className="flex gap-2 p-3">
+            <div>
+              <p className="mb-2 text-sm font-medium">Start Date</p>
+              <Calendar
+                mode="single"
+                selected={startDate}
+                onSelect={handleStartDateChange}
+                numberOfMonths={1}
+                initialFocus
+                className="rounded-md border"
+              />
+            </div>
+            <div className="border-l" />
+            <div>
+              <p className="mb-2 text-sm font-medium">End Date</p>
+              <Calendar
+                mode="single"
+                selected={endDate}
+                onSelect={handleEndDateChange}
+                numberOfMonths={1}
+                disabled={(date) => startDate ? date < startDate : false}
+                initialFocus
+                className="rounded-md border"
+              />
+            </div>
           </div>
         </PopoverContent>
       </Popover>
