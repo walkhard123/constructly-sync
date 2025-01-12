@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   DndContext,
@@ -13,12 +13,9 @@ import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrate
 import { ScheduleItem } from "@/components/project/schedule/types";
 import { SortableGroup } from "@/components/project/schedule/SortableGroup";
 import { ScheduleHeader } from "@/components/project/schedule/ScheduleHeader";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 
 export default function ProjectSchedule() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([
     {
       id: 1,
@@ -60,48 +57,6 @@ export default function ProjectSchedule() {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-
-  useEffect(() => {
-    const updateLinkedGroups = async (groupTitle: string) => {
-      const { data: relationships } = await supabase
-        .from('group_relationships')
-        .select()
-        .eq('predecessor_group_title', groupTitle);
-
-      if (relationships) {
-        const groupItems = scheduleItems.filter(item => item.groupTitle === groupTitle);
-        const latestEndDate = new Date(Math.max(...groupItems.map(item => new Date(item.endDate || 0).getTime())));
-
-        relationships.forEach(rel => {
-          const successorItems = scheduleItems.filter(item => item.groupTitle === rel.successor_group_title);
-          successorItems.forEach(item => {
-            const newStartDate = new Date(latestEndDate);
-            newStartDate.setDate(newStartDate.getDate() + 1);
-            
-            handleItemUpdate(item.id, 'startDate', newStartDate.toISOString());
-            
-            if (item.duration) {
-              let currentDate = new Date(newStartDate);
-              let daysCount = 0;
-              
-              while (daysCount < item.duration) {
-                currentDate.setDate(currentDate.getDate() + 1);
-                if (currentDate.getDay() !== 0) {
-                  daysCount++;
-                }
-              }
-              
-              handleItemUpdate(item.id, 'endDate', currentDate.toISOString());
-            }
-          });
-        });
-      }
-    };
-
-    // Update linked groups whenever schedule items change
-    const groupTitles = Array.from(new Set(scheduleItems.map(item => item.groupTitle)));
-    groupTitles.forEach(updateLinkedGroups);
-  }, [scheduleItems]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -203,7 +158,6 @@ export default function ProjectSchedule() {
               onGroupTitleChange={handleGroupTitleChange}
               onAddItem={addNewItem}
               handleItemUpdate={handleItemUpdate}
-              allGroups={groupTitles}
             />
           ))}
         </SortableContext>
