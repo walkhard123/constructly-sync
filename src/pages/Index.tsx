@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
-import { Bell, Home, Users, ListTodo, LayoutDashboard, Settings2, Clock, Calendar } from "lucide-react";
+import { Bell, Home, Users, ListTodo, LayoutDashboard, Settings2, Clock, Calendar, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectManagement } from "@/components/ProjectManagement";
 import { TeamMembers } from "@/components/TeamMembers";
@@ -98,7 +98,7 @@ const Index = () => {
     {
       title: "Files",
       description: "Documents",
-      icon: <FileUpload className="w-6 h-6 text-indigo-500" />,
+      icon: <Upload className="w-6 h-6 text-indigo-500" />,
       component: <FileUpload />,
       items: "45 files"
     }
