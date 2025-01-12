@@ -11,7 +11,7 @@ import {
 
 interface DeleteProjectDialogProps {
   deleteProjectId: number | null;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: () => void;
   onConfirmDelete: () => void;
 }
 
@@ -21,16 +21,17 @@ export const DeleteProjectDialog = ({
   onConfirmDelete,
 }: DeleteProjectDialogProps) => {
   return (
-    <AlertDialog open={deleteProjectId !== null} onOpenChange={onOpenChange}>
+    <AlertDialog open={!!deleteProjectId} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the project and all its data.
+            This action cannot be undone. This will permanently delete the project
+            and all its data.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={onOpenChange}>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirmDelete}>Delete</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
