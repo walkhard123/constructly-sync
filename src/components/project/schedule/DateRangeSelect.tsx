@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface DateRangeSelectProps {
@@ -28,17 +28,14 @@ export const DateRangeSelect = ({
     if (startDate && endDate) {
       return `${formatDate(startDate)} - ${formatDate(endDate)}`;
     }
-    return "Select timeline";
+    return "Select dates";
   };
 
   const calculateDuration = (start: Date, end: Date) => {
     let duration = 0;
     let currentDate = new Date(start);
-    currentDate.setHours(0, 0, 0, 0);
-    const endDateNormalized = new Date(end);
-    endDateNormalized.setHours(0, 0, 0, 0);
     
-    while (currentDate <= endDateNormalized) {
+    while (currentDate <= end) {
       if (currentDate.getDay() !== 0) { // Skip Sundays
         duration++;
       }
@@ -49,9 +46,6 @@ export const DateRangeSelect = ({
   };
 
   const handleStartDateChange = (date: Date | undefined) => {
-    if (date) {
-      date.setHours(0, 0, 0, 0);
-    }
     onStartDateChange(date);
     if (date && endDate) {
       const duration = calculateDuration(date, endDate);
@@ -60,9 +54,6 @@ export const DateRangeSelect = ({
   };
 
   const handleEndDateChange = (date: Date | undefined) => {
-    if (date) {
-      date.setHours(0, 0, 0, 0);
-    }
     onEndDateChange(date);
     if (startDate && date) {
       const duration = calculateDuration(startDate, date);
@@ -85,7 +76,7 @@ export const DateRangeSelect = ({
             {displayText()}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="flex flex-col gap-4 p-4" align="start">
+        <PopoverContent className="flex flex-col gap-4 p-4 w-auto" align="start">
           <div>
             <p className="mb-2 text-sm font-medium">Start Date</p>
             <Calendar
@@ -93,12 +84,7 @@ export const DateRangeSelect = ({
               selected={startDate}
               onSelect={handleStartDateChange}
               initialFocus
-              disabled={(date) => {
-                if (endDate) {
-                  return date > endDate;
-                }
-                return false;
-              }}
+              className="rounded-md border"
             />
           </div>
           <div>
@@ -109,6 +95,7 @@ export const DateRangeSelect = ({
               onSelect={handleEndDateChange}
               disabled={(date) => startDate ? date < startDate : false}
               initialFocus
+              className="rounded-md border"
             />
           </div>
         </PopoverContent>
