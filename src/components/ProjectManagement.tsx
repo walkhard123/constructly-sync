@@ -1,20 +1,11 @@
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ProjectHeader } from "./project/ProjectHeader";
 import { ProjectDialogForm } from "./project/ProjectDialogForm";
 import { ProjectTabs } from "./project/ProjectTabs";
 import { Project } from "./types/project";
 import { useProjects } from "@/hooks/useProjects";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { useProjectDialogState } from "./project/dialog/ProjectDialogState";
+import { DeleteProjectDialog } from "./project/dialog/DeleteProjectDialog";
 
 export const ProjectManagement = () => {
   const { toast } = useToast();
@@ -25,24 +16,17 @@ export const ProjectManagement = () => {
     handleDeleteProject,
   } = useProjects();
 
-  const [isProjectDialogOpen, setIsProjectDialogOpen] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [deleteProjectId, setDeleteProjectId] = useState<number | null>(null);
-  const [newProject, setNewProject] = useState<Partial<Project>>({
-    name: "",
-    address: "",
-    type: "house",
-    teamMember: "",
-    startDate: "",
-    endDate: "",
-    description: "",
-    phase: "Phase 1",
-    progress: 0,
-    status: "active",
-    budget: "",
-    risk: "low",
-    tasks: []
-  });
+  const {
+    isProjectDialogOpen,
+    setIsProjectDialogOpen,
+    editingProject,
+    setEditingProject,
+    deleteProjectId,
+    setDeleteProjectId,
+    newProject,
+    setNewProject,
+    resetNewProject
+  } = useProjectDialogState();
 
   const handleEditProject = (project: Project) => {
     setEditingProject(project);
@@ -77,21 +61,7 @@ export const ProjectManagement = () => {
     handleAddProject(newProject, editingProject);
     setIsProjectDialogOpen(false);
     setEditingProject(null);
-    setNewProject({
-      name: "",
-      address: "",
-      type: "house",
-      teamMember: "",
-      startDate: "",
-      endDate: "",
-      description: "",
-      phase: "Phase 1",
-      progress: 0,
-      status: "active",
-      budget: "",
-      risk: "low",
-      tasks: []
-    });
+    resetNewProject();
     
     toast({
       title: editingProject ? "Project Updated" : "Project Added",
@@ -117,21 +87,7 @@ export const ProjectManagement = () => {
       <ProjectHeader 
         onOpenProjectDialog={() => {
           setEditingProject(null);
-          setNewProject({
-            name: "",
-            address: "",
-            type: "house",
-            teamMember: "",
-            startDate: "",
-            endDate: "",
-            description: "",
-            phase: "Phase 1",
-            progress: 0,
-            status: "active",
-            budget: "",
-            risk: "low",
-            tasks: []
-          });
+          resetNewProject();
           setIsProjectDialogOpen(true);
         }}
         onSearch={handleSearch}
@@ -152,20 +108,11 @@ export const ProjectManagement = () => {
         onDeleteProject={(projectId) => setDeleteProjectId(projectId)}
       />
 
-      <AlertDialog open={deleteProjectId !== null} onOpenChange={() => setDeleteProjectId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the project and all its data.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteProjectDialog
+        deleteProjectId={deleteProjectId}
+        onOpenChange={() => setDeleteProjectId(null)}
+        onConfirmDelete={handleConfirmDelete}
+      />
     </div>
   );
 };
