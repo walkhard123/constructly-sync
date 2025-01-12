@@ -45,25 +45,26 @@ export const DateRangeSelect = ({
     return duration;
   };
 
-  const handleStartDateChange = (date: Date | undefined) => {
-    if (date) {
-      // Set time to midnight for consistent comparison
-      date.setHours(0, 0, 0, 0);
-    }
-    onStartDateChange(date);
-    if (date && endDate) {
-      const duration = calculateDuration(date, endDate);
-      onDurationChange(duration);
-    }
-  };
+  const handleSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
+    // Set time to midnight for consistent comparison
+    date.setHours(0, 0, 0, 0);
 
-  const handleEndDateChange = (date: Date | undefined) => {
-    if (date) {
-      // Set time to midnight for consistent comparison
-      date.setHours(0, 0, 0, 0);
-    }
-    onEndDateChange(date);
-    if (startDate && date) {
+    if (!startDate || (startDate && endDate)) {
+      // If no start date is set, or both dates are set, set new start date
+      onStartDateChange(date);
+      onEndDateChange(undefined);
+    } else {
+      // If start date is set but no end date, set end date
+      if (date < startDate) {
+        // If selected date is before start date, swap them
+        onEndDateChange(startDate);
+        onStartDateChange(date);
+      } else {
+        onEndDateChange(date);
+      }
+      // Calculate duration when both dates are set
       const duration = calculateDuration(startDate, date);
       onDurationChange(duration);
     }
@@ -84,32 +85,19 @@ export const DateRangeSelect = ({
             {displayText()}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <div className="flex gap-2 p-3">
-            <div>
-              <p className="mb-2 text-sm font-medium">Start Date</p>
-              <Calendar
-                mode="single"
-                selected={startDate}
-                onSelect={handleStartDateChange}
-                numberOfMonths={1}
-                initialFocus
-                className="rounded-md border"
-              />
-            </div>
-            <div className="border-l" />
-            <div>
-              <p className="mb-2 text-sm font-medium">End Date</p>
-              <Calendar
-                mode="single"
-                selected={endDate}
-                onSelect={handleEndDateChange}
-                numberOfMonths={1}
-                disabled={(date) => startDate ? date < startDate : false}
-                initialFocus
-                className="rounded-md border"
-              />
-            </div>
+        <PopoverContent className="w-auto p-3" align="start">
+          <div>
+            <p className="mb-2 text-sm font-medium">
+              {!startDate ? "Select start date" : !endDate ? "Select end date" : "Select date range"}
+            </p>
+            <Calendar
+              mode="single"
+              selected={endDate || startDate}
+              onSelect={handleSelect}
+              numberOfMonths={1}
+              initialFocus
+              className="rounded-md border"
+            />
           </div>
         </PopoverContent>
       </Popover>
