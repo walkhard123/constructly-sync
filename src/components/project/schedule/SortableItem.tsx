@@ -1,12 +1,14 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScheduleItem, SubScheduleItem } from "./types";
-import { Plus, ChevronDown, ChevronRight, Check, Circle } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DateRangeSelect } from "./DateRangeSelect";
+import { DurationInput } from "./components/DurationInput";
+import { StatusSelect } from "./components/StatusSelect";
+import { SubItemsList } from "./components/SubItemsList";
 
 interface SortableItemProps {
   id: number;
@@ -16,7 +18,6 @@ interface SortableItemProps {
 
 export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [newSubItemTitle, setNewSubItemTitle] = useState("");
 
   const {
     attributes,
@@ -46,6 +47,20 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
 
   const handleDurationChange = (duration: number) => {
     handleItemUpdate(item.id, 'duration', duration);
+    if (item.startDate) {
+      const startDate = new Date(item.startDate);
+      let currentDate = new Date(startDate);
+      let daysCount = 0;
+      
+      while (daysCount < duration) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        if (currentDate.getDay() !== 0) { // Skip Sundays
+          daysCount++;
+        }
+      }
+      
+      handleItemUpdate(item.id, 'endDate', currentDate.toISOString());
+    }
   };
 
   const handleStartDateChange = (date: Date | undefined) => {
@@ -56,18 +71,13 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
     handleItemUpdate(item.id, 'endDate', date?.toISOString());
   };
 
-  const handleAddSubItem = () => {
-    if (!newSubItemTitle.trim()) return;
-
+  const handleAddSubItem = (title: string) => {
     const newSubItem: SubScheduleItem = {
       id: (item.subItems?.length || 0) + 1,
-      title: newSubItemTitle.trim(),
+      title: title,
       completed: false
     };
-
     handleItemUpdate(item.id, 'subItems', [...(item.subItems || []), newSubItem]);
-    setNewSubItemTitle("");
-    setIsExpanded(true);
   };
 
   const toggleSubItemCompletion = (subItemId: number) => {
@@ -77,19 +87,6 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
         : subItem
     );
     handleItemUpdate(item.id, 'subItems', updatedSubItems);
-  };
-
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'done':
-        return 'bg-[#F2FCE2] text-green-700';
-      case 'stuck':
-        return 'bg-[#FFDEE2] text-red-700';
-      case 'in-progress':
-        return 'bg-[#FEF7CD] text-yellow-700';
-      default:
-        return '';
-    }
   };
 
   return (
@@ -139,12 +136,9 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
           className="h-8"
           placeholder="Enter contractor"
         />
-        <Input
-          type="number"
-          value={item.duration || ''}
-          onChange={(e) => handleDurationChange(parseInt(e.target.value) || 0)}
-          className="h-8"
-          placeholder="Days"
+        <DurationInput
+          duration={item.duration}
+          onDurationChange={handleDurationChange}
         />
         <DateRangeSelect
           startDate={item.startDate ? new Date(item.startDate) : undefined}
@@ -153,64 +147,17 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
           onEndDateChange={handleEndDateChange}
           onDurationChange={handleDurationChange}
         />
-        <Select 
-          value={item.status} 
-          onValueChange={(value) => handleItemUpdate(item.id, 'status', value)}
-        >
-          <SelectTrigger className={`h-8 ${getStatusStyle(item.status)}`}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="stuck">Stuck</SelectItem>
-            <SelectItem value="done">Done</SelectItem>
-            <SelectItem value="in-progress">In Progress</SelectItem>
-          </SelectContent>
-        </Select>
+        <StatusSelect
+          status={item.status}
+          onStatusChange={(value) => handleItemUpdate(item.id, 'status', value)}
+        />
       </div>
       {isExpanded && (
-        <div className="ml-8 space-y-2">
-          <div className="flex items-center gap-2">
-            <Input
-              value={newSubItemTitle}
-              onChange={(e) => setNewSubItemTitle(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleAddSubItem();
-                }
-              }}
-              placeholder="Add sub-item..."
-              className="h-8"
-            />
-            <Button 
-              variant="secondary"
-              size="sm"
-              onClick={handleAddSubItem}
-              className="h-8"
-            >
-              Add
-            </Button>
-          </div>
-          {item.subItems?.map((subItem) => (
-            <div 
-              key={subItem.id} 
-              className="flex items-center gap-2 pl-2"
-            >
-              <button
-                onClick={() => toggleSubItemCompletion(subItem.id)}
-                className="hover:scale-110 transition-transform"
-              >
-                {subItem.completed ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Circle className="h-4 w-4 text-gray-400" />
-                )}
-              </button>
-              <span className={`text-sm ${subItem.completed ? 'line-through text-gray-500' : ''}`}>
-                {subItem.title}
-              </span>
-            </div>
-          ))}
-        </div>
+        <SubItemsList
+          subItems={item.subItems}
+          onAddSubItem={handleAddSubItem}
+          onToggleSubItem={toggleSubItemCompletion}
+        />
       )}
     </div>
   );

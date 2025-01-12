@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 
 interface DateRangeSelectProps {
@@ -43,6 +43,20 @@ export const DateRangeSelect = ({
     }
     
     return duration;
+  };
+
+  const calculateEndDate = (start: Date, duration: number) => {
+    let currentDate = new Date(start);
+    let daysCount = 0;
+    
+    while (daysCount < duration) {
+      currentDate = addDays(currentDate, 1);
+      if (currentDate.getDay() !== 0) { // Skip Sundays
+        daysCount++;
+      }
+    }
+    
+    return currentDate;
   };
 
   const handleStartDateChange = (date: Date | undefined) => {
