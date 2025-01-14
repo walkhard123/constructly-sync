@@ -69,39 +69,39 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="mobile-container animate-fade-in safe-area-padding">
-      <div className="mb-6">
-        <h1 className="text-heading">Welcome Back!</h1>
-        <p className="text-caption">Here's your daily overview</p>
+    <div className="min-h-screen bg-[#F5F5F5] pb-20">
+      <div className="px-4 pt-6 pb-4">
+        <h1 className="text-2xl font-semibold text-[#1A1A1A] mb-1">Welcome Back!</h1>
+        <p className="text-sm text-[#6B6B6B]">Here's your daily overview</p>
       </div>
       
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="px-4 grid grid-cols-2 gap-4 mb-6">
         {statCards.map((card, index) => (
           <StatCard key={index} {...card} />
         ))}
       </div>
 
-      <div className="space-y-6">
+      <div className="px-4 space-y-6">
         <ProjectProgress projects={projectProgress} />
         <ActivityList activities={recentActivities} />
       </div>
 
-      <nav className="bottom-nav">
+      <nav className="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-200 flex justify-around items-center px-4 z-50">
         <button className="nav-item active">
-          <Home className="w-6 h-6" />
-          <span>Home</span>
+          <Home className="w-6 h-6 text-[#4B3F8F]" />
+          <span className="text-xs text-[#4B3F8F]">Home</span>
         </button>
         <button className="nav-item">
-          <Calendar className="w-6 h-6" />
-          <span>Calendar</span>
+          <Calendar className="w-6 h-6 text-[#6B6B6B]" />
+          <span className="text-xs text-[#6B6B6B]">Calendar</span>
         </button>
         <button className="nav-item">
-          <ListTodo className="w-6 h-6" />
-          <span>Tasks</span>
+          <ListTodo className="w-6 h-6 text-[#6B6B6B]" />
+          <span className="text-xs text-[#6B6B6B]">Tasks</span>
         </button>
         <button className="nav-item">
-          <Settings className="w-6 h-6" />
-          <span>Settings</span>
+          <Settings className="w-6 h-6 text-[#6B6B6B]" />
+          <span className="text-xs text-[#6B6B6B]">Settings</span>
         </button>
       </nav>
     </div>

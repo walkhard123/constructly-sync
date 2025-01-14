@@ -75,42 +75,28 @@
   }
 }
 
-/* Mobile-specific styles */
-@media (max-width: 640px) {
-  .mobile-container {
-    @apply max-w-md mx-auto px-4;
-  }
-  
-  .mobile-card {
-    @apply rounded-2xl shadow-lg p-5 bg-white;
-  }
-  
-  .mobile-header {
-    @apply text-2xl font-semibold mb-4;
-  }
-  
-  .mobile-nav {
-    @apply fixed bottom-0 left-0 right-0 h-14 bg-white border-t flex justify-around items-center px-4;
-  }
-  
-  .mobile-nav-item {
-    @apply flex flex-col items-center justify-center text-xs text-gray-500;
-  }
-  
-  .mobile-nav-item.active {
-    @apply text-primary;
-  }
+/* Mobile navigation */
+.nav-item {
+  @apply flex flex-col items-center justify-center gap-1 py-2 px-4 transition-colors duration-200;
+}
+
+.nav-item.active {
+  @apply text-[#4B3F8F];
+}
+
+.nav-item:not(.active) {
+  @apply text-[#6B6B6B];
 }
 
 /* Animation classes */
 .animate-fade-in {
-  animation: fadeIn 0.5s ease-in;
+  animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -128,100 +114,9 @@
   }
 }
 
-.progress-bar {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--secondary);
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: var(--primary);
-  animation: progress 1s ease-out forwards;
-}
-
-/* Task card styles */
-.task-card {
-  @apply rounded-2xl bg-white p-5 shadow-md mb-4 hover:shadow-lg transition-shadow duration-200;
-}
-
-.task-header {
-  @apply flex items-center justify-between mb-3;
-}
-
-.task-title {
-  @apply text-lg font-medium text-gray-900;
-}
-
-.task-date {
-  @apply text-sm text-gray-500;
-}
-
-.task-progress {
-  @apply mt-4;
-}
-
-/* Button styles */
-.btn-primary {
-  @apply h-12 px-6 rounded-xl bg-primary text-white font-medium hover:bg-opacity-90 transition-colors duration-200;
-}
-
-.btn-secondary {
-  @apply h-12 px-6 rounded-xl bg-secondary text-primary font-medium hover:bg-opacity-90 transition-colors duration-200;
-}
-
-/* Form styles */
-.form-input {
-  @apply h-14 rounded-xl border-gray-200 w-full px-4 focus:ring-2 focus:ring-primary focus:border-transparent;
-}
-
-.form-label {
-  @apply text-sm font-medium text-gray-700 mb-1;
-}
-
-/* Category tags */
-.category-tag {
-  @apply h-8 px-4 rounded-full text-sm font-medium inline-flex items-center;
-}
-
-.category-tag.active {
-  @apply bg-primary text-white;
-}
-
-.category-tag.inactive {
-  @apply bg-secondary text-primary;
-}
-
-/* Calendar styles */
-.calendar-day {
-  @apply w-10 h-10 rounded-xl flex items-center justify-center text-sm font-medium;
-}
-
-.calendar-day.active {
-  @apply bg-primary text-white;
-}
-
-.calendar-day.inactive {
-  @apply bg-secondary text-gray-500;
-}
-
-/* Mobile navigation */
-.bottom-nav {
-  @apply fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-200 flex justify-around items-center px-4;
-}
-
-.nav-item {
-  @apply flex flex-col items-center justify-center text-xs text-gray-500;
-}
-
-.nav-item.active {
-  @apply text-primary;
-}
-
 /* Safe area padding for mobile */
 .safe-area-padding {
-  @apply px-4 pb-16;
+  @apply px-4 pb-20;
 }
 
 /* Responsive text sizes */
@@ -239,6 +134,6 @@
   }
   
   .text-caption {
-    @apply text-sm text-gray-500;
+    @apply text-sm text-[#6B6B6B];
   }
 }
