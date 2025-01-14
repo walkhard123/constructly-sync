@@ -40,6 +40,45 @@ export const SubItemsList = ({
 
   const handleSubItemUpdate = (subItemId: number, field: keyof SubScheduleItem, value: any) => {
     if (onUpdateSubItem) {
+      if (field === 'duration') {
+        const item = subItems.find(item => item.id === subItemId);
+        if (item?.startDate) {
+          const startDate = new Date(item.startDate);
+          let currentDate = new Date(startDate);
+          let daysCount = 0;
+          
+          while (daysCount < value) {
+            currentDate.setDate(currentDate.getDate() + 1);
+            if (currentDate.getDay() !== 0) { // Skip Sundays
+              daysCount++;
+            }
+          }
+          
+          onUpdateSubItem(subItemId, 'endDate', currentDate.toISOString());
+        }
+      } else if (field === 'startDate' || field === 'endDate') {
+        const item = subItems.find(item => item.id === subItemId);
+        if (item) {
+          const start = field === 'startDate' ? value : item.startDate;
+          const end = field === 'endDate' ? value : item.endDate;
+          
+          if (start && end) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            let duration = 0;
+            let currentDate = new Date(startDate);
+            
+            while (currentDate <= endDate) {
+              if (currentDate.getDay() !== 0) { // Skip Sundays
+                duration++;
+              }
+              currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            onUpdateSubItem(subItemId, 'duration', duration);
+          }
+        }
+      }
       onUpdateSubItem(subItemId, field, value);
     }
   };
@@ -83,7 +122,7 @@ export const SubItemsList = ({
       {subItems.map((subItem) => (
         <div 
           key={subItem.id} 
-          className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-12 items-center bg-gray-50/50 rounded-sm"
+          className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-12 items-center bg-gray-50/50 rounded-sm py-1"
         >
           <div className="flex items-center gap-2">
             <button
