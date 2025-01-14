@@ -75,9 +75,20 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
     const newSubItem: SubScheduleItem = {
       id: (item.subItems?.length || 0) + 1,
       title: title,
-      completed: false
+      completed: false,
+      status: "in-progress",
+      duration: 0
     };
     handleItemUpdate(item.id, 'subItems', [...(item.subItems || []), newSubItem]);
+  };
+
+  const handleUpdateSubItem = (subItemId: number, field: keyof SubScheduleItem, value: any) => {
+    const updatedSubItems = item.subItems?.map(subItem => 
+      subItem.id === subItemId 
+        ? { ...subItem, [field]: value }
+        : subItem
+    );
+    handleItemUpdate(item.id, 'subItems', updatedSubItems);
   };
 
   const toggleSubItemCompletion = (subItemId: number) => {
@@ -157,6 +168,7 @@ export const SortableItem = ({ id, item, handleItemUpdate }: SortableItemProps) 
           subItems={item.subItems}
           onAddSubItem={handleAddSubItem}
           onToggleSubItem={toggleSubItemCompletion}
+          onUpdateSubItem={handleUpdateSubItem}
         />
       )}
     </div>

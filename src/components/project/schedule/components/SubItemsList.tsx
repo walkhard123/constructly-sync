@@ -11,23 +11,45 @@ interface SubItemsListProps {
   subItems?: SubScheduleItem[];
   onAddSubItem: (title: string) => void;
   onToggleSubItem: (subItemId: number) => void;
+  onUpdateSubItem?: (subItemId: number, field: keyof SubScheduleItem, value: any) => void;
 }
 
-export const SubItemsList = ({ subItems, onAddSubItem, onToggleSubItem }: SubItemsListProps) => {
-  const [newSubItemTitle, setNewSubItemTitle] = useState("");
+export const SubItemsList = ({ 
+  subItems = [], 
+  onAddSubItem, 
+  onToggleSubItem,
+  onUpdateSubItem 
+}: SubItemsListProps) => {
+  const [newSubItem, setNewSubItem] = useState<Partial<SubScheduleItem>>({
+    title: "",
+    contractor: "",
+    duration: 0,
+    status: "in-progress"
+  });
 
   const handleAddSubItem = () => {
-    if (!newSubItemTitle.trim()) return;
-    onAddSubItem(newSubItemTitle.trim());
-    setNewSubItemTitle("");
+    if (!newSubItem.title?.trim()) return;
+    onAddSubItem(newSubItem.title.trim());
+    setNewSubItem({
+      title: "",
+      contractor: "",
+      duration: 0,
+      status: "in-progress"
+    });
+  };
+
+  const handleSubItemUpdate = (subItemId: number, field: keyof SubScheduleItem, value: any) => {
+    if (onUpdateSubItem) {
+      onUpdateSubItem(subItemId, field, value);
+    }
   };
 
   return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-8">
+    <div className="space-y-3 mt-2">
+      <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-12 items-center">
         <Input
-          value={newSubItemTitle}
-          onChange={(e) => setNewSubItemTitle(e.target.value)}
+          value={newSubItem.title}
+          onChange={(e) => setNewSubItem({ ...newSubItem, title: e.target.value })}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               handleAddSubItem();
@@ -37,29 +59,31 @@ export const SubItemsList = ({ subItems, onAddSubItem, onToggleSubItem }: SubIte
           className="h-8"
         />
         <Input
+          value={newSubItem.contractor}
+          onChange={(e) => setNewSubItem({ ...newSubItem, contractor: e.target.value })}
           placeholder="Contractor"
           className="h-8"
         />
         <DurationInput
-          duration={0}
-          onDurationChange={() => {}}
+          duration={newSubItem.duration}
+          onDurationChange={(value) => setNewSubItem({ ...newSubItem, duration: value })}
         />
         <DateRangeSelect
-          startDate={undefined}
-          endDate={undefined}
-          onStartDateChange={() => {}}
-          onEndDateChange={() => {}}
-          onDurationChange={() => {}}
+          startDate={newSubItem.startDate ? new Date(newSubItem.startDate) : undefined}
+          endDate={newSubItem.endDate ? new Date(newSubItem.endDate) : undefined}
+          onStartDateChange={(date) => setNewSubItem({ ...newSubItem, startDate: date?.toISOString() })}
+          onEndDateChange={(date) => setNewSubItem({ ...newSubItem, endDate: date?.toISOString() })}
+          onDurationChange={(duration) => setNewSubItem({ ...newSubItem, duration })}
         />
         <StatusSelect
-          status="in-progress"
-          onStatusChange={() => {}}
+          status={newSubItem.status || "in-progress"}
+          onStatusChange={(value) => setNewSubItem({ ...newSubItem, status: value })}
         />
       </div>
-      {subItems?.map((subItem) => (
+      {subItems.map((subItem) => (
         <div 
           key={subItem.id} 
-          className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-8 items-center"
+          className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-12 items-center bg-gray-50/50 rounded-sm"
         >
           <div className="flex items-center gap-2">
             <button
@@ -77,23 +101,25 @@ export const SubItemsList = ({ subItems, onAddSubItem, onToggleSubItem }: SubIte
             </span>
           </div>
           <Input
+            value={subItem.contractor || ''}
+            onChange={(e) => handleSubItemUpdate(subItem.id, 'contractor', e.target.value)}
             placeholder="Contractor"
             className="h-8"
           />
           <DurationInput
-            duration={0}
-            onDurationChange={() => {}}
+            duration={subItem.duration}
+            onDurationChange={(value) => handleSubItemUpdate(subItem.id, 'duration', value)}
           />
           <DateRangeSelect
-            startDate={undefined}
-            endDate={undefined}
-            onStartDateChange={() => {}}
-            onEndDateChange={() => {}}
-            onDurationChange={() => {}}
+            startDate={subItem.startDate ? new Date(subItem.startDate) : undefined}
+            endDate={subItem.endDate ? new Date(subItem.endDate) : undefined}
+            onStartDateChange={(date) => handleSubItemUpdate(subItem.id, 'startDate', date?.toISOString())}
+            onEndDateChange={(date) => handleSubItemUpdate(subItem.id, 'endDate', date?.toISOString())}
+            onDurationChange={(duration) => handleSubItemUpdate(subItem.id, 'duration', duration)}
           />
           <StatusSelect
-            status="in-progress"
-            onStatusChange={() => {}}
+            status={subItem.status || "in-progress"}
+            onStatusChange={(value) => handleSubItemUpdate(subItem.id, 'status', value)}
           />
         </div>
       ))}
