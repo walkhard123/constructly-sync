@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { format } from "date-fns";
 
 interface LeaveRequest {
   id: number;
   type: string;
   startDate: string;
+  endDate: string;
   startTime: string;
   status: string;
   reason: string;
@@ -19,6 +19,7 @@ export const useLeaveRequests = () => {
       id: 1,
       type: "Annual Leave",
       startDate: "2024-04-01",
+      endDate: "2024-04-01",
       startTime: "09:00",
       status: "pending",
       reason: "Family vacation",
@@ -39,7 +40,6 @@ export const useLeaveRequests = () => {
     setRequests([...requests, {
       id: requests.length + 1,
       ...newRequest,
-      startDate: format(newRequest.startDate, "yyyy-MM-dd"),
       status: "pending"
     }]);
 

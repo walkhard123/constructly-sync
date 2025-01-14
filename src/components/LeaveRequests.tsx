@@ -3,12 +3,14 @@ import { LeaveRequestDialog } from "./leave-requests/LeaveRequestDialog";
 import { LeaveRequestCard } from "./leave-requests/LeaveRequestCard";
 import { LeaveRequestHeader } from "./leave-requests/LeaveRequestHeader";
 import { useLeaveRequests } from "@/hooks/useLeaveRequests";
+import { format } from "date-fns";
 
 export const LeaveRequests = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({
     type: "",
     startDate: undefined as Date | undefined,
+    endDate: undefined as Date | undefined,
     startTime: "",
     reason: "",
     employee: ""
@@ -31,11 +33,28 @@ export const LeaveRequests = () => {
     setNewRequest({
       type: "",
       startDate: undefined,
+      endDate: undefined,
       startTime: "",
       reason: "",
       employee: ""
     });
     setIsDialogOpen(false);
+  };
+
+  const handleSubmitRequest = () => {
+    if (!newRequest.startDate) return;
+    
+    const formattedRequest = {
+      type: newRequest.type,
+      startDate: format(newRequest.startDate, 'yyyy-MM-dd'),
+      endDate: newRequest.endDate ? format(newRequest.endDate, 'yyyy-MM-dd') : format(newRequest.startDate, 'yyyy-MM-dd'),
+      startTime: newRequest.startTime,
+      reason: newRequest.reason,
+      employee: newRequest.employee
+    };
+
+    handleAddRequest(formattedRequest);
+    handleCancel();
   };
 
   return (
@@ -47,10 +66,7 @@ export const LeaveRequests = () => {
         onOpenChange={setIsDialogOpen}
         newRequest={newRequest}
         setNewRequest={setNewRequest}
-        handleAddRequest={() => {
-          handleAddRequest(newRequest);
-          handleCancel();
-        }}
+        handleAddRequest={handleSubmitRequest}
         handleCancel={handleCancel}
         teamMembers={teamMembers}
       />
