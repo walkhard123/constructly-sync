@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Upload } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LeaveRequestDialogProps {
@@ -53,17 +53,17 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-6">
         <DialogHeader>
           <DialogTitle>New Leave Request</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Team Member</Label>
                 <Select onValueChange={(value) => setFormData(prev => ({ ...prev, employee: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select team member" />
                   </SelectTrigger>
                   <SelectContent>
@@ -77,7 +77,7 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
               <div>
                 <Label>Leave Type</Label>
                 <Select onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select leave type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -122,6 +122,7 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
+                  className="w-full"
                 />
               </div>
             </div>
@@ -159,40 +160,42 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
+                  className="w-full"
                 />
               </div>
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Description</Label>
               <Textarea
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 placeholder="Enter any additional details..."
-                className="h-20"
+                className="min-h-[100px]"
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <Label>Supporting Documents</Label>
-              <div className="mt-2">
-                <Input
-                  type="file"
-                  onChange={handleFileChange}
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Upload supporting documents (e.g., medical certificates)
-                </p>
-              </div>
+              <Input
+                type="file"
+                onChange={handleFileChange}
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                className="w-full"
+              />
+              <p className="text-sm text-muted-foreground mt-1">
+                Upload supporting documents (e.g., medical certificates)
+              </p>
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit">Submit Request</Button>
+            <Button type="submit" className="bg-primary text-primary-foreground">
+              Submit Request
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
