@@ -27,28 +27,6 @@ export const useLeaveRequests = () => {
     }
   ]);
 
-  const handleAddRequest = (newRequest: Omit<LeaveRequest, "id" | "status">) => {
-    if (!newRequest.type || !newRequest.startDate || !newRequest.startTime || !newRequest.employee) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setRequests([...requests, {
-      id: requests.length + 1,
-      ...newRequest,
-      status: "pending"
-    }]);
-
-    toast({
-      title: "Success",
-      description: "Leave request submitted successfully.",
-    });
-  };
-
   const handleApprove = (requestId: number) => {
     setRequests(requests.map(request => 
       request.id === requestId 
@@ -76,7 +54,6 @@ export const useLeaveRequests = () => {
 
   return {
     requests,
-    handleAddRequest,
     handleApprove,
     handleReject
   };
