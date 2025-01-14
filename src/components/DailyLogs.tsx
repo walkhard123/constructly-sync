@@ -60,6 +60,20 @@ export const DailyLogs = () => {
     dateRange
   });
 
+  const handleOpenEditDialog = (log: LogEntry) => {
+    setEditingLog(log);
+    setNewLog({
+      project: log.project,
+      activities: log.activities,
+      deliveries: log.deliveries,
+      startTime: log.startTime,
+      endTime: log.endTime,
+      tags: log.tags,
+      photos: log.photos
+    });
+    setIsDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <LogHeader 
@@ -74,7 +88,7 @@ export const DailyLogs = () => {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editingLog ? 'Edit Log Entry' : 'Add Daily Log Entry'}</DialogTitle>
             <DialogDescription>
@@ -103,7 +117,7 @@ export const DailyLogs = () => {
           <LogEntryCard
             key={log.id}
             log={log}
-            onEdit={handleEditLog}
+            onEdit={() => handleOpenEditDialog(log)}
           />
         ))}
       </div>
