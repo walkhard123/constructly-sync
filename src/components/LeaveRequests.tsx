@@ -8,8 +8,8 @@ export const LeaveRequests = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({
     type: "",
-    startDate: "",
-    endDate: "",
+    startDate: undefined as Date | undefined,
+    startTime: "",
     reason: "",
     employee: ""
   });
@@ -30,8 +30,8 @@ export const LeaveRequests = () => {
   const handleCancel = () => {
     setNewRequest({
       type: "",
-      startDate: "",
-      endDate: "",
+      startDate: undefined,
+      startTime: "",
       reason: "",
       employee: ""
     });

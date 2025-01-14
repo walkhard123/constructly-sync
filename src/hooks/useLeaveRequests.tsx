@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { format } from "date-fns";
 
 interface LeaveRequest {
   id: number;
   type: string;
   startDate: string;
-  endDate: string;
+  startTime: string;
   status: string;
   reason: string;
   employee: string;
@@ -18,7 +19,7 @@ export const useLeaveRequests = () => {
       id: 1,
       type: "Annual Leave",
       startDate: "2024-04-01",
-      endDate: "2024-04-05",
+      startTime: "09:00",
       status: "pending",
       reason: "Family vacation",
       employee: "John Smith"
@@ -26,7 +27,7 @@ export const useLeaveRequests = () => {
   ]);
 
   const handleAddRequest = (newRequest: Omit<LeaveRequest, "id" | "status">) => {
-    if (!newRequest.type || !newRequest.employee) {
+    if (!newRequest.type || !newRequest.startDate || !newRequest.startTime || !newRequest.employee) {
       toast({
         title: "Error",
         description: "Please fill in all required fields",
@@ -38,6 +39,7 @@ export const useLeaveRequests = () => {
     setRequests([...requests, {
       id: requests.length + 1,
       ...newRequest,
+      startDate: format(newRequest.startDate, "yyyy-MM-dd"),
       status: "pending"
     }]);
 
