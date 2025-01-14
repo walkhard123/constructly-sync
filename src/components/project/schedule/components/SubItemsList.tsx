@@ -135,19 +135,24 @@ export const SubItemsList = ({
                 <Circle className="h-4 w-4 text-gray-400" />
               )}
             </button>
-            <span className={`text-sm ${subItem.completed ? 'line-through text-gray-500' : ''}`}>
-              {subItem.title}
-            </span>
+            <Input
+              value={subItem.title}
+              onChange={(e) => handleSubItemUpdate(subItem.id, 'title', e.target.value)}
+              className={`h-8 ${subItem.completed ? 'line-through text-gray-500' : ''}`}
+              readOnly={subItem.completed}
+            />
           </div>
           <Input
             value={subItem.contractor || ''}
             onChange={(e) => handleSubItemUpdate(subItem.id, 'contractor', e.target.value)}
             placeholder="Contractor"
             className="h-8"
+            readOnly={subItem.completed}
           />
           <DurationInput
             duration={subItem.duration}
             onDurationChange={(value) => handleSubItemUpdate(subItem.id, 'duration', value)}
+            disabled={subItem.completed}
           />
           <DateRangeSelect
             startDate={subItem.startDate ? new Date(subItem.startDate) : undefined}
@@ -155,10 +160,12 @@ export const SubItemsList = ({
             onStartDateChange={(date) => handleSubItemUpdate(subItem.id, 'startDate', date?.toISOString())}
             onEndDateChange={(date) => handleSubItemUpdate(subItem.id, 'endDate', date?.toISOString())}
             onDurationChange={(duration) => handleSubItemUpdate(subItem.id, 'duration', duration)}
+            disabled={subItem.completed}
           />
           <StatusSelect
             status={subItem.status || "in-progress"}
             onStatusChange={(value) => handleSubItemUpdate(subItem.id, 'status', value)}
+            disabled={subItem.completed}
           />
         </div>
       ))}
