@@ -168,9 +168,7 @@ export default function ProjectSchedule() {
         onLoadTemplate={handleLoadTemplate}
       />
 
-      <D
-
-ndContext
+      <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
