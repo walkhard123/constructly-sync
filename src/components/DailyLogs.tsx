@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LogEntry } from "./types/log";
 import { LogEntryForm } from "./log/LogEntryForm";
