@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { GripVertical, Plus } from "lucide-react";
+import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableItem } from "./SortableItem";
 import { ScheduleItem } from "./types";
@@ -15,6 +15,8 @@ interface SortableGroupProps {
   onGroupTitleChange: (oldTitle: string, newTitle: string) => void;
   onAddItem: (groupTitle: string) => void;
   handleItemUpdate: (id: number, field: keyof ScheduleItem, value: any) => void;
+  onDeleteGroup: (groupTitle: string) => void;
+  onDeleteItem: (itemId: number) => void;
 }
 
 export const SortableGroup = ({ 
@@ -23,6 +25,8 @@ export const SortableGroup = ({
   onGroupTitleChange, 
   onAddItem, 
   handleItemUpdate,
+  onDeleteGroup,
+  onDeleteItem
 }: SortableGroupProps) => {
   const {
     attributes,
@@ -90,6 +94,14 @@ export const SortableGroup = ({
               {editingTitle}
             </div>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onDeleteGroup(groupTitle)}
+            className="text-red-500 hover:text-red-600 p-1 h-7"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
         <Button 
           onClick={() => onAddItem(groupTitle)} 
@@ -116,6 +128,7 @@ export const SortableGroup = ({
               id={item.id}
               item={item}
               handleItemUpdate={handleItemUpdate}
+              onDeleteItem={onDeleteItem}
             />
           ))}
         </div>

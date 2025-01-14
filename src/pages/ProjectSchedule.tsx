@@ -13,9 +13,11 @@ import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrate
 import { ScheduleItem } from "@/components/project/schedule/types";
 import { SortableGroup } from "@/components/project/schedule/SortableGroup";
 import { ScheduleHeader } from "@/components/project/schedule/ScheduleHeader";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProjectSchedule() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([
     {
       id: 1,
@@ -126,6 +128,26 @@ export default function ProjectSchedule() {
     setScheduleItems([...scheduleItems, newItem]);
   };
 
+  const handleDeleteGroup = (groupTitle: string) => {
+    setScheduleItems(items => items.filter(item => item.groupTitle !== groupTitle));
+    toast({
+      title: "Success",
+      description: "Group deleted successfully",
+    });
+  };
+
+  const handleDeleteItem = (itemId: number) => {
+    setScheduleItems(items => items.filter(item => item.id !== itemId));
+    toast({
+      title: "Success",
+      description: "Item deleted successfully",
+    });
+  };
+
+  const handleLoadTemplate = (items: ScheduleItem[]) => {
+    setScheduleItems(items);
+  };
+
   // Group items by groupTitle
   const groupedItems = scheduleItems.reduce((acc, item) => {
     if (!acc[item.groupTitle]) {
@@ -142,9 +164,13 @@ export default function ProjectSchedule() {
       <ScheduleHeader
         onNavigateBack={() => navigate('/', { state: { selectedSection: "Projects Management" } })}
         onAddGroup={addNewItem}
+        scheduleItems={scheduleItems}
+        onLoadTemplate={handleLoadTemplate}
       />
 
-      <DndContext
+      <D
+
+ndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
@@ -158,6 +184,8 @@ export default function ProjectSchedule() {
               onGroupTitleChange={handleGroupTitleChange}
               onAddItem={addNewItem}
               handleItemUpdate={handleItemUpdate}
+              onDeleteGroup={handleDeleteGroup}
+              onDeleteItem={handleDeleteItem}
             />
           ))}
         </SortableContext>

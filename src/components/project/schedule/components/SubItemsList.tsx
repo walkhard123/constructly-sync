@@ -12,13 +12,15 @@ interface SubItemsListProps {
   onAddSubItem: (title: string) => void;
   onToggleSubItem: (subItemId: number) => void;
   onUpdateSubItem?: (subItemId: number, field: keyof SubScheduleItem, value: any) => void;
+  onDeleteSubItem: (subItemId: number) => void;
 }
 
 export const SubItemsList = ({ 
   subItems = [], 
   onAddSubItem, 
   onToggleSubItem,
-  onUpdateSubItem 
+  onUpdateSubItem,
+  onDeleteSubItem
 }: SubItemsListProps) => {
   const [newSubItem, setNewSubItem] = useState<Partial<SubScheduleItem>>({
     title: "",
@@ -141,6 +143,14 @@ export const SubItemsList = ({
               className={`h-8 ${subItem.completed ? 'line-through text-gray-500' : ''}`}
               readOnly={subItem.completed}
             />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onDeleteSubItem(subItem.id)}
+              className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
           <Input
             value={subItem.contractor || ''}

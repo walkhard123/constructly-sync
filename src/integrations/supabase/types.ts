@@ -96,6 +96,138 @@ export type Database = {
         }
         Relationships: []
       }
+      schedule_templates: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      template_groups: {
+        Row: {
+          created_at: string
+          id: number
+          sort_order: number
+          template_id: number | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          sort_order: number
+          template_id?: number | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          sort_order?: number
+          template_id?: number | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_groups_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      template_items: {
+        Row: {
+          contractor: string | null
+          created_at: string
+          duration: number | null
+          group_id: number | null
+          id: number
+          sort_order: number
+          status: string
+          title: string
+        }
+        Insert: {
+          contractor?: string | null
+          created_at?: string
+          duration?: number | null
+          group_id?: number | null
+          id?: number
+          sort_order: number
+          status: string
+          title: string
+        }
+        Update: {
+          contractor?: string | null
+          created_at?: string
+          duration?: number | null
+          group_id?: number | null
+          id?: number
+          sort_order?: number
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_items_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "template_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      template_sub_items: {
+        Row: {
+          completed: boolean | null
+          contractor: string | null
+          created_at: string
+          duration: number | null
+          id: number
+          item_id: number | null
+          status: string
+          title: string
+        }
+        Insert: {
+          completed?: boolean | null
+          contractor?: string | null
+          created_at?: string
+          duration?: number | null
+          id?: number
+          item_id?: number | null
+          status: string
+          title: string
+        }
+        Update: {
+          completed?: boolean | null
+          contractor?: string | null
+          created_at?: string
+          duration?: number | null
+          id?: number
+          item_id?: number | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_sub_items_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "template_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       User: {
         Row: {
           created_at: string

@@ -1,14 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Plus } from "lucide-react";
+import { ChevronLeft, Plus, Save } from "lucide-react";
+import { TemplateDialog } from "./TemplateDialog";
+import { ScheduleItem } from "./types";
 
 interface ScheduleHeaderProps {
   onNavigateBack: () => void;
   onAddGroup: (groupTitle: string) => void;
+  scheduleItems: ScheduleItem[];
+  onLoadTemplate: (items: ScheduleItem[]) => void;
 }
 
 export const ScheduleHeader = ({
   onNavigateBack,
-  onAddGroup
+  onAddGroup,
+  scheduleItems,
+  onLoadTemplate
 }: ScheduleHeaderProps) => {
   return (
     <>
@@ -31,6 +37,10 @@ export const ScheduleHeader = ({
             <Plus className="h-4 w-4" />
             New Group
           </Button>
+          <TemplateDialog
+            scheduleItems={scheduleItems}
+            onLoadTemplate={onLoadTemplate}
+          />
         </div>
       </div>
     </>
