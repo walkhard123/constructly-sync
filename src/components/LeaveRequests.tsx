@@ -6,8 +6,6 @@ import { useLeaveRequests } from "@/hooks/useLeaveRequests";
 
 export const LeaveRequests = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
   const [newRequest, setNewRequest] = useState({
     type: "",
     startDate: "",
@@ -37,8 +35,6 @@ export const LeaveRequests = () => {
       reason: "",
       employee: ""
     });
-    setStartDate(undefined);
-    setEndDate(undefined);
     setIsDialogOpen(false);
   };
 
@@ -51,15 +47,9 @@ export const LeaveRequests = () => {
         onOpenChange={setIsDialogOpen}
         newRequest={newRequest}
         setNewRequest={setNewRequest}
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
         handleAddRequest={() => {
-          if (startDate && endDate) {
-            handleAddRequest(newRequest, startDate, endDate);
-            handleCancel();
-          }
+          handleAddRequest(newRequest);
+          handleCancel();
         }}
         handleCancel={handleCancel}
         teamMembers={teamMembers}

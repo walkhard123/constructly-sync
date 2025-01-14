@@ -4,7 +4,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TeamMemberSelect } from "./dialog/TeamMemberSelect";
 import { LeaveTypeSelect } from "./dialog/LeaveTypeSelect";
-import { DateRangeSelect } from "./dialog/DateRangeSelect";
 
 interface LeaveRequestDialogProps {
   isOpen: boolean;
@@ -15,10 +14,6 @@ interface LeaveRequestDialogProps {
     employee: string;
   };
   setNewRequest: (request: any) => void;
-  startDate: Date | undefined;
-  setStartDate: (date: Date | undefined) => void;
-  endDate: Date | undefined;
-  setEndDate: (date: Date | undefined) => void;
   handleAddRequest: () => void;
   handleCancel: () => void;
   teamMembers: { id: number; name: string; }[];
@@ -29,26 +24,10 @@ export const LeaveRequestDialog = ({
   onOpenChange,
   newRequest,
   setNewRequest,
-  startDate,
-  setStartDate,
-  endDate,
-  setEndDate,
   handleAddRequest,
   handleCancel,
   teamMembers,
 }: LeaveRequestDialogProps) => {
-  const handleStartDateSelect = (date: Date | undefined) => {
-    setStartDate(date);
-    // Reset end date if start date is after it
-    if (date && endDate && date > endDate) {
-      setEndDate(undefined);
-    }
-  };
-
-  const handleEndDateSelect = (date: Date | undefined) => {
-    setEndDate(date);
-  };
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -67,12 +46,6 @@ export const LeaveRequestDialog = ({
           <LeaveTypeSelect
             value={newRequest.type}
             onChange={(value) => setNewRequest({...newRequest, type: value})}
-          />
-          <DateRangeSelect
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateSelect={handleStartDateSelect}
-            onEndDateSelect={handleEndDateSelect}
           />
           <div>
             <Label>Reason</Label>
