@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LeaveRequest {
   id: number;
@@ -7,9 +8,11 @@ interface LeaveRequest {
   startDate: string;
   endDate: string;
   startTime: string;
+  endTime: string;
   status: string;
   reason: string;
   employee: string;
+  file?: File;
 }
 
 export const useLeaveRequests = () => {
@@ -21,11 +24,53 @@ export const useLeaveRequests = () => {
       startDate: "2024-04-01",
       endDate: "2024-04-01",
       startTime: "09:00",
+      endTime: "17:00",
       status: "pending",
       reason: "Family vacation",
       employee: "John Smith"
     }
   ]);
+
+  const handleAddRequest = async (newRequest: Omit<LeaveRequest, "id" | "status">) => {
+    if (!newRequest.type || !newRequest.startDate || !newRequest.startTime || !newRequest.employee) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      if (newRequest.file) {
+        const fileExt = newRequest.file.name.split('.').pop();
+        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('project-files')
+          .upload(filePath, newRequest.file);
+
+        if (uploadError) throw uploadError;
+      }
+
+      setRequests([...requests, {
+        id: requests.length + 1,
+        ...newRequest,
+        status: "pending"
+      }]);
+
+      toast({
+        title: "Success",
+        description: "Leave request submitted successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to upload supporting document. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleApprove = (requestId: number) => {
     setRequests(requests.map(request => 
@@ -34,8 +79,8 @@ export const useLeaveRequests = () => {
         : request
     ));
     toast({
-      title: "Leave Request Approved",
-      description: "The leave request has been approved successfully.",
+      title: "Success",
+      description: "Leave request approved successfully.",
     });
   };
 
@@ -46,7 +91,7 @@ export const useLeaveRequests = () => {
         : request
     ));
     toast({
-      title: "Leave Request Rejected",
+      title: "Request Rejected",
       description: "The leave request has been rejected.",
       variant: "destructive",
     });
@@ -54,6 +99,7 @@ export const useLeaveRequests = () => {
 
   return {
     requests,
+    handleAddRequest,
     handleApprove,
     handleReject
   };
