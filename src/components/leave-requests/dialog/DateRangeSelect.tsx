@@ -40,11 +40,8 @@ export const DateRangeSelect = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-auto p-0 bg-white" 
-            align="start" 
-            side="bottom" 
-            sideOffset={4}
-            onOpenAutoFocus={(e) => e.preventDefault()}
+            className="z-50 bg-white p-0" 
+            align="start"
           >
             <Calendar
               mode="single"
@@ -56,6 +53,7 @@ export const DateRangeSelect = ({
           </PopoverContent>
         </Popover>
       </div>
+
       <div className="space-y-2">
         <Label>End Date</Label>
         <Popover>
@@ -72,11 +70,8 @@ export const DateRangeSelect = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent 
-            className="w-auto p-0 bg-white" 
-            align="start" 
-            side="bottom" 
-            sideOffset={4}
-            onOpenAutoFocus={(e) => e.preventDefault()}
+            className="z-50 bg-white p-0" 
+            align="start"
           >
             <Calendar
               mode="single"
