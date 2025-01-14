@@ -1,45 +1,13 @@
-import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import { LogEntry } from "./types/log";
 import { LogEntryForm } from "./log/LogEntryForm";
 import { LogEntryCard } from "./log/LogEntryCard";
 import { LogHeader } from "./log/LogHeader";
-import { DateRange } from "react-day-picker";
-import { isWithinInterval, parseISO } from "date-fns";
+import { useLogState } from "./log/hooks/useLogState";
+import { useLogActions } from "./log/hooks/useLogActions";
+import { useLogFilters } from "./log/hooks/useLogFilters";
 
 export const DailyLogs = () => {
-  const { toast } = useToast();
-  const [logs, setLogs] = useState<LogEntry[]>([
-    {
-      id: 1,
-      project: "Downtown Office Building",
-      date: "2024-03-20",
-      startTime: new Date().toISOString(),
-      endTime: new Date().toISOString(),
-      activities: "Completed foundation inspection, started electrical work",
-      deliveries: "Received steel beams, ordered concrete",
-      attachments: 2,
-      tags: ["@JohnDoe", "@SarahSmith"],
-      photos: []
-    }
-  ]);
-
-  const [newLog, setNewLog] = useState<Partial<LogEntry>>({
-    project: "",
-    activities: "",
-    deliveries: "",
-    startTime: new Date().toISOString(),
-    endTime: new Date().toISOString(),
-    tags: [],
-    photos: []
-  });
-
-  const [editingLog, setEditingLog] = useState<LogEntry | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedTeamMember, setSelectedTeamMember] = useState<string>("");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
-
   const [projects] = useState([
     "Downtown Office Building",
     "Residential Complex",
@@ -54,121 +22,41 @@ export const DailyLogs = () => {
     "@EmilyBrown"
   ]);
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      const newPhotos = Array.from(files).map(file => URL.createObjectURL(file));
-      if (editingLog) {
-        setEditingLog({
-          ...editingLog,
-          photos: [...editingLog.photos, ...newPhotos]
-        });
-      } else {
-        setNewLog(prev => ({
-          ...prev,
-          photos: [...(prev.photos || []), ...newPhotos]
-        }));
-      }
-    }
-  };
+  const {
+    logs,
+    setLogs,
+    newLog,
+    setNewLog,
+    editingLog,
+    setEditingLog,
+    isDialogOpen,
+    setIsDialogOpen,
+    selectedTeamMember,
+    setSelectedTeamMember,
+    dateRange,
+    setDateRange
+  } = useLogState();
 
-  const handleEditLog = (log: LogEntry) => {
-    setEditingLog(log);
-    setNewLog(log); // Set newLog to the current log being edited
-    setIsDialogOpen(true);
-  };
+  const {
+    handlePhotoUpload,
+    handleEditLog,
+    handleSaveEdit,
+    handleAddLog,
+    resetNewLog
+  } = useLogActions({
+    logs,
+    setLogs,
+    newLog,
+    setNewLog,
+    editingLog,
+    setEditingLog,
+    setIsDialogOpen
+  });
 
-  const handleSaveEdit = () => {
-    if (!editingLog?.project || !editingLog?.activities) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setLogs(prevLogs => 
-      prevLogs.map(log => 
-        log.id === editingLog.id ? { ...editingLog, ...newLog } : log
-      )
-    );
-
-    setEditingLog(null);
-    setIsDialogOpen(false);
-    setNewLog({
-      project: "",
-      activities: "",
-      deliveries: "",
-      startTime: new Date().toISOString(),
-      endTime: new Date().toISOString(),
-      tags: [],
-      photos: []
-    });
-
-    toast({
-      title: "Success",
-      description: "Log entry updated successfully"
-    });
-  };
-
-  const handleAddLog = () => {
-    if (!newLog.project || !newLog.activities) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const logEntry: LogEntry = {
-      id: logs.length + 1,
-      date: new Date().toISOString().split('T')[0],
-      attachments: newLog.photos?.length || 0,
-      project: newLog.project,
-      activities: newLog.activities,
-      deliveries: newLog.deliveries || "",
-      startTime: newLog.startTime || "",
-      endTime: newLog.endTime || "",
-      tags: Array.isArray(newLog.tags) ? newLog.tags : [],
-      photos: newLog.photos || []
-    };
-
-    setLogs([...logs, logEntry]);
-    setNewLog({
-      project: "",
-      activities: "",
-      deliveries: "",
-      startTime: "",
-      endTime: "",
-      tags: [],
-      photos: []
-    });
-    setIsDialogOpen(false);
-
-    toast({
-      title: "Success",
-      description: "Log entry added successfully"
-    });
-  };
-
-  const filteredLogs = logs.filter(log => {
-    let passes = true;
-
-    if (selectedTeamMember) {
-      passes = passes && log.tags.includes(selectedTeamMember);
-    }
-
-    if (dateRange?.from && dateRange?.to) {
-      const logDate = parseISO(log.date);
-      passes = passes && isWithinInterval(logDate, {
-        start: dateRange.from,
-        end: dateRange.to
-      });
-    }
-
-    return passes;
+  const { filteredLogs } = useLogFilters({
+    logs,
+    selectedTeamMember,
+    dateRange
   });
 
   return (
@@ -176,15 +64,7 @@ export const DailyLogs = () => {
       <LogHeader 
         onAddNew={() => {
           setEditingLog(null);
-          setNewLog({
-            project: "",
-            activities: "",
-            deliveries: "",
-            startTime: new Date().toISOString(),
-            endTime: new Date().toISOString(),
-            tags: [],
-            photos: []
-          });
+          resetNewLog();
           setIsDialogOpen(true);
         }}
         teamMembers={teamMembers}
@@ -210,15 +90,7 @@ export const DailyLogs = () => {
             onCancel={() => {
               setEditingLog(null);
               setIsDialogOpen(false);
-              setNewLog({
-                project: "",
-                activities: "",
-                deliveries: "",
-                startTime: new Date().toISOString(),
-                endTime: new Date().toISOString(),
-                tags: [],
-                photos: []
-              });
+              resetNewLog();
             }}
             onSave={editingLog ? handleSaveEdit : handleAddLog}
           />
