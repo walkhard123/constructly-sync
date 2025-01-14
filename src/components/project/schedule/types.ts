@@ -2,6 +2,11 @@ export interface SubScheduleItem {
   id: number;
   title: string;
   completed: boolean;
+  contractor?: string;
+  duration?: number;
+  startDate?: string;
+  endDate?: string;
+  status?: "stuck" | "done" | "in-progress";
 }
 
 export interface ScheduleItem {
