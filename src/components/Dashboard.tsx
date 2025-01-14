@@ -85,25 +85,6 @@ export const Dashboard = () => {
         <ProjectProgress projects={projectProgress} />
         <ActivityList activities={recentActivities} />
       </div>
-
-      <nav className="fixed bottom-0 left-0 right-0 h-14 bg-white border-t border-gray-200 flex justify-around items-center px-4 z-50">
-        <button className="nav-item active">
-          <Home className="w-6 h-6 text-[#4B3F8F]" />
-          <span className="text-xs text-[#4B3F8F]">Home</span>
-        </button>
-        <button className="nav-item">
-          <Calendar className="w-6 h-6 text-[#6B6B6B]" />
-          <span className="text-xs text-[#6B6B6B]">Calendar</span>
-        </button>
-        <button className="nav-item">
-          <ListTodo className="w-6 h-6 text-[#6B6B6B]" />
-          <span className="text-xs text-[#6B6B6B]">Tasks</span>
-        </button>
-        <button className="nav-item">
-          <Settings className="w-6 h-6 text-[#6B6B6B]" />
-          <span className="text-xs text-[#6B6B6B]">Settings</span>
-        </button>
-      </nav>
     </div>
   );
 };
