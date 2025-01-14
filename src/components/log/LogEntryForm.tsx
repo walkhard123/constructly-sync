@@ -30,39 +30,30 @@ export const LogEntryForm = ({
   onSave
 }: LogEntryFormProps) => {
   const handleRemoveTag = (tagToRemove: string) => {
-    const currentLog = editingLog || newLog;
-    const currentTags = Array.isArray(currentLog.tags) ? currentLog.tags : [];
-    const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
-    
-    if (editingLog) {
-      setNewLog({ ...editingLog, tags: updatedTags });
-    } else {
-      setNewLog({ ...currentLog, tags: updatedTags });
-    }
+    const updatedTags = (newLog.tags || []).filter(tag => tag !== tagToRemove);
+    setNewLog({ ...newLog, tags: updatedTags });
   };
-
-  const currentLog = editingLog || newLog;
 
   return (
     <div className="space-y-6 max-h-[80vh] overflow-y-auto px-4">
       <div className="space-y-4">
         <ProjectSelect
-          value={currentLog.project || ""}
+          value={newLog.project || ""}
           projects={projects}
-          onChange={(value) => setNewLog({ ...currentLog, project: value })}
+          onChange={(value) => setNewLog({ ...newLog, project: value })}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <DateSelect
-            value={currentLog.startTime || new Date().toISOString()}
-            onChange={(date) => setNewLog({ ...currentLog, startTime: date })}
+            value={newLog.startTime || new Date().toISOString()}
+            onChange={(date) => setNewLog({ ...newLog, startTime: date })}
           />
           <TeamMemberSelect
             teamMembers={teamMembers}
             onSelect={(value) => {
-              const currentTags = Array.isArray(currentLog.tags) ? currentLog.tags : [];
+              const currentTags = Array.isArray(newLog.tags) ? newLog.tags : [];
               if (!currentTags.includes(value)) {
-                setNewLog({ ...currentLog, tags: [...currentTags, value] });
+                setNewLog({ ...newLog, tags: [...currentTags, value] });
               }
             }}
           />
@@ -71,8 +62,8 @@ export const LogEntryForm = ({
         <div className="space-y-2">
           <Label>Activities</Label>
           <Textarea
-            value={currentLog.activities || ""}
-            onChange={(e) => setNewLog({ ...currentLog, activities: e.target.value })}
+            value={newLog.activities || ""}
+            onChange={(e) => setNewLog({ ...newLog, activities: e.target.value })}
             placeholder="Describe today's activities..."
             className="min-h-[100px] resize-y"
           />
@@ -81,21 +72,21 @@ export const LogEntryForm = ({
         <div className="space-y-2">
           <Label>Deliveries</Label>
           <Textarea
-            value={currentLog.deliveries || ""}
-            onChange={(e) => setNewLog({ ...currentLog, deliveries: e.target.value })}
+            value={newLog.deliveries || ""}
+            onChange={(e) => setNewLog({ ...newLog, deliveries: e.target.value })}
             placeholder="List any deliveries received or ordered..."
             className="min-h-[100px] resize-y"
           />
         </div>
 
         <TeamMemberTags
-          tags={currentLog.tags || []}
+          tags={newLog.tags || []}
           onRemoveTag={handleRemoveTag}
         />
 
         <PhotoUpload
           onPhotoUpload={handlePhotoUpload}
-          photos={currentLog.photos || []}
+          photos={newLog.photos || []}
         />
 
         <div className="flex justify-end gap-2 pt-4">
