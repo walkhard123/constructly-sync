@@ -42,13 +42,14 @@ export const useProjectActions = (
         tasks: []
       };
 
-      const updatedProjects = [...projects, newProjectData];
+      // Add new project at the beginning of the array
+      const updatedProjects = [newProjectData, ...projects];
       setProjects(updatedProjects);
 
       // Scroll to the new project after a short delay to ensure the DOM has updated
       setTimeout(() => {
         const projectElements = document.querySelectorAll('[data-project-id]');
-        const newProjectElement = projectElements[projectElements.length - 1];
+        const newProjectElement = projectElements[0]; // Now it's the first element
         if (newProjectElement) {
           newProjectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
           newProjectElement.classList.add('animate-fade-in');

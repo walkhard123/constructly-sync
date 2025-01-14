@@ -2,7 +2,7 @@ import { Project } from "../types/project";
 import { ProjectCard } from "./ProjectCard";
 import { DndContext, DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,6 +26,11 @@ export const ProjectTabs = ({
   const [localProjects, setLocalProjects] = useState(projects);
   const [selectedFilter, setSelectedFilter] = useState<string>("active");
   
+  // Update localProjects when projects prop changes
+  useEffect(() => {
+    setLocalProjects(projects);
+  }, [projects]);
+
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
