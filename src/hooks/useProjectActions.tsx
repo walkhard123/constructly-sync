@@ -7,7 +7,7 @@ export const useProjectActions = (
 ) => {
   const { toast } = useToast();
 
-  const handleAddProject = (newProject: Partial<Project>, editingProject: Project | null) => {
+  const handleAddProject = async (newProject: Partial<Project>, editingProject: Project | null) => {
     if (!newProject.name?.trim()) {
       toast({
         title: "Error",
@@ -42,7 +42,8 @@ export const useProjectActions = (
         tasks: []
       };
 
-      setProjects([...projects, newProjectData]);
+      const updatedProjects = [...projects, newProjectData];
+      setProjects(updatedProjects);
 
       // Scroll to the new project after a short delay to ensure the DOM has updated
       setTimeout(() => {

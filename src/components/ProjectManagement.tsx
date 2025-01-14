@@ -48,7 +48,7 @@ export const ProjectManagement = () => {
     setIsProjectDialogOpen(true);
   };
 
-  const handleSaveProject = () => {
+  const handleSaveProject = async () => {
     if (!newProject.name?.trim()) {
       toast({
         title: "Error",
@@ -58,17 +58,26 @@ export const ProjectManagement = () => {
       return;
     }
 
-    handleAddProject(newProject, editingProject);
-    setIsProjectDialogOpen(false);
-    setEditingProject(null);
-    resetNewProject();
-    
-    toast({
-      title: editingProject ? "Project Updated" : "Project Added",
-      description: editingProject 
-        ? "Project has been updated successfully"
-        : "New project has been added successfully",
-    });
+    try {
+      await handleAddProject(newProject, editingProject);
+      setIsProjectDialogOpen(false);
+      setEditingProject(null);
+      resetNewProject();
+      
+      toast({
+        title: editingProject ? "Project Updated" : "Project Added",
+        description: editingProject 
+          ? "Project has been updated successfully"
+          : "New project has been added successfully",
+      });
+    } catch (error) {
+      console.error('Error saving project:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save project. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleConfirmDelete = () => {
