@@ -11,7 +11,7 @@ export const TeamMemberSelect = ({ teamMembers, onSelect }: TeamMemberSelectProp
     <div>
       <Label>Team Member</Label>
       <Select onValueChange={onSelect}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Select team member" />
         </SelectTrigger>
         <SelectContent>

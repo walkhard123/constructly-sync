@@ -1,4 +1,5 @@
 import { Tag, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface TeamMemberTagsProps {
   tags: string[];
@@ -14,12 +15,15 @@ export const TeamMemberTags = ({ tags, onRemoveTag }: TeamMemberTagsProps) => {
         <span key={index} className="inline-flex items-center px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm">
           <Tag className="w-3 h-3 mr-1" />
           {tag.replace('@', '')}
-          <button
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-4 w-4 p-0 ml-1 hover:bg-purple-200 rounded-full"
             onClick={() => onRemoveTag(tag)}
-            className="ml-1 p-0.5 hover:bg-purple-200 rounded-full"
           >
             <X className="w-3 h-3" />
-          </button>
+          </Button>
         </span>
       ))}
     </div>

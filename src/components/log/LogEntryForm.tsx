@@ -30,39 +30,33 @@ export const LogEntryForm = ({
   onSave
 }: LogEntryFormProps) => {
   const handleRemoveTag = (tagToRemove: string) => {
-    if (editingLog) {
-      const updatedTags = editingLog.tags.filter(tag => tag !== tagToRemove);
-      setNewLog({ ...editingLog, tags: updatedTags });
-    } else {
-      const currentTags = Array.isArray(newLog.tags) ? newLog.tags : [];
-      const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
-      setNewLog({ ...newLog, tags: updatedTags });
-    }
+    const currentLog = editingLog || newLog;
+    const currentTags = Array.isArray(currentLog.tags) ? currentLog.tags : [];
+    const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
+    setNewLog({ ...currentLog, tags: updatedTags });
   };
+
+  const currentLog = editingLog || newLog;
 
   return (
     <div className="space-y-4">
       <ProjectSelect
-        value={editingLog?.project || newLog.project}
+        value={currentLog.project || ""}
         projects={projects}
-        onChange={(value) => setNewLog(editingLog ? {...editingLog, project: value} : {...newLog, project: value})}
+        onChange={(value) => setNewLog({ ...currentLog, project: value })}
       />
 
       <div className="grid grid-cols-2 gap-4">
         <DateSelect
-          value={editingLog?.startTime || newLog.startTime}
-          onChange={(date) => setNewLog(editingLog ? {...editingLog, startTime: date} : {...newLog, startTime: date})}
+          value={currentLog.startTime || new Date().toISOString()}
+          onChange={(date) => setNewLog({ ...currentLog, startTime: date })}
         />
         <TeamMemberSelect
           teamMembers={teamMembers}
           onSelect={(value) => {
-            const currentTags = Array.isArray(editingLog ? editingLog.tags : newLog.tags) ? 
-              (editingLog ? editingLog.tags : newLog.tags) : [];
+            const currentTags = Array.isArray(currentLog.tags) ? currentLog.tags : [];
             if (!currentTags.includes(value)) {
-              setNewLog(editingLog ? 
-                {...editingLog, tags: [...currentTags, value]} : 
-                {...newLog, tags: [...currentTags, value]}
-              );
+              setNewLog({ ...currentLog, tags: [...currentTags, value] });
             }
           }}
         />
@@ -71,29 +65,31 @@ export const LogEntryForm = ({
       <div>
         <Label>Activities</Label>
         <Textarea
-          value={editingLog ? editingLog.activities : newLog.activities}
-          onChange={(e) => setNewLog(editingLog ? {...editingLog, activities: e.target.value} : {...newLog, activities: e.target.value})}
+          value={currentLog.activities || ""}
+          onChange={(e) => setNewLog({ ...currentLog, activities: e.target.value })}
           placeholder="Describe today's activities..."
+          className="min-h-[100px]"
         />
       </div>
 
       <div>
         <Label>Deliveries</Label>
         <Textarea
-          value={editingLog ? editingLog.deliveries : newLog.deliveries}
-          onChange={(e) => setNewLog(editingLog ? {...editingLog, deliveries: e.target.value} : {...newLog, deliveries: e.target.value})}
+          value={currentLog.deliveries || ""}
+          onChange={(e) => setNewLog({ ...currentLog, deliveries: e.target.value })}
           placeholder="List any deliveries received or ordered..."
+          className="min-h-[100px]"
         />
       </div>
 
       <TeamMemberTags
-        tags={editingLog ? editingLog.tags : newLog.tags || []}
+        tags={currentLog.tags || []}
         onRemoveTag={handleRemoveTag}
       />
 
       <PhotoUpload
         onPhotoUpload={handlePhotoUpload}
-        photos={editingLog ? editingLog.photos : newLog.photos}
+        photos={currentLog.photos || []}
       />
 
       <div className="flex justify-end gap-2">
