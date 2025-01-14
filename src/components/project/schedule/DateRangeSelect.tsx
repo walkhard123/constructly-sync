@@ -11,6 +11,7 @@ interface DateRangeSelectProps {
   onStartDateChange: (date: Date | undefined) => void;
   onEndDateChange: (date: Date | undefined) => void;
   onDurationChange: (duration: number) => void;
+  disabled?: boolean;
 }
 
 export const DateRangeSelect = ({
@@ -18,7 +19,8 @@ export const DateRangeSelect = ({
   endDate,
   onStartDateChange,
   onEndDateChange,
-  onDurationChange
+  onDurationChange,
+  disabled
 }: DateRangeSelectProps) => {
   const formatDate = (date: Date) => {
     return format(date, "MMM dd, yyyy");
@@ -80,6 +82,7 @@ export const DateRangeSelect = ({
               "w-full justify-start text-left font-normal",
               !startDate && !endDate && "text-muted-foreground"
             )}
+            disabled={disabled}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {displayText()}
@@ -97,6 +100,7 @@ export const DateRangeSelect = ({
               numberOfMonths={1}
               initialFocus
               className="rounded-md border"
+              disabled={disabled}
             />
           </div>
         </PopoverContent>

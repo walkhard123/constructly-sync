@@ -4,9 +4,10 @@ import { ScheduleItem } from "../types";
 interface StatusSelectProps {
   status: ScheduleItem['status'];
   onStatusChange: (value: ScheduleItem['status']) => void;
+  disabled?: boolean;
 }
 
-export const StatusSelect = ({ status, onStatusChange }: StatusSelectProps) => {
+export const StatusSelect = ({ status, onStatusChange, disabled }: StatusSelectProps) => {
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'done':
@@ -21,7 +22,7 @@ export const StatusSelect = ({ status, onStatusChange }: StatusSelectProps) => {
   };
 
   return (
-    <Select value={status} onValueChange={onStatusChange}>
+    <Select value={status} onValueChange={onStatusChange} disabled={disabled}>
       <SelectTrigger className={`h-8 ${getStatusStyle(status)}`}>
         <SelectValue />
       </SelectTrigger>
