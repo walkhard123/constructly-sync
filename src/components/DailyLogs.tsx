@@ -74,6 +74,7 @@ export const DailyLogs = () => {
 
   const handleEditLog = (log: LogEntry) => {
     setEditingLog(log);
+    setNewLog(log); // Set newLog to the current log being edited
     setIsDialogOpen(true);
   };
 
@@ -89,12 +90,21 @@ export const DailyLogs = () => {
 
     setLogs(prevLogs => 
       prevLogs.map(log => 
-        log.id === editingLog.id ? editingLog : log
+        log.id === editingLog.id ? { ...editingLog, ...newLog } : log
       )
     );
 
     setEditingLog(null);
     setIsDialogOpen(false);
+    setNewLog({
+      project: "",
+      activities: "",
+      deliveries: "",
+      startTime: new Date().toISOString(),
+      endTime: new Date().toISOString(),
+      tags: [],
+      photos: []
+    });
 
     toast({
       title: "Success",
@@ -183,7 +193,7 @@ export const DailyLogs = () => {
       />
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle>{editingLog ? 'Edit Log Entry' : 'Add Daily Log Entry'}</DialogTitle>
             <DialogDescription>
@@ -200,6 +210,15 @@ export const DailyLogs = () => {
             onCancel={() => {
               setEditingLog(null);
               setIsDialogOpen(false);
+              setNewLog({
+                project: "",
+                activities: "",
+                deliveries: "",
+                startTime: new Date().toISOString(),
+                endTime: new Date().toISOString(),
+                tags: [],
+                photos: []
+              });
             }}
             onSave={editingLog ? handleSaveEdit : handleAddLog}
           />
