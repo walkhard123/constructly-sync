@@ -59,32 +59,34 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-4">
-            <div>
-              <Label>Team Member</Label>
-              <Select onValueChange={(value) => setFormData(prev => ({ ...prev, employee: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select team member" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="John Smith">John Smith</SelectItem>
-                  <SelectItem value="Sarah Johnson">Sarah Johnson</SelectItem>
-                  <SelectItem value="Mike Williams">Mike Williams</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Team Member</Label>
+                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, employee: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select team member" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="John Smith">John Smith</SelectItem>
+                    <SelectItem value="Sarah Johnson">Sarah Johnson</SelectItem>
+                    <SelectItem value="Mike Williams">Mike Williams</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <Label>Leave Type</Label>
-              <Select onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select leave type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Annual Leave">Annual Leave</SelectItem>
-                  <SelectItem value="Sick Leave">Sick Leave</SelectItem>
-                  <SelectItem value="Personal Leave">Personal Leave</SelectItem>
-                </SelectContent>
-              </Select>
+              <div>
+                <Label>Leave Type</Label>
+                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select leave type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Annual Leave">Annual Leave</SelectItem>
+                    <SelectItem value="Sick Leave">Sick Leave</SelectItem>
+                    <SelectItem value="Personal Leave">Personal Leave</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
