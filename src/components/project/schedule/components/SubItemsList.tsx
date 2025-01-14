@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Circle } from "lucide-react";
+import { Check, Circle, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { SubScheduleItem } from "../types";
 import { DurationInput } from "./DurationInput";
