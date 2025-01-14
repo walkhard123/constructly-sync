@@ -39,7 +39,13 @@ export const DateRangeSelect = ({
               {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={4}>
+          <PopoverContent 
+            className="w-auto p-0 bg-white" 
+            align="start" 
+            side="bottom" 
+            sideOffset={4}
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
             <Calendar
               mode="single"
               selected={startDate}
@@ -65,7 +71,13 @@ export const DateRangeSelect = ({
               {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start" side="bottom" sideOffset={4}>
+          <PopoverContent 
+            className="w-auto p-0 bg-white" 
+            align="start" 
+            side="bottom" 
+            sideOffset={4}
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
             <Calendar
               mode="single"
               selected={endDate}
