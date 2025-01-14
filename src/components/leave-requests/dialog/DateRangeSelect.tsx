@@ -24,7 +24,7 @@ export const DateRangeSelect = ({
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <div>
+      <div className="space-y-2">
         <Label>Start Date</Label>
         <Popover>
           <PopoverTrigger asChild>
@@ -39,7 +39,7 @@ export const DateRangeSelect = ({
               {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-auto p-0">
+          <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
               selected={startDate}
@@ -50,7 +50,7 @@ export const DateRangeSelect = ({
           </PopoverContent>
         </Popover>
       </div>
-      <div>
+      <div className="space-y-2">
         <Label>End Date</Label>
         <Popover>
           <PopoverTrigger asChild>
@@ -65,7 +65,7 @@ export const DateRangeSelect = ({
               {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-auto p-0">
+          <PopoverContent className="w-auto p-0" align="start">
             <Calendar
               mode="single"
               selected={endDate}
