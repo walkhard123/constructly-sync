@@ -11,23 +11,23 @@ interface ProjectProgressProps {
 
 export const ProjectProgress = ({ projects }: ProjectProgressProps) => {
   return (
-    <Card>
+    <Card className="mobile-card">
       <CardHeader>
-        <CardTitle>Project Progress</CardTitle>
-        <CardDescription>Overall completion status</CardDescription>
+        <CardTitle className="text-subheading">Project Progress</CardTitle>
+        <CardDescription className="text-caption">Overall completion status</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {projects.map((project, index) => (
             <div key={index} className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span>{project.name}</span>
-                <span className="font-medium">{project.progress}%</span>
+                <span className="font-medium">{project.name}</span>
+                <span className="text-caption">{project.progress}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="progress-bar">
                 <div
-                  className="bg-purple-600 h-2 rounded-full transition-all"
-                  style={{ width: `${project.progress}%` }}
+                  className="progress-bar-fill"
+                  style={{ '--progress-width': `${project.progress}%` } as React.CSSProperties}
                 />
               </div>
             </div>

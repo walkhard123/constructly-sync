@@ -11,17 +11,17 @@ interface ActivityListProps {
 
 export const ActivityList = ({ activities }: ActivityListProps) => {
   return (
-    <Card>
+    <Card className="mobile-card">
       <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-        <CardDescription>Latest updates across all projects</CardDescription>
+        <CardTitle className="text-subheading">Recent Activity</CardTitle>
+        <CardDescription className="text-caption">Latest updates across all projects</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           {activities.map((activity, index) => (
-            <div key={index} className="flex justify-between items-center text-sm">
-              <span>{activity.text}</span>
-              <span className="text-muted-foreground">{activity.time}</span>
+            <div key={index} className="flex justify-between items-center">
+              <span className="text-body">{activity.text}</span>
+              <span className="text-caption">{activity.time}</span>
             </div>
           ))}
         </div>

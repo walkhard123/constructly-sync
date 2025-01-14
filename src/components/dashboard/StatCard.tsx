@@ -17,25 +17,25 @@ export const StatCard = ({
   subtitle,
   highlight,
   icon: Icon,
-  iconColor = "text-purple-600",
+  iconColor = "text-primary",
   onClick
 }: StatCardProps) => {
   return (
     <Card 
-      className={`${onClick ? 'cursor-pointer hover:shadow-lg transition-all' : ''}`}
+      className={`mobile-card ${onClick ? 'cursor-pointer hover:shadow-lg transition-all' : ''}`}
       onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className={`h-4 w-4 ${iconColor}`} />
+        <CardTitle className="text-subheading">{title}</CardTitle>
+        <Icon className={`h-5 w-5 ${iconColor}`} />
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <div className="text-xs text-muted-foreground">
+        <div className="text-caption">
           {subtitle}
         </div>
         {highlight && (
-          <div className="mt-4 text-sm text-purple-600">
+          <div className="mt-2 text-sm text-primary font-medium">
             {highlight}
           </div>
         )}

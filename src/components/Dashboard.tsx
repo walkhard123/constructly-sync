@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { StatCard } from "./dashboard/StatCard";
 import { ActivityList } from "./dashboard/ActivityList";
 import { ProjectProgress } from "./dashboard/ProjectProgress";
-import { BarChart, Calendar, Clock, ClipboardList, ListTodo, Users, FileText } from "lucide-react";
+import { BarChart, Calendar, Clock, ClipboardList, ListTodo, Users, FileText, Home, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useProjects } from "@/hooks/useProjects";
 import { useTaskState } from "@/hooks/useTaskState";
@@ -44,22 +44,6 @@ export const Dashboard = () => {
       highlight: `${pendingTasks} tasks pending`,
       icon: ListTodo,
       onClick: () => navigate('/', { state: { selectedSection: 'Tasks' } })
-    },
-    {
-      title: "Time Clock",
-      value: "Active",
-      subtitle: "2 team members clocked in",
-      highlight: "Current shift: 6h 30m",
-      icon: Clock,
-      onClick: () => navigate('/', { state: { selectedSection: 'Time Clock' } })
-    },
-    {
-      title: "Daily Logs",
-      value: "12",
-      subtitle: "Logs submitted today",
-      highlight: "3 requiring review",
-      icon: Calendar,
-      onClick: () => navigate('/', { state: { selectedSection: 'Daily Logs' } })
     }
   ];
 
@@ -85,19 +69,41 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+    <div className="mobile-container animate-fade-in safe-area-padding">
+      <div className="mb-6">
+        <h1 className="text-heading">Welcome Back!</h1>
+        <p className="text-caption">Here's your daily overview</p>
+      </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         {statCards.map((card, index) => (
           <StatCard key={index} {...card} />
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <ActivityList activities={recentActivities} />
+      <div className="space-y-6">
         <ProjectProgress projects={projectProgress} />
+        <ActivityList activities={recentActivities} />
       </div>
+
+      <nav className="bottom-nav">
+        <button className="nav-item active">
+          <Home className="w-6 h-6" />
+          <span>Home</span>
+        </button>
+        <button className="nav-item">
+          <Calendar className="w-6 h-6" />
+          <span>Calendar</span>
+        </button>
+        <button className="nav-item">
+          <ListTodo className="w-6 h-6" />
+          <span>Tasks</span>
+        </button>
+        <button className="nav-item">
+          <Settings className="w-6 h-6" />
+          <span>Settings</span>
+        </button>
+      </nav>
     </div>
   );
 };
