@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Input } from "@/components/ui/input";
 import { ScheduleItem, SubScheduleItem } from "./types";
-import { ChevronDown, ChevronRight, FileText, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, FileText, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { DateRangeSelect } from "./DateRangeSelect";
@@ -24,6 +24,7 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
   const [files, setFiles] = useState<any[]>([]);
+  const [showActions, setShowActions] = useState(false);
   const isMobile = useIsMobile();
 
   const {
@@ -157,41 +158,54 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
             className="h-8"
             placeholder="Enter item"
           />
-          <div className="flex gap-1">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsExpanded(true);
-              }}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsFileDialogOpen(true);
-              }}
-              className={`h-8 w-8 p-0 ${files.length > 0 ? 'text-purple-600' : ''}`}
-            >
-              <FileText className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDeleteItem(id);
-              }}
-              className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowActions(!showActions);
+            }}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+          {showActions && (
+            <div className="flex gap-1 animate-fade-in">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(true);
+                }}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFileDialogOpen(true);
+                }}
+                className={`h-8 w-8 p-0 ${files.length > 0 ? 'text-purple-600' : ''}`}
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDeleteItem(id);
+                }}
+                className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
 
         {isMobile && <div className="text-xs text-gray-500">Contractor</div>}
