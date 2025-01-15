@@ -24,7 +24,6 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
   const [files, setFiles] = useState<any[]>([]);
-  const [showActions, setShowActions] = useState(false);
   const isMobile = useIsMobile();
 
   const {
@@ -60,9 +59,38 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
     transition,
   };
 
-  const handleItemClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setShowActions(!showActions);
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleItemUpdate(item.id, 'title', e.target.value);
+  };
+
+  const handleContractorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleItemUpdate(item.id, 'contractor', e.target.value);
+  };
+
+  const handleDurationChange = (duration: number) => {
+    handleItemUpdate(item.id, 'duration', duration);
+    if (item.startDate) {
+      const startDate = new Date(item.startDate);
+      let currentDate = new Date(startDate);
+      let daysCount = 0;
+      
+      while (daysCount < duration) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        if (currentDate.getDay() !== 0) { // Skip Sundays
+          daysCount++;
+        }
+      }
+      
+      handleItemUpdate(item.id, 'endDate', currentDate.toISOString());
+    }
+  };
+
+  const handleStartDateChange = (date: Date | undefined) => {
+    handleItemUpdate(item.id, 'startDate', date?.toISOString());
+  };
+
+  const handleEndDateChange = (date: Date | undefined) => {
+    handleItemUpdate(item.id, 'endDate', date?.toISOString());
   };
 
   const handleAddSubItem = (title: string) => {
@@ -108,7 +136,6 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
         } gap-2 py-2 border-b last:border-b-0 text-sm ${
           files.length > 0 ? 'bg-[#E5DEFF]' : 'bg-white'
         } rounded px-2 cursor-move hover:bg-opacity-90`}
-        onClick={handleItemClick}
       >
         <div className="flex items-center gap-2">
           <button
@@ -129,8 +156,42 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
             onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
             className="h-8"
             placeholder="Enter item"
-            onClick={(e) => e.stopPropagation()}
           />
+          <div className="flex gap-1">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsExpanded(true);
+              }}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsFileDialogOpen(true);
+              }}
+              className={`h-8 w-8 p-0 ${files.length > 0 ? 'text-purple-600' : ''}`}
+            >
+              <FileText className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteItem(id);
+              }}
+              className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {isMobile && <div className="text-xs text-gray-500">Contractor</div>}
@@ -139,7 +200,6 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
           onChange={(e) => handleItemUpdate(item.id, 'contractor', e.target.value)}
           className="h-8"
           placeholder="Enter contractor"
-          onClick={(e) => e.stopPropagation()}
         />
 
         {isMobile && <div className="text-xs text-gray-500">Duration (days)</div>}
@@ -163,48 +223,6 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
           onStatusChange={(value) => handleItemUpdate(item.id, 'status', value)}
         />
       </div>
-
-      {showActions && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded animate-fade-in">
-          <Button 
-            variant="ghost" 
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsExpanded(true);
-              setShowActions(false);
-            }}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsFileDialogOpen(true);
-              setShowActions(false);
-            }}
-            className={`h-8 w-8 p-0 ${files.length > 0 ? 'text-purple-600' : ''}`}
-          >
-            <FileText className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteItem(id);
-              setShowActions(false);
-            }}
-            className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-
       {isExpanded && (
         <SubItemsList
           subItems={item.subItems}
