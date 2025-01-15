@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Circle, FileText, Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Check, Circle, FileText, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { SubScheduleItem } from "../types";
 import { DurationInput } from "./DurationInput";
 import { DateRangeSelect } from "../DateRangeSelect";
@@ -35,6 +35,7 @@ export const SubItemsList = ({
   const [selectedSubItem, setSelectedSubItem] = useState<number | null>(null);
   const [files, setFiles] = useState<any[]>([]);
   const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+  const [showActionsMap, setShowActionsMap] = useState<{ [key: number]: boolean }>({});
 
   const fetchFiles = async (subItemId: number) => {
     const { data, error } = await supabase
@@ -62,6 +63,13 @@ export const SubItemsList = ({
     setSelectedSubItem(subItemId);
     fetchFiles(subItemId);
     setIsFileDialogOpen(true);
+  };
+
+  const toggleActions = (subItemId: number) => {
+    setShowActionsMap(prev => ({
+      ...prev,
+      [subItemId]: !prev[subItemId]
+    }));
   };
 
   return (
@@ -123,21 +131,33 @@ export const SubItemsList = ({
               readOnly={subItem.completed}
             />
             <div className="flex gap-1">
+              {showActionsMap[subItem.id] && (
+                <div className="flex gap-1 animate-fade-in">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleOpenFileDialog(subItem.id)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <FileText className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDeleteSubItem(subItem.id)}
+                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onOpenFileDialog?.(subItem.id)}
                 className="h-8 w-8 p-0"
+                onClick={() => toggleActions(subItem.id)}
               >
-                <FileText className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDeleteSubItem(subItem.id)}
-                className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-              >
-                <Trash2 className="h-4 w-4" />
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             </div>
           </div>
