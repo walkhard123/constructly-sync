@@ -88,21 +88,17 @@ export const SubItemsList = ({
   return (
     <div className="space-y-3 mt-2">
       <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-12 items-center">
-        <div className="flex items-center gap-2">
-          <Input
-            value={newSubItem.title}
-            onChange={(e) => setNewSubItem({ ...newSubItem, title: e.target.value })}
-            placeholder="Add sub-item..."
-            className="h-8"
-          />
-          <Button 
-            onClick={handleAddSubItem}
-            size="sm"
-            className="h-8"
-          >
-            Add
-          </Button>
-        </div>
+        <Input
+          value={newSubItem.title}
+          onChange={(e) => setNewSubItem({ ...newSubItem, title: e.target.value })}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleAddSubItem();
+            }
+          }}
+          placeholder="Add sub-item..."
+          className="h-8"
+        />
         <Input
           value={newSubItem.contractor}
           onChange={(e) => setNewSubItem({ ...newSubItem, contractor: e.target.value })}
