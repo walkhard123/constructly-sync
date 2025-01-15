@@ -133,7 +133,9 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
           isMobile 
             ? 'flex flex-col gap-2' 
             : 'grid grid-cols-[2fr,1fr,1fr,1fr,1fr]'
-        } gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50`}
+        } gap-2 py-2 border-b last:border-b-0 text-sm ${
+          files.length > 0 ? 'bg-[#E5DEFF]' : 'bg-white'
+        } rounded px-2 cursor-move hover:bg-opacity-90`}
       >
         <div className="flex items-center gap-2">
           <button
@@ -174,7 +176,7 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
                 e.stopPropagation();
                 setIsFileDialogOpen(true);
               }}
-              className="h-8 w-8 p-0"
+              className={`h-8 w-8 p-0 ${files.length > 0 ? 'text-purple-600' : ''}`}
             >
               <FileText className="h-4 w-4" />
             </Button>
