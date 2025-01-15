@@ -1,17 +1,14 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Input } from "@/components/ui/input";
 import { ScheduleItem, SubScheduleItem } from "./types";
-import { ChevronDown, ChevronRight, FileText, MoreHorizontal, Plus, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
-import { DateRangeSelect } from "./DateRangeSelect";
-import { DurationInput } from "./components/DurationInput";
-import { StatusSelect } from "./components/StatusSelect";
 import { SubItemsList } from "./components/SubItemsList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { FileDialog } from "./components/FileDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { ItemActions } from "./components/ItemActions";
+import { ItemFields } from "./components/ItemFields";
 
 interface SortableItemProps {
   id: number;
@@ -58,40 +55,6 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
-
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleItemUpdate(item.id, 'title', e.target.value);
-  };
-
-  const handleContractorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleItemUpdate(item.id, 'contractor', e.target.value);
-  };
-
-  const handleDurationChange = (duration: number) => {
-    handleItemUpdate(item.id, 'duration', duration);
-    if (item.startDate) {
-      const startDate = new Date(item.startDate);
-      let currentDate = new Date(startDate);
-      let daysCount = 0;
-      
-      while (daysCount < duration) {
-        currentDate.setDate(currentDate.getDate() + 1);
-        if (currentDate.getDay() !== 0) { // Skip Sundays
-          daysCount++;
-        }
-      }
-      
-      handleItemUpdate(item.id, 'endDate', currentDate.toISOString());
-    }
-  };
-
-  const handleStartDateChange = (date: Date | undefined) => {
-    handleItemUpdate(item.id, 'startDate', date?.toISOString());
-  };
-
-  const handleEndDateChange = (date: Date | undefined) => {
-    handleItemUpdate(item.id, 'endDate', date?.toISOString());
   };
 
   const handleAddSubItem = (title: string) => {
@@ -152,97 +115,49 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
               <ChevronRight className="h-4 w-4 text-gray-500" />
             )}
           </button>
-          <Input
-            value={item.title}
-            onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
-            className="h-8"
-            placeholder="Enter item"
+
+          <ItemFields
+            title={item.title}
+            contractor={item.contractor}
+            duration={item.duration}
+            startDate={item.startDate}
+            endDate={item.endDate}
+            status={item.status}
+            onTitleChange={(value) => handleItemUpdate(item.id, 'title', value)}
+            onContractorChange={(value) => handleItemUpdate(item.id, 'contractor', value)}
+            onDurationChange={(value) => handleItemUpdate(item.id, 'duration', value)}
+            onStartDateChange={(date) => handleItemUpdate(item.id, 'startDate', date?.toISOString())}
+            onEndDateChange={(date) => handleItemUpdate(item.id, 'endDate', date?.toISOString())}
+            onStatusChange={(value) => handleItemUpdate(item.id, 'status', value)}
           />
-          <div className="flex items-center gap-1">
-            {showActions && (
-              <div className="flex gap-1 animate-fade-in">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="h-8 w-8 p-0"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsExpanded(true);
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsFileDialogOpen(true);
-                  }}
-                  className={`h-8 w-8 p-0 ${files.length > 0 ? 'text-purple-600' : ''}`}
-                >
-                  <FileText className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDeleteItem(id);
-                  }}
-                  className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowActions(!showActions);
-              }}
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
+
+          <ItemActions
+            showActions={showActions}
+            filesCount={files.length}
+            onToggleActions={(e) => {
+              e.stopPropagation();
+              setShowActions(!showActions);
+            }}
+            onExpand={(e) => {
+              e.stopPropagation();
+              setIsExpanded(true);
+            }}
+            onOpenFileDialog={(e) => {
+              e.stopPropagation();
+              setIsFileDialogOpen(true);
+            }}
+            onDelete={(e) => {
+              e.stopPropagation();
+              onDeleteItem(id);
+            }}
+          />
         </div>
-
-        {isMobile && <div className="text-xs text-gray-500">Contractor</div>}
-        <Input
-          value={item.contractor || ''}
-          onChange={(e) => handleItemUpdate(item.id, 'contractor', e.target.value)}
-          className="h-8"
-          placeholder="Enter contractor"
-        />
-
-        {isMobile && <div className="text-xs text-gray-500">Duration (days)</div>}
-        <DurationInput
-          duration={item.duration}
-          onDurationChange={(value) => handleItemUpdate(item.id, 'duration', value)}
-        />
-
-        {isMobile && <div className="text-xs text-gray-500">Timeline</div>}
-        <DateRangeSelect
-          startDate={item.startDate ? new Date(item.startDate) : undefined}
-          endDate={item.endDate ? new Date(item.endDate) : undefined}
-          onStartDateChange={(date) => handleItemUpdate(item.id, 'startDate', date?.toISOString())}
-          onEndDateChange={(date) => handleItemUpdate(item.id, 'endDate', date?.toISOString())}
-          onDurationChange={(duration) => handleItemUpdate(item.id, 'duration', duration)}
-        />
-
-        {isMobile && <div className="text-xs text-gray-500">Status</div>}
-        <StatusSelect
-          status={item.status}
-          onStatusChange={(value) => handleItemUpdate(item.id, 'status', value)}
-        />
       </div>
+
       {isExpanded && (
         <SubItemsList
           subItems={item.subItems}
-          onAddSubItem={(title) => handleAddSubItem(title)}
+          onAddSubItem={handleAddSubItem}
           onToggleSubItem={toggleSubItemCompletion}
           onUpdateSubItem={handleUpdateSubItem}
           onDeleteSubItem={(subItemId) => {
@@ -254,6 +169,7 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
           }}
         />
       )}
+      
       <FileDialog
         isOpen={isFileDialogOpen}
         onClose={() => setIsFileDialogOpen(false)}
