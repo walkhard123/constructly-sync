@@ -75,22 +75,24 @@ export const SubItemsList = ({
   return (
     <div className="space-y-3 mt-2">
       <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-12 items-center">
-        <Input
-          value={newSubItem.title}
-          onChange={(e) => setNewSubItem({ ...newSubItem, title: e.target.value })}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleAddSubItem();
-            }
-          }}
-          placeholder="Add sub-item..."
-          className="h-8"
-        />
+        <div className="flex items-center gap-2 w-full">
+          <Input
+            value={newSubItem.title}
+            onChange={(e) => setNewSubItem({ ...newSubItem, title: e.target.value })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleAddSubItem();
+              }
+            }}
+            placeholder="Add sub-item..."
+            className="h-8 w-[calc(100%-1rem)]"
+          />
+        </div>
         <Input
           value={newSubItem.contractor}
           onChange={(e) => setNewSubItem({ ...newSubItem, contractor: e.target.value })}
           placeholder="Contractor"
-          className="h-8"
+          className="h-8 w-full"
         />
         <DurationInput
           duration={newSubItem.duration}
@@ -116,7 +118,7 @@ export const SubItemsList = ({
           <div className="flex items-center gap-2 pl-12">
             <button
               onClick={() => onToggleSubItem(subItem.id)}
-              className="hover:scale-110 transition-transform"
+              className="hover:scale-110 transition-transform flex-shrink-0"
             >
               {subItem.completed ? (
                 <Check className="h-4 w-4 text-green-500" />
@@ -127,10 +129,10 @@ export const SubItemsList = ({
             <Input
               value={subItem.title}
               onChange={(e) => onUpdateSubItem?.(subItem.id, 'title', e.target.value)}
-              className={`h-8 ${subItem.completed ? 'line-through text-gray-500' : ''}`}
+              className={`h-8 w-[calc(100%-1rem)] ${subItem.completed ? 'line-through text-gray-500' : ''}`}
               readOnly={subItem.completed}
             />
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-shrink-0">
               {showActionsMap[subItem.id] && (
                 <div className="flex gap-1 animate-fade-in">
                   <Button
@@ -165,7 +167,7 @@ export const SubItemsList = ({
             value={subItem.contractor || ''}
             onChange={(e) => onUpdateSubItem?.(subItem.id, 'contractor', e.target.value)}
             placeholder="Contractor"
-            className="h-8"
+            className="h-8 w-full"
             readOnly={subItem.completed}
           />
           <DurationInput
