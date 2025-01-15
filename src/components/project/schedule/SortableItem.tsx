@@ -254,15 +254,15 @@ export const SortableItem = ({
     <div className="space-y-2">
       <div
         ref={setNodeRef}
-        style={style}
+        style={{
+          ...style,
+          gridTemplateColumns: columnOrder.map(col => col.width).join(' ')
+        }}
         {...attributes}
         {...listeners}
         className={`grid gap-2 py-2 border-b last:border-b-0 text-sm ${
           files.length > 0 ? 'bg-[#E5DEFF]' : 'bg-white'
         } rounded px-2 cursor-move hover:bg-opacity-90`}
-        style={{
-          gridTemplateColumns: columnOrder.map(col => col.width).join(' ')
-        }}
       >
         {columnOrder.map((column) => (
           <div key={column.id}>
