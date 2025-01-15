@@ -15,9 +15,24 @@ import { SortableGroup } from "@/components/project/schedule/SortableGroup";
 import { ScheduleHeader } from "@/components/project/schedule/ScheduleHeader";
 import { useToast } from "@/hooks/use-toast";
 
+interface Column {
+  id: string;
+  label: string;
+  width: string;
+}
+
+const defaultColumns: Column[] = [
+  { id: 'title', label: 'Title', width: '2fr' },
+  { id: 'contractor', label: 'Contractor', width: '1fr' },
+  { id: 'duration', label: 'Duration (days)', width: '1fr' },
+  { id: 'timeline', label: 'Timeline', width: '1fr' },
+  { id: 'status', label: 'Status', width: '1fr' }
+];
+
 export default function ProjectSchedule() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [columnOrder, setColumnOrder] = useState<Column[]>(defaultColumns);
   const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>([
     {
       id: 1,
@@ -65,7 +80,14 @@ export default function ProjectSchedule() {
     
     if (!over) return;
 
-    if (active.data.current?.type === 'group') {
+    if (active.data.current?.type === 'column') {
+      const oldIndex = columnOrder.findIndex(col => col.id === active.id);
+      const newIndex = columnOrder.findIndex(col => col.id === over.id);
+      
+      if (oldIndex !== newIndex) {
+        setColumnOrder(columns => arrayMove(columns, oldIndex, newIndex));
+      }
+    } else if (active.data.current?.type === 'group') {
       const oldIndex = groupTitles.indexOf(active.id as string);
       const newIndex = groupTitles.indexOf(over.id as string);
       
@@ -185,6 +207,8 @@ export default function ProjectSchedule() {
                 handleItemUpdate={handleItemUpdate}
                 onDeleteGroup={handleDeleteGroup}
                 onDeleteItem={handleDeleteItem}
+                columnOrder={columnOrder}
+                onColumnOrderChange={setColumnOrder}
               />
             ))}
           </div>

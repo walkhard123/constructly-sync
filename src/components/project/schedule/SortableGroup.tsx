@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,12 @@ import { SortableItem } from "./SortableItem";
 import { ScheduleItem } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+interface Column {
+  id: string;
+  label: string;
+  width: string;
+}
+
 interface SortableGroupProps {
   groupTitle: string;
   items: ScheduleItem[];
@@ -18,6 +24,8 @@ interface SortableGroupProps {
   handleItemUpdate: (id: number, field: keyof ScheduleItem, value: any) => void;
   onDeleteGroup: (groupTitle: string) => void;
   onDeleteItem: (itemId: number) => void;
+  columnOrder: Column[];
+  onColumnOrderChange: (newOrder: Column[]) => void;
 }
 
 export const SortableGroup = ({ 
@@ -27,7 +35,9 @@ export const SortableGroup = ({
   onAddItem, 
   handleItemUpdate,
   onDeleteGroup,
-  onDeleteItem
+  onDeleteItem,
+  columnOrder,
+  onColumnOrderChange
 }: SortableGroupProps) => {
   const {
     attributes,
@@ -117,12 +127,18 @@ export const SortableGroup = ({
       </div>
       
       {!isMobile && (
-        <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
-          <div className="h-8 flex items-center">Title</div>
-          <div className="h-8 flex items-center">Contractor</div>
-          <div className="h-8 flex items-center">Duration (days)</div>
-          <div className="h-8 flex items-center">Timeline</div>
-          <div className="h-8 flex items-center">Status</div>
+        <div className="grid gap-2 mb-1 px-2 font-medium text-sm text-gray-600" 
+             style={{ 
+               gridTemplateColumns: columnOrder.map(col => col.width).join(' ') 
+             }}>
+          {columnOrder.map((column) => (
+            <div key={column.id} className="h-8 flex items-center">
+              <div className="flex items-center gap-2">
+                <GripVertical className="h-4 w-4 text-gray-400 cursor-grab" />
+                {column.label}
+              </div>
+            </div>
+          ))}
         </div>
       )}
       
@@ -135,6 +151,7 @@ export const SortableGroup = ({
               item={item}
               handleItemUpdate={handleItemUpdate}
               onDeleteItem={onDeleteItem}
+              columnOrder={columnOrder}
             />
           ))}
         </div>
