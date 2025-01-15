@@ -8,6 +8,7 @@ import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { SortableItem } from "./SortableItem";
 import { ScheduleItem } from "./types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SortableGroupProps {
   groupTitle: string;
@@ -43,6 +44,7 @@ export const SortableGroup = ({
 
   const [editingTitle, setEditingTitle] = useState(groupTitle);
   const [isEditing, setIsEditing] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditingTitle(e.target.value);
@@ -70,9 +72,9 @@ export const SortableGroup = ({
     <Card 
       ref={setNodeRef} 
       style={style} 
-      className="mb-2 last:mb-0 p-3 border hover:border-gray-300 transition-colors"
+      className="mb-2 last:mb-0 p-2 border hover:border-gray-300 transition-colors"
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
           <div {...attributes} {...listeners} className="cursor-grab">
             <GripVertical className="h-4 w-4 text-gray-400" />
@@ -107,19 +109,23 @@ export const SortableGroup = ({
           onClick={() => onAddItem(groupTitle)} 
           variant="outline" 
           size="sm"
-          className="gap-1"
+          className="gap-1 w-full sm:w-auto"
         >
           <Plus className="h-3 w-3" />
           New Item
         </Button>
       </div>
-      <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
-        <div className="h-8 flex items-center">Title</div>
-        <div className="h-8 flex items-center">Contractor</div>
-        <div className="h-8 flex items-center">Duration (days)</div>
-        <div className="h-8 flex items-center">Timeline</div>
-        <div className="h-8 flex items-center">Status</div>
-      </div>
+      
+      {!isMobile && (
+        <div className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 mb-1 px-2 font-medium text-sm text-gray-600">
+          <div className="h-8 flex items-center">Title</div>
+          <div className="h-8 flex items-center">Contractor</div>
+          <div className="h-8 flex items-center">Duration (days)</div>
+          <div className="h-8 flex items-center">Timeline</div>
+          <div className="h-8 flex items-center">Status</div>
+        </div>
+      )}
+      
       <SortableContext items={items.map(item => item.id)} strategy={verticalListSortingStrategy}>
         <div className="space-y-1">
           {items.map((item) => (

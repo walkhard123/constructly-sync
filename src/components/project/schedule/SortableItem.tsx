@@ -9,6 +9,7 @@ import { DateRangeSelect } from "./DateRangeSelect";
 import { DurationInput } from "./components/DurationInput";
 import { StatusSelect } from "./components/StatusSelect";
 import { SubItemsList } from "./components/SubItemsList";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface SortableItemProps {
   id: number;
@@ -19,6 +20,7 @@ interface SortableItemProps {
 
 export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: SortableItemProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const isMobile = useIsMobile();
 
   const {
     attributes,
@@ -108,7 +110,11 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
         style={style}
         {...attributes}
         {...listeners}
-        className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50"
+        className={`${
+          isMobile 
+            ? 'flex flex-col gap-2' 
+            : 'grid grid-cols-[2fr,1fr,1fr,1fr,1fr]'
+        } gap-2 py-2 border-b last:border-b-0 text-sm bg-white rounded px-2 cursor-move hover:bg-gray-50`}
       >
         <div className="flex items-center gap-2">
           <button
@@ -155,16 +161,22 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
             </Button>
           </div>
         </div>
+
+        {isMobile && <div className="text-xs text-gray-500">Contractor</div>}
         <Input
           value={item.contractor || ''}
           onChange={handleContractorChange}
           className="h-8"
           placeholder="Enter contractor"
         />
+
+        {isMobile && <div className="text-xs text-gray-500">Duration (days)</div>}
         <DurationInput
           duration={item.duration}
           onDurationChange={handleDurationChange}
         />
+
+        {isMobile && <div className="text-xs text-gray-500">Timeline</div>}
         <DateRangeSelect
           startDate={item.startDate ? new Date(item.startDate) : undefined}
           endDate={item.endDate ? new Date(item.endDate) : undefined}
@@ -172,6 +184,8 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
           onEndDateChange={handleEndDateChange}
           onDurationChange={handleDurationChange}
         />
+
+        {isMobile && <div className="text-xs text-gray-500">Status</div>}
         <StatusSelect
           status={item.status}
           onStatusChange={(value) => handleItemUpdate(item.id, 'status', value)}

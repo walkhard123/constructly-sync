@@ -160,7 +160,7 @@ export default function ProjectSchedule() {
   const groupTitles = Array.from(new Set(scheduleItems.map(item => item.groupTitle)));
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
+    <div className="container mx-auto px-2 sm:px-6 py-4 max-w-7xl">
       <ScheduleHeader
         onNavigateBack={() => navigate('/', { state: { selectedSection: "Projects Management" } })}
         onAddGroup={addNewItem}
@@ -174,18 +174,20 @@ export default function ProjectSchedule() {
         onDragEnd={handleDragEnd}
       >
         <SortableContext items={groupTitles} strategy={verticalListSortingStrategy}>
-          {groupTitles.map((groupTitle) => (
-            <SortableGroup
-              key={groupTitle}
-              groupTitle={groupTitle}
-              items={groupedItems[groupTitle]}
-              onGroupTitleChange={handleGroupTitleChange}
-              onAddItem={addNewItem}
-              handleItemUpdate={handleItemUpdate}
-              onDeleteGroup={handleDeleteGroup}
-              onDeleteItem={handleDeleteItem}
-            />
-          ))}
+          <div className="space-y-2">
+            {groupTitles.map((groupTitle) => (
+              <SortableGroup
+                key={groupTitle}
+                groupTitle={groupTitle}
+                items={groupedItems[groupTitle]}
+                onGroupTitleChange={handleGroupTitleChange}
+                onAddItem={addNewItem}
+                handleItemUpdate={handleItemUpdate}
+                onDeleteGroup={handleDeleteGroup}
+                onDeleteItem={handleDeleteItem}
+              />
+            ))}
+          </div>
         </SortableContext>
       </DndContext>
     </div>
