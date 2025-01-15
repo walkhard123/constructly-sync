@@ -111,9 +111,9 @@ export const SubItemsList = ({
       {subItems.map((subItem) => (
         <div 
           key={subItem.id} 
-          className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 pl-12 items-center bg-gray-50/50 rounded-sm py-1"
+          className="grid grid-cols-[2fr,1fr,1fr,1fr,1fr] gap-2 items-center bg-gray-50/50 rounded-sm py-1"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pl-12">
             <button
               onClick={() => onToggleSubItem(subItem.id)}
               className="hover:scale-110 transition-transform"
