@@ -60,6 +60,40 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
     transition,
   };
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleItemUpdate(item.id, 'title', e.target.value);
+  };
+
+  const handleContractorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleItemUpdate(item.id, 'contractor', e.target.value);
+  };
+
+  const handleDurationChange = (duration: number) => {
+    handleItemUpdate(item.id, 'duration', duration);
+    if (item.startDate) {
+      const startDate = new Date(item.startDate);
+      let currentDate = new Date(startDate);
+      let daysCount = 0;
+      
+      while (daysCount < duration) {
+        currentDate.setDate(currentDate.getDate() + 1);
+        if (currentDate.getDay() !== 0) { // Skip Sundays
+          daysCount++;
+        }
+      }
+      
+      handleItemUpdate(item.id, 'endDate', currentDate.toISOString());
+    }
+  };
+
+  const handleStartDateChange = (date: Date | undefined) => {
+    handleItemUpdate(item.id, 'startDate', date?.toISOString());
+  };
+
+  const handleEndDateChange = (date: Date | undefined) => {
+    handleItemUpdate(item.id, 'endDate', date?.toISOString());
+  };
+
   const handleAddSubItem = (title: string) => {
     const newSubItem: SubScheduleItem = {
       id: (item.subItems?.length || 0) + 1,
@@ -105,6 +139,19 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
         } rounded px-2 cursor-move hover:bg-opacity-90`}
       >
         <div className="flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
+            }}
+            className="p-1 hover:bg-gray-100 rounded"
+          >
+            {isExpanded ? (
+              <ChevronDown className="h-4 w-4 text-gray-500" />
+            ) : (
+              <ChevronRight className="h-4 w-4 text-gray-500" />
+            )}
+          </button>
           <Input
             value={item.title}
             onChange={(e) => handleItemUpdate(item.id, 'title', e.target.value)}
@@ -120,7 +167,7 @@ export const SortableItem = ({ id, item, handleItemUpdate, onDeleteItem }: Sorta
                   className="h-8 w-8 p-0"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsExpanded(!isExpanded);
+                    setIsExpanded(true);
                   }}
                 >
                   <Plus className="h-4 w-4" />
