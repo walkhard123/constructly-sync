@@ -15,6 +15,7 @@ interface SubItemsListProps {
   onToggleSubItem: (subItemId: number) => void;
   onUpdateSubItem?: (subItemId: number, field: keyof SubScheduleItem, value: any) => void;
   onDeleteSubItem: (subItemId: number) => void;
+  onOpenFileDialog?: (subItemId: number) => void;
 }
 
 export const SubItemsList = ({ 
@@ -22,7 +23,8 @@ export const SubItemsList = ({
   onAddSubItem, 
   onToggleSubItem,
   onUpdateSubItem,
-  onDeleteSubItem
+  onDeleteSubItem,
+  onOpenFileDialog
 }: SubItemsListProps) => {
   const [newSubItem, setNewSubItem] = useState<Partial<SubScheduleItem>>({
     title: "",
@@ -124,7 +126,7 @@ export const SubItemsList = ({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => handleOpenFileDialog(subItem.id)}
+                onClick={() => onOpenFileDialog?.(subItem.id)}
                 className="h-8 w-8 p-0"
               >
                 <FileText className="h-4 w-4" />
