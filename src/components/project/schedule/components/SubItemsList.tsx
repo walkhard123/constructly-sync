@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, Circle, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { Check, Circle, FileText, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { SubScheduleItem } from "../types";
 import { DurationInput } from "./DurationInput";
 import { DateRangeSelect } from "../DateRangeSelect";
 import { StatusSelect } from "./StatusSelect";
+import { FileDialog } from "./FileDialog";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SubItemsListProps {
   subItems?: SubScheduleItem[];
@@ -28,6 +30,20 @@ export const SubItemsList = ({
     duration: 0,
     status: "in-progress"
   });
+  const [selectedSubItem, setSelectedSubItem] = useState<number | null>(null);
+  const [files, setFiles] = useState<any[]>([]);
+  const [isFileDialogOpen, setIsFileDialogOpen] = useState(false);
+
+  const fetchFiles = async (subItemId: number) => {
+    const { data, error } = await supabase
+      .from('schedule_files')
+      .select('*')
+      .eq('sub_item_id', subItemId);
+    
+    if (!error && data) {
+      setFiles(data);
+    }
+  };
 
   const handleAddSubItem = () => {
     if (!newSubItem.title?.trim()) return;
@@ -40,49 +56,10 @@ export const SubItemsList = ({
     });
   };
 
-  const handleSubItemUpdate = (subItemId: number, field: keyof SubScheduleItem, value: any) => {
-    if (onUpdateSubItem) {
-      if (field === 'duration') {
-        const item = subItems.find(item => item.id === subItemId);
-        if (item?.startDate) {
-          const startDate = new Date(item.startDate);
-          let currentDate = new Date(startDate);
-          let daysCount = 0;
-          
-          while (daysCount < value) {
-            currentDate.setDate(currentDate.getDate() + 1);
-            if (currentDate.getDay() !== 0) { // Skip Sundays
-              daysCount++;
-            }
-          }
-          
-          onUpdateSubItem(subItemId, 'endDate', currentDate.toISOString());
-        }
-      } else if (field === 'startDate' || field === 'endDate') {
-        const item = subItems.find(item => item.id === subItemId);
-        if (item) {
-          const start = field === 'startDate' ? value : item.startDate;
-          const end = field === 'endDate' ? value : item.endDate;
-          
-          if (start && end) {
-            const startDate = new Date(start);
-            const endDate = new Date(end);
-            let duration = 0;
-            let currentDate = new Date(startDate);
-            
-            while (currentDate <= endDate) {
-              if (currentDate.getDay() !== 0) { // Skip Sundays
-                duration++;
-              }
-              currentDate.setDate(currentDate.getDate() + 1);
-            }
-            
-            onUpdateSubItem(subItemId, 'duration', duration);
-          }
-        }
-      }
-      onUpdateSubItem(subItemId, field, value);
-    }
+  const handleOpenFileDialog = (subItemId: number) => {
+    setSelectedSubItem(subItemId);
+    fetchFiles(subItemId);
+    setIsFileDialogOpen(true);
   };
 
   return (
@@ -139,46 +116,66 @@ export const SubItemsList = ({
             </button>
             <Input
               value={subItem.title}
-              onChange={(e) => handleSubItemUpdate(subItem.id, 'title', e.target.value)}
+              onChange={(e) => onUpdateSubItem?.(subItem.id, 'title', e.target.value)}
               className={`h-8 ${subItem.completed ? 'line-through text-gray-500' : ''}`}
               readOnly={subItem.completed}
             />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onDeleteSubItem(subItem.id)}
-              className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleOpenFileDialog(subItem.id)}
+                className="h-8 w-8 p-0"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDeleteSubItem(subItem.id)}
+                className="h-8 w-8 p-0 text-red-500 hover:text-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
           <Input
             value={subItem.contractor || ''}
-            onChange={(e) => handleSubItemUpdate(subItem.id, 'contractor', e.target.value)}
+            onChange={(e) => onUpdateSubItem?.(subItem.id, 'contractor', e.target.value)}
             placeholder="Contractor"
             className="h-8"
             readOnly={subItem.completed}
           />
           <DurationInput
             duration={subItem.duration}
-            onDurationChange={(value) => handleSubItemUpdate(subItem.id, 'duration', value)}
+            onDurationChange={(value) => onUpdateSubItem?.(subItem.id, 'duration', value)}
             disabled={subItem.completed}
           />
           <DateRangeSelect
             startDate={subItem.startDate ? new Date(subItem.startDate) : undefined}
             endDate={subItem.endDate ? new Date(subItem.endDate) : undefined}
-            onStartDateChange={(date) => handleSubItemUpdate(subItem.id, 'startDate', date?.toISOString())}
-            onEndDateChange={(date) => handleSubItemUpdate(subItem.id, 'endDate', date?.toISOString())}
-            onDurationChange={(duration) => handleSubItemUpdate(subItem.id, 'duration', duration)}
+            onStartDateChange={(date) => onUpdateSubItem?.(subItem.id, 'startDate', date?.toISOString())}
+            onEndDateChange={(date) => onUpdateSubItem?.(subItem.id, 'endDate', date?.toISOString())}
+            onDurationChange={(duration) => onUpdateSubItem?.(subItem.id, 'duration', duration)}
             disabled={subItem.completed}
           />
           <StatusSelect
             status={subItem.status || "in-progress"}
-            onStatusChange={(value) => handleSubItemUpdate(subItem.id, 'status', value)}
+            onStatusChange={(value) => onUpdateSubItem?.(subItem.id, 'status', value)}
             disabled={subItem.completed}
           />
         </div>
       ))}
+      <FileDialog
+        isOpen={isFileDialogOpen}
+        onClose={() => {
+          setIsFileDialogOpen(false);
+          setSelectedSubItem(null);
+        }}
+        subItemId={selectedSubItem || undefined}
+        files={files}
+        onFileUpload={() => selectedSubItem && fetchFiles(selectedSubItem)}
+      />
     </div>
   );
 };

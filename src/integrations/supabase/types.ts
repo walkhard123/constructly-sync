@@ -96,6 +96,54 @@ export type Database = {
         }
         Relationships: []
       }
+      schedule_files: {
+        Row: {
+          content_type: string | null
+          created_at: string
+          file_path: string
+          filename: string
+          id: number
+          item_id: number | null
+          size: number | null
+          sub_item_id: number | null
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string
+          file_path: string
+          filename: string
+          id?: number
+          item_id?: number | null
+          size?: number | null
+          sub_item_id?: number | null
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string
+          file_path?: string
+          filename?: string
+          id?: number
+          item_id?: number | null
+          size?: number | null
+          sub_item_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "schedule_files_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "template_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "schedule_files_sub_item_id_fkey"
+            columns: ["sub_item_id"]
+            isOneToOne: false
+            referencedRelation: "template_sub_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       schedule_templates: {
         Row: {
           created_at: string
