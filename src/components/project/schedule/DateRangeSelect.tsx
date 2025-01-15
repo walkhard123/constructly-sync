@@ -23,7 +23,7 @@ export const DateRangeSelect = ({
   disabled
 }: DateRangeSelectProps) => {
   const formatDate = (date: Date) => {
-    return format(date, "MMM dd, yyyy");
+    return format(date, "dd");  // Changed format to only show day
   };
 
   const displayText = () => {
