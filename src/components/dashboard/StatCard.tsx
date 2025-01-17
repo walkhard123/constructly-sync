@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { LucideIcon } from "lucide-react";
 
 interface StatCardProps {
@@ -7,7 +7,6 @@ interface StatCardProps {
   subtitle: string;
   highlight?: string;
   icon: LucideIcon;
-  iconColor?: string;
   onClick?: () => void;
 }
 
@@ -17,25 +16,25 @@ export const StatCard = ({
   subtitle,
   highlight,
   icon: Icon,
-  iconColor = "text-[#4B3F8F]",
   onClick
 }: StatCardProps) => {
   return (
     <Card 
-      className={`rounded-2xl border-0 shadow-[0px_2px_8px_rgba(0,0,0,0.08)] ${onClick ? 'cursor-pointer hover:shadow-lg transition-all duration-200' : ''}`}
+      className="app-card cursor-pointer"
       onClick={onClick}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 pt-4 px-4">
-        <CardTitle className="text-base font-medium text-[#1A1A1A]">{title}</CardTitle>
-        <Icon className={`h-5 w-5 ${iconColor}`} />
-      </CardHeader>
-      <CardContent className="pb-4 px-4">
-        <div className="text-2xl font-semibold text-[#1A1A1A]">{value}</div>
-        <div className="text-sm text-[#6B6B6B] mt-1">
-          {subtitle}
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="icon-container w-12 h-12">
+            <Icon className="h-6 w-6 text-white" />
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold text-gray-800">{value}</div>
+            <div className="text-sm text-gray-500">{subtitle}</div>
+          </div>
         </div>
         {highlight && (
-          <div className="mt-2 text-sm font-medium text-[#4B3F8F]">
+          <div className="text-sm font-medium text-primary mt-2">
             {highlight}
           </div>
         )}
