@@ -48,7 +48,7 @@ const Index = () => {
       component: <Dashboard />
     },
     {
-      title: "Projects Management",
+      title: "Projects",
       description: "Manage construction projects and tasks",
       icon: <ClipboardList className="w-6 h-6" />,
       component: <ProjectManagement />
@@ -72,19 +72,19 @@ const Index = () => {
       component: <DailyLogs />
     },
     {
-      title: "File Upload",
+      title: "Files",
       description: "Manage project documents",
       icon: <Upload className="w-6 h-6" />,
       component: <FileUpload />
     },
     {
-      title: "Team Members",
+      title: "Team",
       description: "Manage team and permissions",
       icon: <Users className="w-6 h-6" />,
       component: <TeamMembers />
     },
     {
-      title: "Leave Requests",
+      title: "Leave",
       description: "Manage time off and leave requests",
       icon: <ListChecks className="w-6 h-6" />,
       component: <LeaveRequests />
@@ -100,25 +100,21 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-full md:max-w-7xl mx-auto px-4 py-4 md:p-8">
-        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <div className="flex items-center gap-4 flex-wrap">
-            {selectedSection && (
-              <Button
-                variant="ghost"
-                onClick={() => setSelectedSection(null)}
-                className="w-full sm:w-auto"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Main Menu
-              </Button>
-            )}
-            <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
-            </h1>
-          </div>
+        <div className="flex justify-between items-center mb-6">
+          {selectedSection && (
+            <Button
+              variant="ghost"
+              onClick={() => setSelectedSection(null)}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={handleLogout}
-            className="flex items-center gap-2 w-full sm:w-auto"
+            className="flex items-center gap-2 ml-auto"
           >
             <LogOut className="h-4 w-4" />
             Sign Out
@@ -126,25 +122,20 @@ const Index = () => {
         </div>
         
         {!selectedSection ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-3 gap-4 md:gap-6 max-w-md mx-auto">
             {menuItems.map((item) => (
-              <Card 
-                key={item.title} 
-                className="hover:shadow-lg transition-shadow cursor-pointer hover:border-purple-200 w-full"
+              <button
+                key={item.title}
                 onClick={() => setSelectedSection(item.title)}
+                className="flex flex-col items-center gap-2 p-4 transition-all"
               >
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-purple-100 text-purple-600 flex-shrink-0">
-                      {item.icon}
-                    </div>
-                    <div className="min-w-0">
-                      <CardTitle className="text-lg truncate">{item.title}</CardTitle>
-                      <CardDescription className="text-sm truncate">{item.description}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
+                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 transition-colors hover:bg-purple-200">
+                  {item.icon}
+                </div>
+                <span className="text-sm font-medium text-gray-700 text-center">
+                  {item.title}
+                </span>
+              </button>
             ))}
           </div>
         ) : (
