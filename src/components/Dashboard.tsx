@@ -69,19 +69,19 @@ export const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] animate-fade-in">
-      <div className="px-6 pt-8 pb-6">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-2">Welcome Back!</h1>
-        <p className="text-sm text-gray-600">Here's your daily overview</p>
+    <div className="min-h-screen bg-[#F5F5F5] pb-20">
+      <div className="px-4 pt-6 pb-4">
+        <h1 className="text-2xl font-semibold text-[#1A1A1A] mb-1">Welcome Back!</h1>
+        <p className="text-sm text-[#6B6B6B]">Here's your daily overview</p>
       </div>
       
-      <div className="px-6 grid grid-cols-2 gap-6 mb-8">
+      <div className="px-4 grid grid-cols-2 gap-4 mb-6">
         {statCards.map((card, index) => (
           <StatCard key={index} {...card} />
         ))}
       </div>
 
-      <div className="px-6 space-y-8">
+      <div className="px-4 space-y-6">
         <ProjectProgress projects={projectProgress} />
         <ActivityList activities={recentActivities} />
       </div>

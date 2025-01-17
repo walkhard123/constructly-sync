@@ -75,70 +75,17 @@
   }
 }
 
-/* Global card styles */
-.app-card {
-  @apply bg-white rounded-2xl shadow-lg p-6 transition-all duration-300 hover:shadow-xl;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+/* Mobile navigation */
+.nav-item {
+  @apply flex flex-col items-center justify-center gap-1 py-2 px-4 transition-colors duration-200;
 }
 
-/* Icon container styles */
-.icon-container {
-  @apply w-16 h-16 rounded-2xl flex items-center justify-center mb-3 mx-auto transition-transform duration-300 hover:scale-110;
-  background: linear-gradient(135deg, #9b87f5 0%, #7E69AB 100%);
+.nav-item.active {
+  @apply text-[#4B3F8F];
 }
 
-/* Menu grid layout */
-.menu-grid {
-  @apply grid grid-cols-3 gap-6 p-6 max-w-md mx-auto;
-}
-
-.menu-item {
-  @apply flex flex-col items-center text-center p-4 rounded-2xl transition-all duration-300 hover:transform hover:scale-105;
-  background: linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.9) 100%);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.menu-item:hover .icon-container {
-  @apply transform scale-110;
-  box-shadow: 0 8px 20px rgba(155, 135, 245, 0.3);
-}
-
-.menu-item-label {
-  @apply mt-2 font-medium text-gray-700;
-}
-
-/* Card header styles */
-.card-header {
-  @apply flex items-center justify-between mb-6;
-}
-
-.card-title {
-  @apply text-xl font-semibold text-gray-800;
-}
-
-/* List item styles */
-.list-item {
-  @apply flex items-center p-4 rounded-xl mb-4 transition-all duration-200 hover:shadow-md;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
-}
-
-/* Button styles */
-.app-button {
-  @apply px-6 py-3 rounded-xl font-medium transition-all duration-300;
-  background: linear-gradient(135deg, #9b87f5 0%, #7E69AB 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(155, 135, 245, 0.3);
-}
-
-.app-button:hover {
-  @apply transform scale-105;
-  box-shadow: 0 6px 20px rgba(155, 135, 245, 0.4);
-}
-
-/* Input field styles */
-.app-input {
-  @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+.nav-item:not(.active) {
+  @apply text-[#6B6B6B];
 }
 
 /* Animation classes */

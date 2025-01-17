@@ -44,77 +44,68 @@ const Index = () => {
     {
       title: "Dashboard",
       description: "Overview of all activities and metrics",
-      icon: <LayoutDashboard className="w-7 h-7" />,
-      component: <Dashboard />,
-      gradient: "from-blue-500 to-blue-600"
+      icon: <LayoutDashboard className="w-6 h-6" />,
+      component: <Dashboard />
     },
     {
       title: "Projects",
       description: "Manage construction projects and tasks",
-      icon: <ClipboardList className="w-7 h-7" />,
-      component: <ProjectManagement />,
-      gradient: "from-purple-500 to-purple-600"
+      icon: <ClipboardList className="w-6 h-6" />,
+      component: <ProjectManagement />
     },
     {
       title: "Tasks",
       description: "View and manage all tasks across projects",
-      icon: <ListTodo className="w-7 h-7" />,
-      component: <TaskManagement />,
-      gradient: "from-indigo-500 to-indigo-600"
+      icon: <ListTodo className="w-6 h-6" />,
+      component: <TaskManagement />
     },
     {
       title: "Time Clock",
       description: "Track working hours",
-      icon: <Clock className="w-7 h-7" />,
-      component: <TimeClock />,
-      gradient: "from-green-500 to-green-600"
+      icon: <Clock className="w-6 h-6" />,
+      component: <TimeClock />
     },
     {
       title: "Daily Logs",
       description: "Record and track daily activities",
-      icon: <Calendar className="w-7 h-7" />,
-      component: <DailyLogs />,
-      gradient: "from-yellow-500 to-yellow-600"
+      icon: <Calendar className="w-6 h-6" />,
+      component: <DailyLogs />
     },
     {
       title: "Files",
       description: "Manage project documents",
-      icon: <Upload className="w-7 h-7" />,
-      component: <FileUpload />,
-      gradient: "from-pink-500 to-pink-600"
+      icon: <Upload className="w-6 h-6" />,
+      component: <FileUpload />
     },
     {
       title: "Team",
       description: "Manage team and permissions",
-      icon: <Users className="w-7 h-7" />,
-      component: <TeamMembers />,
-      gradient: "from-cyan-500 to-cyan-600"
+      icon: <Users className="w-6 h-6" />,
+      component: <TeamMembers />
     },
     {
       title: "Leave",
       description: "Manage time off and leave requests",
-      icon: <ListChecks className="w-7 h-7" />,
-      component: <LeaveRequests />,
-      gradient: "from-teal-500 to-teal-600"
+      icon: <ListChecks className="w-6 h-6" />,
+      component: <LeaveRequests />
     },
     {
       title: "Settings",
       description: "Configure system preferences",
-      icon: <Settings2 className="w-7 h-7" />,
-      component: <Settings />,
-      gradient: "from-gray-500 to-gray-600"
+      icon: <Settings2 className="w-6 h-6" />,
+      component: <Settings />
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-full md:max-w-7xl mx-auto px-4 py-4 md:p-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-6">
           {selectedSection && (
             <Button
               variant="ghost"
               onClick={() => setSelectedSection(null)}
-              className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
               Back
@@ -123,7 +114,7 @@ const Index = () => {
           <Button
             variant="outline"
             onClick={handleLogout}
-            className="flex items-center gap-2 ml-auto text-gray-700 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 ml-auto"
           >
             <LogOut className="h-4 w-4" />
             Sign Out
@@ -131,29 +122,24 @@ const Index = () => {
         </div>
         
         {!selectedSection ? (
-          <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto">
+          <div className="grid grid-cols-3 gap-4 md:gap-6 max-w-md mx-auto">
             {menuItems.map((item) => (
               <button
                 key={item.title}
                 onClick={() => setSelectedSection(item.title)}
-                className="group flex flex-col items-center gap-3 p-4 transition-all"
+                className="flex flex-col items-center gap-2 p-4 transition-all"
               >
-                <div className={`w-20 h-20 rounded-[24px] bg-gradient-to-br ${item.gradient} 
-                  flex items-center justify-center text-white shadow-lg 
-                  transform transition-all duration-300 ease-in-out
-                  group-hover:scale-105 group-hover:shadow-xl
-                  group-active:scale-95`}
-                >
+                <div className="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 transition-colors hover:bg-purple-200">
                   {item.icon}
                 </div>
-                <span className="text-sm font-medium text-gray-700 text-center group-hover:text-gray-900 transition-colors">
+                <span className="text-sm font-medium text-gray-700 text-center">
                   {item.title}
                 </span>
               </button>
             ))}
           </div>
         ) : (
-          <div className="mt-4 md:mt-8 w-full animate-fade-in">
+          <div className="mt-4 md:mt-8 w-full">
             {menuItems.find(item => item.title === selectedSection)?.component}
           </div>
         )}
