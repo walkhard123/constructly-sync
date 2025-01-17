@@ -1,6 +1,6 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Plus, Search, Calendar, Clock, Upload, Users, ClipboardList, ListTodo, LayoutDashboard, Settings2, ListChecks, LogOut } from "lucide-react";
+import { ArrowLeft, Plus, Search, Calendar, Clock, Upload, Users, ClipboardList, ListTodo, LayoutDashboard, Settings2, ListChecks, LogOut, Smartphone, Tablet, Laptop } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProjectManagement } from "@/components/ProjectManagement";
 import { TeamMembers } from "@/components/TeamMembers";
@@ -44,26 +44,20 @@ const Index = () => {
     {
       title: "Dashboard",
       description: "Overview of all activities and metrics",
-      icon: <LayoutDashboard className="w-6 h-6" />,
+      icon: <Smartphone className="w-6 h-6" />,
       component: <Dashboard />
     },
     {
-      title: "Projects Management",
+      title: "Projects",
       description: "Manage construction projects and tasks",
-      icon: <ClipboardList className="w-6 h-6" />,
+      icon: <Tablet className="w-6 h-6" />,
       component: <ProjectManagement />
     },
     {
       title: "Tasks",
       description: "View and manage all tasks across projects",
-      icon: <ListTodo className="w-6 h-6" />,
+      icon: <Laptop className="w-6 h-6" />,
       component: <TaskManagement />
-    },
-    {
-      title: "Time Clock",
-      description: "Track working hours",
-      icon: <Clock className="w-6 h-6" />,
-      component: <TimeClock />
     },
     {
       title: "Daily Logs",
@@ -100,8 +94,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-full md:max-w-7xl mx-auto px-4 py-4 md:p-8">
-        <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-4">
             {selectedSection && (
               <Button
                 variant="ghost"
@@ -112,13 +106,11 @@ const Index = () => {
                 Back to Main Menu
               </Button>
             )}
-            <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
-            </h1>
           </div>
           <Button
             variant="outline"
             onClick={handleLogout}
-            className="flex items-center gap-2 w-full sm:w-auto"
+            className="flex items-center gap-2"
           >
             <LogOut className="h-4 w-4" />
             Sign Out
@@ -126,25 +118,18 @@ const Index = () => {
         </div>
         
         {!selectedSection ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {menuItems.map((item) => (
-              <Card 
-                key={item.title} 
-                className="hover:shadow-lg transition-shadow cursor-pointer hover:border-purple-200 w-full"
+          <div className="grid grid-cols-3 gap-4 max-w-sm mx-auto">
+            {menuItems.slice(0, 3).map((item) => (
+              <div
+                key={item.title}
+                className="flex flex-col items-center gap-2 cursor-pointer"
                 onClick={() => setSelectedSection(item.title)}
               >
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-purple-100 text-purple-600 flex-shrink-0">
-                      {item.icon}
-                    </div>
-                    <div className="min-w-0">
-                      <CardTitle className="text-lg truncate">{item.title}</CardTitle>
-                      <CardDescription className="text-sm truncate">{item.description}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
+                <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
+                  {item.icon}
+                </div>
+                <span className="text-sm font-medium text-gray-700">{item.title}</span>
+              </div>
             ))}
           </div>
         ) : (
