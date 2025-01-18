@@ -96,6 +96,57 @@ export type Database = {
         }
         Relationships: []
       }
+      projects: {
+        Row: {
+          address: string | null
+          budget: string | null
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: number
+          name: string
+          phase: string | null
+          progress: number | null
+          risk: string | null
+          start_date: string | null
+          status: string
+          team_member: string[] | null
+          type: string
+        }
+        Insert: {
+          address?: string | null
+          budget?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: number
+          name: string
+          phase?: string | null
+          progress?: number | null
+          risk?: string | null
+          start_date?: string | null
+          status: string
+          team_member?: string[] | null
+          type: string
+        }
+        Update: {
+          address?: string | null
+          budget?: string | null
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: number
+          name?: string
+          phase?: string | null
+          progress?: number | null
+          risk?: string | null
+          start_date?: string | null
+          status?: string
+          team_member?: string[] | null
+          type?: string
+        }
+        Relationships: []
+      }
       schedule_files: {
         Row: {
           content_type: string | null
