@@ -17,22 +17,14 @@ import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const location = useLocation();
-  const [selectedSection, setSelectedSection] = useState<string | null>(() => {
-    // Initialize with location state if available, otherwise null
-    return location.state?.selectedSection || null;
-  });
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Reset selectedSection when navigating back to this page
   useEffect(() => {
-    const handleLocationChange = () => {
-      if (location.state?.selectedSection) {
-        setSelectedSection(location.state.selectedSection);
-      }
-    };
-
-    handleLocationChange();
+    if (location.state?.selectedSection) {
+      setSelectedSection(location.state.selectedSection);
+    }
   }, [location.state]);
 
   const handleLogout = async () => {
@@ -105,10 +97,6 @@ const Index = () => {
     }
   ];
 
-  const handleBack = () => {
-    setSelectedSection(null);
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-full md:max-w-7xl mx-auto px-4 py-4 md:p-8">
@@ -116,7 +104,7 @@ const Index = () => {
           {selectedSection && (
             <Button
               variant="ghost"
-              onClick={handleBack}
+              onClick={() => setSelectedSection(null)}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />

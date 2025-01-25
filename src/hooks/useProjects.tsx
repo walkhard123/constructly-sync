@@ -6,7 +6,7 @@ import { useToast } from "./use-toast";
 
 export const useProjects = () => {
   const { toast } = useToast();
-  const { projects, setProjects, searchQuery, setSearchQuery, refreshProjects } = useProjectState();
+  const { projects, setProjects, searchQuery, setSearchQuery } = useProjectState();
   const { handleAddProject, handleDeleteProject } = useProjectActions(projects, setProjects);
   const { handleAddTask, handleEditTask, handleAddSubTask, toggleSubTask } = useTaskActions({
     tasks: projects.flatMap(p => p.tasks),
@@ -144,7 +144,6 @@ export const useProjects = () => {
     handleToggleTaskStatus,
     handleDeleteTask,
     handleAddSubTask: projectAddSubTask,
-    toggleSubTask: handleToggleSubTask,
-    refreshProjects
+    toggleSubTask: handleToggleSubTask
   };
 };
