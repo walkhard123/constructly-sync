@@ -22,10 +22,11 @@ const Index = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (location.state?.selectedSection) {
-      setSelectedSection(location.state.selectedSection);
+    // Reset selectedSection when navigating back to the main page
+    if (location.pathname === '/') {
+      setSelectedSection('Projects');
     }
-  }, [location.state]);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -51,7 +52,7 @@ const Index = () => {
       title: "Projects",
       description: "Manage construction projects and tasks",
       icon: <ClipboardList className="w-6 h-6" />,
-      component: <ProjectManagement />
+      component: <ProjectManagement key={location.pathname} />
     },
     {
       title: "Tasks",
