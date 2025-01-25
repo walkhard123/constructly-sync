@@ -6,6 +6,7 @@ import { Project } from "./types/project";
 import { useProjects } from "@/hooks/useProjects";
 import { useProjectDialogState } from "./project/dialog/ProjectDialogState";
 import { DeleteProjectDialog } from "./project/dialog/DeleteProjectDialog";
+import { useEffect } from "react";
 
 export const ProjectManagement = () => {
   const { toast } = useToast();
@@ -14,6 +15,7 @@ export const ProjectManagement = () => {
     handleSearch,
     handleAddProject,
     handleDeleteProject,
+    refreshProjects
   } = useProjects();
 
   const {
@@ -27,6 +29,11 @@ export const ProjectManagement = () => {
     setNewProject,
     resetNewProject
   } = useProjectDialogState();
+
+  // Refresh projects when component mounts or when returning to the page
+  useEffect(() => {
+    refreshProjects();
+  }, []);
 
   const handleEditProject = (project: Project) => {
     setEditingProject(project);
