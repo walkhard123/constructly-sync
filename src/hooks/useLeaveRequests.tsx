@@ -17,46 +17,52 @@ interface LeaveRequest {
 
 export const useLeaveRequests = () => {
   const { toast } = useToast();
-  const [requests, setRequests] = useState<LeaveRequest[]>([
-    {
-      id: 1,
-      type: "Annual Leave",
-      startDate: "2024-04-01",
-      endDate: "2024-04-01",
-      startTime: "09:00",
-      endTime: "17:00",
-      status: "pending",
-      reason: "Family vacation",
-      employee: "John Smith"
-    }
-  ]);
+  const [requests, setRequests] = useState<LeaveRequest[]>([]);
 
   const handleAddRequest = async (newRequest: Omit<LeaveRequest, "id" | "status">) => {
-    if (!newRequest.type || !newRequest.startDate || !newRequest.startTime || !newRequest.employee) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
+      let filePath = null;
+      
+      // If there's a file, upload it to Supabase storage
       if (newRequest.file) {
         const fileExt = newRequest.file.name.split('.').pop();
-        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+        const fileName = `${crypto.randomUUID()}.${fileExt}`;
         
-        const { error: uploadError } = await supabase.storage
+        const { error: uploadError, data } = await supabase.storage
           .from('project-files')
-          .upload(filePath, newRequest.file);
+          .upload(fileName, newRequest.file);
 
         if (uploadError) throw uploadError;
+        filePath = data?.path;
       }
 
+      // Get the current user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Insert the leave request into the database
+      const { data, error } = await supabase
+        .from('leave_requests')
+        .insert({
+          user_id: user.id,
+          type: newRequest.type,
+          start_date: newRequest.startDate,
+          end_date: newRequest.endDate,
+          start_time: newRequest.startTime,
+          end_time: newRequest.endTime,
+          reason: newRequest.reason,
+          file_path: filePath
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Add the new request to the local state
       setRequests([...requests, {
-        id: requests.length + 1,
+        id: data.id,
         ...newRequest,
-        status: "pending"
+        status: 'pending'
       }]);
 
       toast({
@@ -64,9 +70,10 @@ export const useLeaveRequests = () => {
         description: "Leave request submitted successfully.",
       });
     } catch (error) {
+      console.error('Error submitting leave request:', error);
       toast({
         title: "Error",
-        description: "Failed to upload supporting document. Please try again.",
+        description: "Failed to submit leave request. Please try again.",
         variant: "destructive",
       });
     }
