@@ -10,6 +10,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface LeaveRequestDialogProps {
   isOpen: boolean;
@@ -37,6 +39,33 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
     employee: "",
     file: undefined as File | undefined
   });
+
+  const [users, setUsers] = React.useState<Array<{ id: string; username: string | null }>>([]);
+  const { toast } = useToast();
+
+  React.useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, username');
+        
+        if (error) {
+          throw error;
+        }
+
+        setUsers(data || []);
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to fetch team members",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchUsers();
+  }, [toast]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,9 +96,11 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
                     <SelectValue placeholder="Select team member" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="John Smith">John Smith</SelectItem>
-                    <SelectItem value="Sarah Johnson">Sarah Johnson</SelectItem>
-                    <SelectItem value="Mike Williams">Mike Williams</SelectItem>
+                    {users.map((user) => (
+                      <SelectItem key={user.id} value={user.username || user.id}>
+                        {user.username || 'Unnamed User'}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
