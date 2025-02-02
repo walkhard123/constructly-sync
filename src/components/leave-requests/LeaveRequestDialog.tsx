@@ -61,8 +61,8 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Team Member</Label>
-                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, employee: value }))}>
+                <Label>Team Member <span className="text-red-500">*</span></Label>
+                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, employee: value }))} required>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select team member" />
                   </SelectTrigger>
@@ -75,8 +75,8 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
               </div>
 
               <div>
-                <Label>Leave Type</Label>
-                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
+                <Label>Leave Type <span className="text-red-500">*</span></Label>
+                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))} required>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select leave type" />
                   </SelectTrigger>
@@ -91,7 +91,7 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Start Date</Label>
+                <Label>Start Date <span className="text-red-500">*</span></Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -117,19 +117,20 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
               </div>
 
               <div className="space-y-2">
-                <Label>Start Time</Label>
+                <Label>Start Time <span className="text-red-500">*</span></Label>
                 <Input
                   type="time"
                   value={formData.startTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
                   className="w-full"
+                  required
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>End Date</Label>
+                <Label>End Date <span className="text-red-500">*</span></Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -155,12 +156,13 @@ export const LeaveRequestDialog = ({ isOpen, onOpenChange, onSubmit }: LeaveRequ
               </div>
 
               <div className="space-y-2">
-                <Label>End Time</Label>
+                <Label>End Time <span className="text-red-500">*</span></Label>
                 <Input
                   type="time"
                   value={formData.endTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
                   className="w-full"
+                  required
                 />
               </div>
             </div>

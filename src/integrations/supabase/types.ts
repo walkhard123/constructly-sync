@@ -51,6 +51,48 @@ export type Database = {
         }
         Relationships: []
       }
+      leave_requests: {
+        Row: {
+          created_at: string
+          end_date: string
+          end_time: string
+          file_path: string | null
+          id: number
+          reason: string | null
+          start_date: string
+          start_time: string
+          status: Database["public"]["Enums"]["leave_status"] | null
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          end_time: string
+          file_path?: string | null
+          id?: number
+          reason?: string | null
+          start_date: string
+          start_time: string
+          status?: Database["public"]["Enums"]["leave_status"] | null
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          end_time?: string
+          file_path?: string | null
+          id?: number
+          reason?: string | null
+          start_date?: string
+          start_time?: string
+          status?: Database["public"]["Enums"]["leave_status"] | null
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       log_comments: {
         Row: {
           content: string
@@ -353,7 +395,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      leave_status: "pending" | "approved" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
