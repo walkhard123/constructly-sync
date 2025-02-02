@@ -16,7 +16,6 @@ interface LeaveRequest {
 }
 
 export const useLeaveRequests = () => {
-  const { toast } = useToast();
   const [requests, setRequests] = useState<LeaveRequest[]>([
     {
       id: 1,
@@ -30,17 +29,9 @@ export const useLeaveRequests = () => {
       employee: "John Smith"
     }
   ]);
+  const { toast } = useToast();
 
   const handleAddRequest = async (newRequest: Omit<LeaveRequest, "id" | "status">) => {
-    if (!newRequest.type || !newRequest.startDate || !newRequest.startTime || !newRequest.employee) {
-      toast({
-        title: "Error",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
       // Get the current user's session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
@@ -76,7 +67,7 @@ export const useLeaveRequests = () => {
             reason: newRequest.reason,
             file_path: filePath,
             status: 'pending',
-            user_id: session.user.id  // Add the user_id from the session
+            user_id: session.user.id
           }
         ])
         .select()
@@ -87,8 +78,14 @@ export const useLeaveRequests = () => {
       // Update local state with the new request
       setRequests([...requests, {
         id: data.id,
-        ...newRequest,
-        status: "pending"
+        type: data.type,
+        startDate: data.start_date,
+        endDate: data.end_date,
+        startTime: data.start_time,
+        endTime: data.end_time,
+        status: data.status,
+        reason: data.reason,
+        employee: newRequest.employee
       }]);
 
       toast({
@@ -105,29 +102,63 @@ export const useLeaveRequests = () => {
     }
   };
 
-  const handleApprove = (requestId: number) => {
-    setRequests(requests.map(request => 
-      request.id === requestId 
-        ? { ...request, status: "approved" }
-        : request
-    ));
-    toast({
-      title: "Success",
-      description: "Leave request approved successfully.",
-    });
+  const handleApprove = async (requestId: number) => {
+    try {
+      const { error } = await supabase
+        .from('leave_requests')
+        .update({ status: 'approved' })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      setRequests(requests.map(request => 
+        request.id === requestId 
+          ? { ...request, status: "approved" }
+          : request
+      ));
+
+      toast({
+        title: "Success",
+        description: "Leave request approved successfully.",
+      });
+    } catch (error) {
+      console.error('Error approving leave request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to approve leave request. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleReject = (requestId: number) => {
-    setRequests(requests.map(request => 
-      request.id === requestId 
-        ? { ...request, status: "rejected" }
-        : request
-    ));
-    toast({
-      title: "Request Rejected",
-      description: "The leave request has been rejected.",
-      variant: "destructive",
-    });
+  const handleReject = async (requestId: number) => {
+    try {
+      const { error } = await supabase
+        .from('leave_requests')
+        .update({ status: 'rejected' })
+        .eq('id', requestId);
+
+      if (error) throw error;
+
+      setRequests(requests.map(request => 
+        request.id === requestId 
+          ? { ...request, status: "rejected" }
+          : request
+      ));
+
+      toast({
+        title: "Request Rejected",
+        description: "The leave request has been rejected.",
+        variant: "destructive",
+      });
+    } catch (error) {
+      console.error('Error rejecting leave request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject leave request. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return {
