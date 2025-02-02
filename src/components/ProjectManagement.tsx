@@ -7,7 +7,6 @@ import { useProjects } from "@/hooks/useProjects";
 import { useProjectDialogState } from "./project/dialog/ProjectDialogState";
 import { DeleteProjectDialog } from "./project/dialog/DeleteProjectDialog";
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 export const ProjectManagement = () => {
   const { toast } = useToast();
@@ -16,6 +15,7 @@ export const ProjectManagement = () => {
     handleSearch,
     handleAddProject,
     handleDeleteProject,
+    refreshProjects
   } = useProjects();
 
   const {
@@ -30,49 +30,10 @@ export const ProjectManagement = () => {
     resetNewProject
   } = useProjectDialogState();
 
-  // Fetch projects when component mounts
+  // Refresh projects when component mounts or when returning to the page
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('projects')
-          .select('*')
-          .order('created_at', { ascending: false });
-
-        if (error) throw error;
-
-        // Transform the data to match our Project type
-        const transformedProjects = data.map(project => ({
-          id: project.id,
-          name: project.name,
-          address: project.address || "",
-          type: project.type,
-          teamMember: project.team_member?.[0] || "",
-          startDate: project.start_date || "",
-          endDate: project.end_date || "",
-          description: project.description || "",
-          phase: project.phase || "Phase 1",
-          progress: project.progress || 0,
-          status: project.status,
-          budget: project.budget || "",
-          risk: project.risk || "low",
-          tasks: []
-        }));
-
-        // Update projects in the state
-        handleSearch("");
-      } catch (error) {
-        console.error('Error fetching projects:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load projects. Please refresh the page.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    fetchProjects();
-  }, [toast]);
+    refreshProjects();
+  }, []);
 
   const handleEditProject = (project: Project) => {
     setEditingProject(project);
