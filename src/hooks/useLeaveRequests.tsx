@@ -42,6 +42,13 @@ export const useLeaveRequests = () => {
     }
 
     try {
+      // Get the current user's session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session?.user?.id) {
+        throw new Error('User must be logged in to submit a leave request');
+      }
+
       let filePath = null;
       
       // Handle file upload if a file is provided
@@ -68,7 +75,8 @@ export const useLeaveRequests = () => {
             end_time: newRequest.endTime,
             reason: newRequest.reason,
             file_path: filePath,
-            status: 'pending'
+            status: 'pending',
+            user_id: session.user.id  // Add the user_id from the session
           }
         ])
         .select()
