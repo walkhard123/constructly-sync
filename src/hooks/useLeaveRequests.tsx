@@ -42,9 +42,12 @@ export const useLeaveRequests = () => {
     }
 
     try {
+      let filePath = null;
+      
+      // Handle file upload if a file is provided
       if (newRequest.file) {
         const fileExt = newRequest.file.name.split('.').pop();
-        const filePath = `${crypto.randomUUID()}.${fileExt}`;
+        filePath = `${crypto.randomUUID()}.${fileExt}`;
         
         const { error: uploadError } = await supabase.storage
           .from('project-files')
@@ -53,8 +56,29 @@ export const useLeaveRequests = () => {
         if (uploadError) throw uploadError;
       }
 
+      // Insert the leave request into the database
+      const { data, error } = await supabase
+        .from('leave_requests')
+        .insert([
+          {
+            type: newRequest.type,
+            start_date: newRequest.startDate,
+            end_date: newRequest.endDate,
+            start_time: newRequest.startTime,
+            end_time: newRequest.endTime,
+            reason: newRequest.reason,
+            file_path: filePath,
+            status: 'pending'
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Update local state with the new request
       setRequests([...requests, {
-        id: requests.length + 1,
+        id: data.id,
         ...newRequest,
         status: "pending"
       }]);
@@ -64,9 +88,10 @@ export const useLeaveRequests = () => {
         description: "Leave request submitted successfully.",
       });
     } catch (error) {
+      console.error('Error submitting leave request:', error);
       toast({
         title: "Error",
-        description: "Failed to upload supporting document. Please try again.",
+        description: "Failed to submit leave request. Please try again.",
         variant: "destructive",
       });
     }
