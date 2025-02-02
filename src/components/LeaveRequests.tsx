@@ -9,6 +9,7 @@ export const LeaveRequests = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const {
     requests,
+    isLoading,
     handleAddRequest,
     handleApprove,
     handleReject
@@ -50,14 +51,20 @@ export const LeaveRequests = () => {
       />
 
       <div className="space-y-4">
-        {requests.map((request) => (
-          <LeaveRequestCard
-            key={request.id}
-            request={request}
-            onApprove={handleApprove}
-            onReject={handleReject}
-          />
-        ))}
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">Loading leave requests...</div>
+        ) : requests.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">No leave requests found</div>
+        ) : (
+          requests.map((request) => (
+            <LeaveRequestCard
+              key={request.id}
+              request={request}
+              onApprove={handleApprove}
+              onReject={handleReject}
+            />
+          ))
+        )}
       </div>
     </div>
   );

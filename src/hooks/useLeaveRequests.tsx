@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -18,6 +18,50 @@ interface LeaveRequest {
 export const useLeaveRequests = () => {
   const { toast } = useToast();
   const [requests, setRequests] = useState<LeaveRequest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchLeaveRequests();
+  }, []);
+
+  const fetchLeaveRequests = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { data, error } = await supabase
+        .from('leave_requests')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      // Transform the data to match our interface
+      const transformedRequests = data.map(request => ({
+        id: request.id,
+        type: request.type,
+        startDate: request.start_date,
+        endDate: request.end_date,
+        startTime: request.start_time,
+        endTime: request.end_time,
+        status: request.status || 'pending',
+        reason: request.reason || '',
+        employee: request.employee || '',
+      }));
+
+      setRequests(transformedRequests);
+    } catch (error) {
+      console.error('Error fetching leave requests:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch leave requests. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddRequest = async (newRequest: Omit<LeaveRequest, "id" | "status">) => {
     try {
@@ -51,7 +95,8 @@ export const useLeaveRequests = () => {
           start_time: newRequest.startTime,
           end_time: newRequest.endTime,
           reason: newRequest.reason,
-          file_path: filePath
+          file_path: filePath,
+          employee: newRequest.employee
         })
         .select()
         .single();
@@ -59,11 +104,11 @@ export const useLeaveRequests = () => {
       if (error) throw error;
 
       // Add the new request to the local state
-      setRequests([...requests, {
+      setRequests([{
         id: data.id,
         ...newRequest,
         status: 'pending'
-      }]);
+      }, ...requests]);
 
       toast({
         title: "Success",
@@ -106,6 +151,7 @@ export const useLeaveRequests = () => {
 
   return {
     requests,
+    isLoading,
     handleAddRequest,
     handleApprove,
     handleReject
